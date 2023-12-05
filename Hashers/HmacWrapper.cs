@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace EASDotnetSDK
+namespace EasDotnetSdk
 {
     public class HmacWrapper
     {

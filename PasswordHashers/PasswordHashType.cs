@@ -1,4 +1,4 @@
-﻿namespace EASDotnetSDK.PasswordHash
+﻿namespace EasDotnetSdk.PasswordHash
 {
     public enum PasswordHashType
     {
