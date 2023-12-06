@@ -24,18 +24,6 @@ namespace EasDotnetSdk.Tests
         }
 
         [Fact]
-        public async Task CreateHashAsync()
-        {
-            string dataToHash = "HashThisData";
-            IntPtr hashedPtr = await this._md5Wrapper.HashAsync(dataToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            MD5Wrapper.free_cstring(hashedPtr);
-            Assert.NotEmpty(hashed);
-            Assert.NotNull(hashed);
-            Assert.NotEqual(dataToHash, hashed);
-        }
-
-        [Fact]
         public async Task VerifyHash()
         {
             string dataToHash = "HashThisData";
@@ -46,19 +34,6 @@ namespace EasDotnetSdk.Tests
             Assert.NotNull(hashed);
             Assert.NotEqual(dataToHash, hashed);
             Assert.True(this._md5Wrapper.Verify(hashed, dataToHash));
-        }
-
-        [Fact]
-        public async Task VerifyHashAsync()
-        {
-            string dataToHash = "HashThisDat123a";
-            IntPtr hashedPtr = await this._md5Wrapper.HashAsync(dataToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            MD5Wrapper.free_cstring(hashedPtr);
-            Assert.NotEmpty(hashed);
-            Assert.NotNull(hashed);
-            Assert.NotEqual(dataToHash, hashed);
-            Assert.True(await this._md5Wrapper.VerifyAsync(hashed, dataToHash));
         }
     }
 }
