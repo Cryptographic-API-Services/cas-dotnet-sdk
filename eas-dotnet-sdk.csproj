@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>EasDotnetSdk</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -12,7 +12,6 @@
     <Folder Include="Symmetric\" />
     <Folder Include="Signatures\" />
     <Folder Include="PasswordHashers\" />
-    <Folder Include="RustLibraries\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="RustLibraries\performant_encryption.dll">
+    <None Update="performant_encryption.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
