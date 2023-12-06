@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace EASDotnetSDK.PasswordHash
+namespace EasDotnetSdk.PasswordHash
 {
     public class BcryptWrapper
     {

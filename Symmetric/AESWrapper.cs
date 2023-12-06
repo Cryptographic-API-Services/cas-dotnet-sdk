@@ -1,19 +1,12 @@
-﻿using Encryption.Compression;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace EASDotnetSDK
+namespace EasDotnetSdk
 {
     public class AESWrapper
     {
-        private readonly ZSTDWrapper _zstdWrapper;
-        public AESWrapper(ZSTDWrapper zstdWrapper)
-        {
-            this._zstdWrapper = zstdWrapper;
-        }
-
         public struct AesEncrypt
         {
             public IntPtr key { get; set; }
@@ -61,58 +54,6 @@ namespace EASDotnetSDK
             return aes128_encrypt_string(nonceKey, dataToEncrypt);
         }
 
-        public AesEncrypt Aes128ZSTDEncrypt(string nonceKey, string dataToEncrypt)
-        {
-            if (string.IsNullOrEmpty(nonceKey))
-            {
-                throw new Exception("Please provide a nonce key to encrypt with AES-128 ZSTD");
-            }
-            if (string.IsNullOrEmpty(dataToEncrypt))
-            {
-                throw new Exception("Please provide data to encrypt with AES-128 ZSTD");
-            }
-            IntPtr compressDataPtr = this._zstdWrapper.Compress(dataToEncrypt);
-            string compressedData = Marshal.PtrToStringAnsi(compressDataPtr);
-            ZSTDWrapper.free_cstring(compressDataPtr);
-            return this.Aes128Encrypt(nonceKey, compressedData);
-        }
-
-        public async Task<AesEncrypt> Aes128ZSTDEncryptAsync(string nonceKey, string dataToEncrypt)
-        {
-            return await Task.Run(() =>
-            {
-                return this.Aes128ZSTDEncrypt(nonceKey, dataToEncrypt);
-            });
-        }
-
-        public IntPtr Aes128ZSTDEncryptWithKey(string nonceKey, string key, string dataToEncrypt)
-        {
-            if (string.IsNullOrEmpty(nonceKey))
-            {
-                throw new Exception("Please provide a nonce key to encrypt with AES-128 ZSTD");
-            }
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new Exception("Please provide a secret key to encrypt with AES-128 ZSTD");
-            }
-            if (string.IsNullOrEmpty(dataToEncrypt))
-            {
-                throw new Exception("Please provide data to encrypt with AES-128 ZSTD");
-            }
-            IntPtr compressDataPtr = this._zstdWrapper.Compress(dataToEncrypt);
-            string compressedData = Marshal.PtrToStringAnsi(compressDataPtr);
-            ZSTDWrapper.free_cstring(compressDataPtr);
-            return this.EncryptAES128WithKey(nonceKey, key, compressedData);
-        }
-
-        public async Task<IntPtr> Aes128ZSTDEncryptWithKeyAsync(string nonceKey, string key, string dataToEncrypt)
-        {
-            return await Task.Run(() =>
-            {
-                return this.Aes128ZSTDEncryptWithKey(nonceKey, key, dataToEncrypt);
-            });
-        }
-
         public async Task<IntPtr> Aes128KeyAsync()
         {
             return await Task.Run(() =>
@@ -148,34 +89,6 @@ namespace EASDotnetSDK
                 throw new Exception("Please provide a data to decrypt with AES-128");
             }
             return aes128_decrypt_string(nonceKey, key, dataToDecrypt);
-        }
-
-        public IntPtr DecryptAES128ZSTDWithKey(string nonceKey, string key, string dataToDecrypt)
-        {
-            if (string.IsNullOrEmpty(nonceKey))
-            {
-                throw new Exception("Please provide an IV to decrypt with AES-128 ZSTD");
-            }
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new Exception("Please provide a secret key to decrypt with AES-128 ZSTD");
-            }
-            if (string.IsNullOrEmpty(dataToDecrypt))
-            {
-                throw new Exception("Please provide a data to decrypt with AES-128 ZSTD");
-            }
-            IntPtr decryptedCompressedDataPtr = this.DecryptAES128WithKey(nonceKey, key, dataToDecrypt);
-            string decryptedCompressedData = Marshal.PtrToStringAnsi(decryptedCompressedDataPtr);
-            ZSTDWrapper.free_cstring(decryptedCompressedDataPtr);
-            return this._zstdWrapper.Decompress(decryptedCompressedData);
-        }
-
-        public async Task<IntPtr> DecryptAES128ZSTDWithKeyAsync(string nonceKey, string key, string dataToDecrypt)
-        {
-            return await Task.Run(() =>
-            {
-                return this.DecryptAES128ZSTDWithKey(nonceKey, key, dataToDecrypt);
-            });
         }
 
         public async Task<IntPtr> EncryptAES128WithKeyAsync(string nonceKey, string key, string dataToEncrypt)
@@ -243,27 +156,6 @@ namespace EASDotnetSDK
             }
         }
 
-        public AesEncrypt EncryptZSTDPerformant(string nonceKey, string dataToEncrypt)
-        {
-            if (string.IsNullOrEmpty(nonceKey) || string.IsNullOrEmpty(dataToEncrypt))
-            {
-                throw new Exception("Please provide a valid nonce key and data to encrypt to encrypt with AES256 ZSTD");
-            }
-            IntPtr compressedDataPtr = this._zstdWrapper.Compress(dataToEncrypt);
-            string compressedData = Marshal.PtrToStringAnsi(compressedDataPtr);
-            ZSTDWrapper.free_cstring(compressedDataPtr);
-            return this.EncryptPerformant(nonceKey, compressedData);
-        }
-
-        public async Task<AesEncrypt> EncryptZSTDPerformantAsync(string nonceKey, string dataToEncrypt)
-        {
-            return await Task.Run(() =>
-            {
-                return this.EncryptZSTDPerformant(nonceKey, dataToEncrypt);
-            });
-        }
-
-
         /// <summary>
         /// AES 256 encrypt
         /// </summary>
@@ -310,25 +202,6 @@ namespace EASDotnetSDK
             {
                 throw new Exception("You need to provide a nonce key, key, and data to decrypt to use AES-GCM");
             }
-        }
-        public IntPtr DecryptZSTDPerformant(string nonceKey, string key, string toDecrypt)
-        {
-            if (string.IsNullOrEmpty(nonceKey) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(toDecrypt))
-            {
-                throw new Exception("You need to provide a nonce key, key, and data to decrypt to use AES-GCM ZSTD");
-            }
-            IntPtr decryptedPtr = aes256_decrypt_string(nonceKey, key, toDecrypt);
-            string decrypted = Marshal.PtrToStringAnsi(decryptedPtr);
-            AESWrapper.free_cstring(decryptedPtr);
-            return this._zstdWrapper.Decompress(decrypted);
-        }
-
-        public async Task<IntPtr> DecryptZSTDPerformantAsync(string nonceKey, string key, string toDecrypt)
-        {
-            return await Task.Run(() =>
-            {
-                return this.DecryptZSTDPerformant(nonceKey, key, toDecrypt);
-            });
         }
 
         public string GenerateAESNonce()

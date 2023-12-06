@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eas-dotnet-sdk", "eas-dotnet-sdk.csproj", "{DFF23C05-B838-47E7-A3CF-A2595B1FA39F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eas-dotnet-sdk-tests", "..\EAS\eas-dotnet-sdk\eas-dotnet-sdk-tests\eas-dotnet-sdk-tests.csproj", "{B24BC024-3DF1-4E98-A720-ABC258F79271}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DFF23C05-B838-47E7-A3CF-A2595B1FA39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFF23C05-B838-47E7-A3CF-A2595B1FA39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFF23C05-B838-47E7-A3CF-A2595B1FA39F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B24BC024-3DF1-4E98-A720-ABC258F79271}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24BC024-3DF1-4E98-A720-ABC258F79271}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24BC024-3DF1-4E98-A720-ABC258F79271}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B24BC024-3DF1-4E98-A720-ABC258F79271}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
