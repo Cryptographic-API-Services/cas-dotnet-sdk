@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace EasDotnetSdk.PasswordHash
 {
@@ -22,18 +21,6 @@ namespace EasDotnetSdk.PasswordHash
             }
             return scrypt_hash(passToHash);
         }
-        public async Task<IntPtr> HashPasswordAsync(string passToHash)
-        {
-            if (string.IsNullOrEmpty(passToHash))
-            {
-                throw new Exception("Please provide a password to hash");
-            }
-
-            return await Task.Run(() =>
-            {
-                return scrypt_hash(passToHash);
-            });
-        }
 
         public bool VerifyPassword(string password, string hash)
         {
@@ -42,19 +29,6 @@ namespace EasDotnetSdk.PasswordHash
                 throw new Exception("Please provide a password and a hash to verify");
             }
             return scrypt_verify(password, hash);
-        }
-
-        public async Task<bool> VerifyPasswordAsync(string password, string hash)
-        {
-            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
-            {
-                throw new Exception("Please provide a password and a hash to verify");
-            }
-
-            return await Task.Run(() =>
-            {
-                return scrypt_verify(password, hash);
-            });
         }
     }
 }

@@ -26,15 +26,6 @@ namespace EasDotnetSdk
             }
             return hmac_sign(key, message);
         }
-
-        public async Task<IntPtr> HmacSignAsync(string key, string message)
-        {
-            return await Task.Run(() =>
-            {
-                return this.HmacSign(key, message);
-            });
-        }
-
         public bool HmacVerify(string key, string message, string signature)
         {
             if (string.IsNullOrEmpty(key))
@@ -50,14 +41,6 @@ namespace EasDotnetSdk
                 throw new Exception("Please provide a signature to verify with HMAC");
             }
             return hmac_verify(key, message, signature);
-        }
-
-        public async Task<bool> HmacVerifyAsync(string key, string message, string signature)
-        {
-            return await Task.Run(() =>
-            {
-                return this.HmacVerify(key, message, signature);
-            });
         }
     }
 }
