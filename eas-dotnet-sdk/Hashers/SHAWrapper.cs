@@ -21,19 +21,6 @@ namespace EasDotnetSdk
             }
             return sha512(stringTohash);
         }
-
-        public async Task<IntPtr> SHA512HashStringAsync(string stringTohash)
-        {
-            if (string.IsNullOrEmpty(stringTohash))
-            {
-                throw new Exception("Please provide a string to hash");
-            }
-            return await Task.Run(() =>
-            {
-                return sha512(stringTohash);
-            });
-        }
-
         public IntPtr SHA256HashString(string stringToHash)
         {
             if (string.IsNullOrEmpty(stringToHash))
@@ -41,14 +28,6 @@ namespace EasDotnetSdk
                 throw new Exception("Please provide a string to hash");
             }
             return sha256(stringToHash);
-        }
-
-        public async Task<IntPtr> SHA256HashStringAsync(string stringToHash)
-        {
-            return await Task.Run(() =>
-            {
-                return this.SHA256HashString(stringToHash);
-            });
         }
     }
 }

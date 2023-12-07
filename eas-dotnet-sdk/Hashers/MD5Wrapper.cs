@@ -35,21 +35,5 @@ namespace EasDotnetSdk
             }
             return md5_hash_verify(hashToVerify, toHash);
         }
-
-        public async Task<IntPtr> HashAsync(string toHash)
-        {
-            return await Task.Run(() =>
-            {
-                return Hash(toHash);
-            });
-        }
-
-        public async Task<bool> VerifyAsync(string hashToVerify, string toHash)
-        {
-            return await Task.Run(() =>
-            {
-                return Verify(hashToVerify, toHash);
-            });
-        }
     }
 }

@@ -24,16 +24,6 @@ namespace EasDotnetSdk.Tests
         }
 
         [Fact]
-        public async Task HashPasswordAsync()
-        {
-            string password = "DoNotUSETHISPASS@!";
-            IntPtr hashPtr = await this._argon2Wrapper.HashPasswordAsync(password);
-            string hash = Marshal.PtrToStringUTF8(hashPtr);
-            Argon2Wrappper.free_cstring(hashPtr);
-            Assert.NotEqual(password, hash);
-        }
-
-        [Fact]
         public void Verify()
         {
             string password = "TestPasswordToVerify";
@@ -42,29 +32,6 @@ namespace EasDotnetSdk.Tests
             Argon2Wrappper.free_cstring(hashPtr);
             bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
             Assert.True(isValid);
-        }
-
-        [Fact]
-        public async Task VerifyAsync()
-        {
-            string password = "AsyncTestingToTheMoon!";
-            IntPtr hashPtr = await this._argon2Wrapper.HashPasswordAsync(password);
-            string hash = Marshal.PtrToStringUTF8(hashPtr);
-            Argon2Wrappper.free_cstring(hashPtr);
-            bool isValid = await this._argon2Wrapper.VerifyPasswordAsync(hash, password);
-            Assert.True(isValid);
-        }
-
-        [Fact]
-        public async Task VerifyFailAsync()
-        {
-            string password = "AsyncTestingToTheMoon!";
-            string newPassword = "testing!@#$%";
-            IntPtr hashPtr = await this._argon2Wrapper.HashPasswordAsync(password);
-            string hash = Marshal.PtrToStringUTF8(hashPtr);
-            Argon2Wrappper.free_cstring(hashPtr);
-            bool isValid = await this._argon2Wrapper.VerifyPasswordAsync(hash, newPassword);
-            Assert.True(!isValid);
         }
     }
 }

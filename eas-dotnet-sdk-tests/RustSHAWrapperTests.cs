@@ -25,31 +25,9 @@ namespace EasDotnetSdk.Tests
         }
 
         [Fact]
-        public async Task SHA512HashAsync()
-        {
-            IntPtr hashedPtr = await this._wrapper.SHA512HashStringAsync(this._testString);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            SHAWrapper.free_cstring(hashedPtr);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.NotEqual(hashed, this._testString);
-        }
-
-        [Fact]
         public async Task SHA256Hash()
         {
             IntPtr hashedPtr = this._wrapper.SHA256HashString(this._testString);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            SHAWrapper.free_cstring(hashedPtr);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.NotEqual(hashed, this._testString);
-        }
-
-        [Fact]
-        public async Task SHA256HashAsync()
-        {
-            IntPtr hashedPtr = await this._wrapper.SHA256HashStringAsync(this._testString);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             SHAWrapper.free_cstring(hashedPtr);
             Assert.NotNull(hashed);

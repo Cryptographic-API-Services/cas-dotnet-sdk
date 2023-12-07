@@ -37,30 +37,6 @@ namespace EasDotnetSdk.Tests
         }
 
         [Fact]
-        public async Task Blake2512HashAsync()
-        {
-            string message = "hello world";
-            IntPtr hashPtr = await this._wrapper.Blake2512Async(message);
-            string hash = Marshal.PtrToStringAnsi(hashPtr);
-            Blake2Wrapper.free_cstring(hashPtr);
-            Assert.NotNull(hash);
-            Assert.NotEqual(message, hash);
-            Assert.Equal(hash, "Ahzth5kpbOylV4MquUGlC0oR+DR4zxQfUfkz9lOrn7zAWgN83b7QbjCb8zSULE5YzfGkbiN5EczX/Pl4fLx/0A==");
-        }
-
-        [Fact]
-        public async Task Blake2256HashAsync()
-        {
-            string message = "hello world";
-            IntPtr hashPtr = await this._wrapper.Blake2256Async(message);
-            string hash = Marshal.PtrToStringAnsi(hashPtr);
-            Blake2Wrapper.free_cstring(hashPtr);
-            Assert.NotNull(hash);
-            Assert.NotEqual(message, hash);
-            Assert.Equal(hash, "muxoBnlFYRB+WUsfaoprDJKgy6ms9eXpPMoG94GBOws=");
-        }
-
-        [Fact]
         public void Blake2512VerifyPass()
         {
             string message = "hello world";

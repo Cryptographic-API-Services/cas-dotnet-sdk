@@ -19,24 +19,9 @@ namespace EasDotnetSdk.PasswordHash
         {
             return bcrypt_hash(passwordToHash);
         }
-
-        public async Task<IntPtr> HashPasswordAsync(string passwordToHash)
-        {
-            return await Task.Run(() =>
-            {
-                return bcrypt_hash(passwordToHash);
-            });
-        }
         public bool Verify(string hashedPassword, string unhashed)
         {
             return bcrypt_verify(unhashed, hashedPassword);
-        }
-        public async Task<bool> VerifyAsync(string hashedPassword, string unhashed)
-        {
-            return await Task.Run(() =>
-            {
-                return bcrypt_verify(unhashed, hashedPassword);
-            });
         }
     }
 }
