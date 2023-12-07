@@ -3,7 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace EasDotnetSdk
+namespace EasDotnetSdk.Symmetric
 {
     public class AESWrapper
     {

@@ -1,4 +1,5 @@
-﻿using EasDotnetSdk.Helpers;
+﻿using EasDotnetSdk.Hashers;
+using EasDotnetSdk.Helpers;
 using System.Runtime.InteropServices;
 using Xunit;
 

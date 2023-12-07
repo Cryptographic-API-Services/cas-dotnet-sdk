@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace EasDotnetSdk.PasswordHash
+namespace EasDotnetSdk.PasswordHashers
 {
     public class Argon2Wrappper
     {

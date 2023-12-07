@@ -1,7 +1,8 @@
-﻿using EasDotnetSdk.Helpers;
+﻿using EasDotnetSdk.Asymmetric;
+using EasDotnetSdk.Helpers;
 using System.Runtime.InteropServices;
 using Xunit;
-using static EasDotnetSdk.RSAWrapper;
+using static EasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace EasDotnetSdk.Tests
 {

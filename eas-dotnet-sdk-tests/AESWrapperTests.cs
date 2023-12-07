@@ -1,8 +1,9 @@
 ﻿using EasDotnetSdk.Helpers;
+using EasDotnetSdk.Symmetric;
 using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
-using static EasDotnetSdk.AESWrapper;
+using static EasDotnetSdk.Symmetric.AESWrapper;
 
 namespace EasDotnetSdk.Tests
 {

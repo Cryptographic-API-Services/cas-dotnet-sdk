@@ -1,7 +1,8 @@
 ﻿using EasDotnetSdk.Helpers;
+using EasDotnetSdk.Signatures;
 using System.Runtime.InteropServices;
 using Xunit;
-using static EasDotnetSdk.ED25519Wrapper;
+using static EasDotnetSdk.Signatures.ED25519Wrapper;
 
 namespace EasDotnetSdk.Tests
 {

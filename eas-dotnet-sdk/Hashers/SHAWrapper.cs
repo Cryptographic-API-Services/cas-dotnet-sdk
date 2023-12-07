@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace EasDotnetSdk
+namespace EasDotnetSdk.Hashers
 {
     public class SHAWrapper
     {

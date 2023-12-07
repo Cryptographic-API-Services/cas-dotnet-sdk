@@ -1,5 +1,5 @@
 ﻿using EasDotnetSdk.Helpers;
-using EasDotnetSdk.PasswordHash;
+using EasDotnetSdk.PasswordHashers;
 using System.Runtime.InteropServices;
 using Xunit;
 
