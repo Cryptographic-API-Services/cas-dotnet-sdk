@@ -5,7 +5,7 @@ namespace EasDotnetSdk.Helpers
 {
     /// <summary>
     /// Simple class that contains a method to get the current operating system platform.
-    /// In most cases this library with only be running on a Windows or Linux Server.
+    /// In most cases this library will only be running on a Windows or Linux Server.
     /// We don't really need FreeBSD or OSX suport.
     /// </summary>
     public class OperatingSystemDeterminator
