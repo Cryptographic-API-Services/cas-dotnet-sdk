@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class RSAWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+
         public RSAWrapper()
         {
+            this._operatingSystem = new OperatingSystemDeterminator();
         }
         public struct RustRsaKeyPair
         {
@@ -46,7 +50,9 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You must provide data to sign with the private key");
             }
-            return rsa_sign_with_key(privateKey, dataToSign);
+
+            
+
         }
         public bool RsaVerify(string publicKey, string dataToVerify, string signature)
         {

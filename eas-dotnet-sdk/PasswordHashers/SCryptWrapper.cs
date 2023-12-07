@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk.PasswordHash
 {
     public class SCryptWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public SCryptWrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr scrypt_hash(string passToHash);
 

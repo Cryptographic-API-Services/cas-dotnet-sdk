@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class SHAWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public SHAWrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr sha512(string password);
         [DllImport("performant_encryption.dll")]

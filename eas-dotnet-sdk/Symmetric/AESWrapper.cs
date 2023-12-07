@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class AESWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public AESWrapper() 
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
         public struct AesEncrypt
         {
             public IntPtr key { get; set; }

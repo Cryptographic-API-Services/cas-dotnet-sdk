@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class HmacWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+
+        public HmacWrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr hmac_sign(string key, string message);
         [DllImport("performant_encryption.dll")]

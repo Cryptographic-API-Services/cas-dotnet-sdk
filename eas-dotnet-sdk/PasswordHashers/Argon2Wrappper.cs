@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk.PasswordHash
 {
     public class Argon2Wrappper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+
+        public Argon2Wrappper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr argon2_hash(string passToHash);
         [DllImport("performant_encryption.dll")]

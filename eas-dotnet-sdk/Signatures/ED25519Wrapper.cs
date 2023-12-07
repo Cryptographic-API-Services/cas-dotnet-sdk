@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class ED25519Wrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+
+        public ED25519Wrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
+
         public struct Ed25519SignatureResult
         {
             public IntPtr Signature { get; set; }

@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class MD5Wrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public MD5Wrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr md5_hash_string(string toHash);
         [DllImport("performant_encryption.dll")]

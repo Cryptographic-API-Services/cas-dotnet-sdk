@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class Blake2Wrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public Blake2Wrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr blake2_512(string toHash);
         [DllImport("performant_encryption.dll")]
