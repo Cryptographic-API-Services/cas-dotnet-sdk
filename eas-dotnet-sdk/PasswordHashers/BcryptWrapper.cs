@@ -1,11 +1,17 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace EasDotnetSdk.PasswordHash
 {
     public class BcryptWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public BcryptWrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr bcrypt_hash(string passToHash);
 
@@ -17,10 +23,20 @@ namespace EasDotnetSdk.PasswordHash
 
         public IntPtr HashPassword(string passwordToHash)
         {
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return bcrypt_hash(passwordToHash);
         }
         public bool Verify(string hashedPassword, string unhashed)
         {
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return bcrypt_verify(unhashed, hashedPassword);
         }
     }

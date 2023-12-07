@@ -1,10 +1,17 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
 
 namespace EasDotnetSdk
 {
     public class Blake2Wrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public Blake2Wrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr blake2_512(string toHash);
         [DllImport("performant_encryption.dll")]
@@ -22,6 +29,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("Please provide a string to hash with Blake2 512");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return blake2_512(toHash);
         }
         public bool Blake2512Verify(string dataToVerify, string hash)
@@ -34,6 +46,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("Please provide a hash to verify with Blake2 512");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return blake2_512_verify(dataToVerify, hash);
         }
 
@@ -42,6 +59,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(toHash))
             {
                 throw new Exception("Please provide a string to hash with Blake2 256");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return blake2_256(toHash);
         }
@@ -55,6 +77,11 @@ namespace EasDotnetSdk
             else if (string.IsNullOrEmpty(hash))
             {
                 throw new Exception("Please provide a hash to verify with Blake2 256");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return blake2_256_verify(dataToVerify, hash);
         }

@@ -1,11 +1,17 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace EasDotnetSdk
 {
     public class MD5Wrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public MD5Wrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr md5_hash_string(string toHash);
         [DllImport("performant_encryption.dll")]
@@ -20,6 +26,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You must provide data to hash the string");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return md5_hash_string(toHash);
         }
 
@@ -32,6 +43,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(toHash))
             {
                 throw new Exception("You must provide a string to hash to verify");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return md5_hash_verify(hashToVerify, toHash);
         }

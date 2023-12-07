@@ -1,10 +1,18 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
 
 namespace EasDotnetSdk.PasswordHash
 {
     public class SCryptWrapper
     {
+        private readonly OperatingSystemDeterminator _operatingSystem;
+        public SCryptWrapper()
+        {
+            this._operatingSystem = new OperatingSystemDeterminator();
+        }
+
+
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr scrypt_hash(string passToHash);
 
@@ -19,6 +27,11 @@ namespace EasDotnetSdk.PasswordHash
             {
                 throw new Exception("Please provide a password to hash");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return scrypt_hash(passToHash);
         }
 
@@ -27,6 +40,11 @@ namespace EasDotnetSdk.PasswordHash
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
             {
                 throw new Exception("Please provide a password and a hash to verify");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return scrypt_verify(password, hash);
         }
