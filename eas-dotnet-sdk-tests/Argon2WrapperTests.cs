@@ -1,4 +1,5 @@
-﻿using EasDotnetSdk.PasswordHash;
+﻿using EasDotnetSdk.Helpers;
+using EasDotnetSdk.PasswordHash;
 using System.Runtime.InteropServices;
 using Xunit;
 
@@ -7,31 +8,49 @@ namespace EasDotnetSdk.Tests
     public class Argon2WrapperTests
     {
         private Argon2Wrappper _argon2Wrapper;
+        private readonly OperatingSystemDeterminator _operatingSystem;
 
         public Argon2WrapperTests()
         {
             this._argon2Wrapper = new Argon2Wrappper();
+            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]
         public void HashPassword()
         {
-            string password = "DoNotUSETHISPASS@!";
-            IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
-            string hash = Marshal.PtrToStringUTF8(hashPtr);
-            Argon2Wrappper.free_cstring(hashPtr);
-            Assert.NotEqual(password, hash);
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
+            else
+            {
+                string password = "DoNotUSETHISPASS@!";
+                IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
+                string hash = Marshal.PtrToStringUTF8(hashPtr);
+                Argon2Wrappper.free_cstring(hashPtr);
+                Assert.NotEqual(password, hash);
+            }
         }
 
         [Fact]
         public void Verify()
         {
-            string password = "TestPasswordToVerify";
-            IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
-            string hash = Marshal.PtrToStringUTF8(hashPtr);
-            Argon2Wrappper.free_cstring(hashPtr);
-            bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
-            Assert.True(isValid);
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
+            else
+            {
+                string password = "TestPasswordToVerify";
+                IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
+                string hash = Marshal.PtrToStringUTF8(hashPtr);
+                Argon2Wrappper.free_cstring(hashPtr);
+                bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
+                Assert.True(isValid);
+            }
         }
     }
 }
