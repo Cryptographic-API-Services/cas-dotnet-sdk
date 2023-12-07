@@ -1,7 +1,6 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk.PasswordHash
 {
@@ -27,6 +26,11 @@ namespace EasDotnetSdk.PasswordHash
             {
                 throw new Exception("You must provide a password to hash using argon2");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return argon2_hash(passToHash);
         }
         public bool VerifyPassword(string hashedPasswrod, string password)
@@ -34,6 +38,11 @@ namespace EasDotnetSdk.PasswordHash
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
             {
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return argon2_verify(hashedPasswrod, password);
         }

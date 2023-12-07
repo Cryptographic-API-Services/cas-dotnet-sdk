@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
@@ -25,6 +25,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("Please provide a string to hash");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return sha512(stringTohash);
         }
         public IntPtr SHA256HashString(string stringToHash)
@@ -32,6 +37,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(stringToHash))
             {
                 throw new Exception("Please provide a string to hash");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return sha256(stringToHash);
         }

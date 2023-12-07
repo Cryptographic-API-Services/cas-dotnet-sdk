@@ -1,14 +1,12 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class RSAWrapper
     {
         private readonly OperatingSystemDeterminator _operatingSystem;
-
         public RSAWrapper()
         {
             this._operatingSystem = new OperatingSystemDeterminator();
@@ -51,8 +49,12 @@ namespace EasDotnetSdk
                 throw new Exception("You must provide data to sign with the private key");
             }
 
-            
-
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
+            return rsa_sign_with_key(privateKey, dataToSign);
         }
         public bool RsaVerify(string publicKey, string dataToVerify, string signature)
         {
@@ -68,6 +70,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You must provide that digital signature that was provided by our signing");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return rsa_verify(publicKey, dataToVerify, signature);
         }
 
@@ -81,6 +88,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You must provide a valid key bit size to sign with RSA");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return rsa_sign(dataToSign, keySize);
         }
         public IntPtr RsaDecrypt(string privateKey, string dataToDecrypt)
@@ -88,6 +100,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(privateKey) || string.IsNullOrEmpty(dataToDecrypt))
             {
                 throw new Exception("You need to provide a private key and data to decrypt to use RsaCrypt");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return rsa_decrypt(privateKey, dataToDecrypt);
         }
@@ -98,6 +115,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You need to provide a public key and data to encrypt to use RsaEncrypt");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return rsa_encrypt(publicKey, dataToEncrypt);
         }
 
@@ -106,6 +128,11 @@ namespace EasDotnetSdk
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
             {
                 throw new Exception("Please pass in a valid key size.");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return get_key_pair(keySize);
         }

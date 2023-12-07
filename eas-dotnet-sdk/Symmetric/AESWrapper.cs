@@ -1,14 +1,14 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
     public class AESWrapper
     {
         private readonly OperatingSystemDeterminator _operatingSystem;
-        public AESWrapper() 
+        public AESWrapper()
         {
             this._operatingSystem = new OperatingSystemDeterminator();
         }
@@ -48,11 +48,21 @@ namespace EasDotnetSdk
             {
                 throw new Exception("Please provide data to encrypt with AES-128");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return aes128_encrypt_string(nonceKey, dataToEncrypt);
         }
 
         public IntPtr Aes128Key()
         {
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return aes_128_key();
         }
 
@@ -69,6 +79,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(dataToDecrypt))
             {
                 throw new Exception("Please provide a data to decrypt with AES-128");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return aes128_decrypt_string(nonceKey, key, dataToDecrypt);
         }
@@ -87,10 +102,20 @@ namespace EasDotnetSdk
             {
                 throw new Exception("Please provide a data to encrypt with AES-128");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return aes_128_encrypt_string_with_key(nonceKey, key, dataToEncrypt);
         }
         public IntPtr Aes256Key()
         {
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return aes_256_key();
         }
 
@@ -104,25 +129,41 @@ namespace EasDotnetSdk
 
         public AesEncrypt EncryptPerformant(string nonceKey, string toEncrypt)
         {
-            if (!string.IsNullOrEmpty(nonceKey) && !string.IsNullOrEmpty(toEncrypt))
+            if (string.IsNullOrEmpty(nonceKey))
             {
-                return aes256_encrypt_string(nonceKey, toEncrypt);
+                throw new Exception("You must provide a nonce key for AES 256");
             }
-            else
+            if (string.IsNullOrEmpty(toEncrypt))
             {
-                throw new Exception("You need to pass in a valid key and text string to encrypt");
+                throw new Exception("You must provide data to encrypt for AES 256");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
+            return aes256_encrypt_string(nonceKey, toEncrypt);
         }
         public IntPtr DecryptPerformant(string nonceKey, string key, string toDecrypt)
         {
-            if (!string.IsNullOrEmpty(nonceKey) && !string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(toDecrypt))
+            if (string.IsNullOrEmpty(nonceKey))
             {
-                return aes256_decrypt_string(nonceKey, key, toDecrypt);
+                throw new Exception("You must provide a nonce key to decrypt with AES 256");
             }
-            else
+            if (string.IsNullOrEmpty(key))
             {
-                throw new Exception("You need to provide a nonce key, key, and data to decrypt to use AES-GCM");
+                throw new Exception("You must provide a key to decrypt with AES 256");
             }
+            if (string.IsNullOrEmpty(toDecrypt))
+            {
+                throw new Exception("You must provide data to decrypt with AES 256");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
+            return aes256_decrypt_string(nonceKey, key, toDecrypt);
         }
         public string GenerateAESNonce()
         {

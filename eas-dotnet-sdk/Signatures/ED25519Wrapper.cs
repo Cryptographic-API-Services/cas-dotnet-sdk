@@ -1,7 +1,6 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
@@ -13,8 +12,6 @@ namespace EasDotnetSdk
         {
             this._operatingSystem = new OperatingSystemDeterminator();
         }
-
-
         public struct Ed25519SignatureResult
         {
             public IntPtr Signature { get; set; }
@@ -36,6 +33,11 @@ namespace EasDotnetSdk
 
         public IntPtr GetKeyPair()
         {
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return get_ed25519_key_pair();
         }
         public Ed25519SignatureResult Sign(string keyBytes, string dataToSign)
@@ -47,6 +49,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(dataToSign))
             {
                 throw new Exception("You need to pass in data to sign, to sign data");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return sign_with_key_pair(keyBytes, dataToSign);
         }
@@ -65,7 +72,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You need to pass in data to verify, to verify data");
             }
-
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return verify_with_key_pair(keyBytes, signature, dataToVerify);
         }
         public bool VerifyWithPublicKey(string publicKey, string signature, string dataToVerify)
@@ -81,6 +92,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(dataToVerify))
             {
                 throw new Exception("You need to pass in data to verify, to verify data");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return verify_with_public_key(publicKey, signature, dataToVerify);
         }

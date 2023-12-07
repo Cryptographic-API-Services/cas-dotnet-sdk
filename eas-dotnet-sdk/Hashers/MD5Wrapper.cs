@@ -1,7 +1,6 @@
-﻿using System;
+﻿using EasDotnetSdk.Helpers;
+using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using EasDotnetSdk.Helpers;
 
 namespace EasDotnetSdk
 {
@@ -27,6 +26,11 @@ namespace EasDotnetSdk
             {
                 throw new Exception("You must provide data to hash the string");
             }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
+            }
             return md5_hash_string(toHash);
         }
 
@@ -39,6 +43,11 @@ namespace EasDotnetSdk
             if (string.IsNullOrEmpty(toHash))
             {
                 throw new Exception("You must provide a string to hash to verify");
+            }
+            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
+            if (platform == OSPlatform.Linux)
+            {
+                throw new NotImplementedException("Linux version not yet supported");
             }
             return md5_hash_verify(hashToVerify, toHash);
         }
