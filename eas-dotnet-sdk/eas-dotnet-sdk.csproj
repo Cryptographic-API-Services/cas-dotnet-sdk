@@ -2,15 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>eas_dotnet_sdk</RootNamespace>
+    <RootNamespace>EasDotnetSdk</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="RustLibraries\**" />
-    <EmbeddedResource Remove="RustLibraries\**" />
-    <None Remove="RustLibraries\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Asymmetric\" />
@@ -26,6 +20,9 @@
 
   <ItemGroup>
     <None Update="performant_encryption.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="performant_encryption.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
