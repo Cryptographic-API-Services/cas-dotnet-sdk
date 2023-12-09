@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>eas_dotnet_sdk_tests</RootNamespace>
+    <RootNamespace>CasDotnetSdkTests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -24,8 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\eas-dotnet-sdk\eas-dotnet-sdk.csproj" />
-    <ProjectReference Include="..\eas-dotnet-sdk\eas-dotnet-sdk.csproj" />
+    <ProjectReference Include="..\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
   </ItemGroup>
-
 </Project>
