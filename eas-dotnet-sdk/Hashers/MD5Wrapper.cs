@@ -20,7 +20,7 @@ namespace EasDotnetSdk.Hashers
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr Hash(string toHash)
+        public string Hash(string toHash)
         {
             if (string.IsNullOrEmpty(toHash))
             {
@@ -31,7 +31,10 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return md5_hash_string(toHash);
+            IntPtr hashedPtr = md5_hash_string(toHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            MD5Wrapper.free_cstring(hashedPtr);
+            return hashed;
         }
 
         public bool Verify(string hashToVerify, string toHash)
