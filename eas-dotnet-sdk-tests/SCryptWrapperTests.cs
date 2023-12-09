@@ -27,9 +27,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPasswordPtr = this._scrypt.HashPassword(this._password);
-                string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-                SCryptWrapper.free_cstring(hashedPasswordPtr);
+                string hashedPassword = this._scrypt.HashPassword(this._password);
                 Assert.NotNull(hashedPassword);
                 Assert.NotEqual(hashedPassword, this._password);
             }
@@ -45,9 +43,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPasswordPtr = this._scrypt.HashPassword(this._password);
-                string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-                SCryptWrapper.free_cstring(hashedPasswordPtr);
+                string hashedPassword = this._scrypt.HashPassword(this._password);
                 bool isValid = this._scrypt.VerifyPassword(this._password, hashedPassword);
                 Assert.True(isValid);
             }

@@ -21,7 +21,7 @@ namespace EasDotnetSdk.PasswordHashers
         private static extern bool scrypt_verify(string password, string hash);
         [DllImport("performant_encryption.dll")]
         public static extern bool free_cstring(IntPtr stringToFree);
-        public IntPtr HashPassword(string passToHash)
+        public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
             {
@@ -32,7 +32,10 @@ namespace EasDotnetSdk.PasswordHashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return scrypt_hash(passToHash);
+            IntPtr hashedPtr = scrypt_hash(passToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            SCryptWrapper.free_cstring(hashedPtr);
+            return hashed;
         }
 
         public bool VerifyPassword(string password, string hash)
