@@ -1,5 +1,5 @@
-# eas-dotnet-sdk
+# cas-dotnet-sdk
 
 # Consuming Library Documentation
 This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool.
-[eas-core-lib](https://github.com/Encryption-API-Services/eas-core-lib)
+[cas-core-lib](https://github.com/Encryption-API-Services/eas-core-lib)
