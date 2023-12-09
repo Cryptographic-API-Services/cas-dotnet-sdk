@@ -11,25 +11,38 @@ namespace EasDotnetSdk.Asymmetric
         {
             this._operatingSystem = new OperatingSystemDeterminator();
         }
-        public struct RustRsaKeyPair
+
+        public class RsaKeyPairResult
+        {
+            public string PublicKey { get; set; }
+            public string PrivateKey { get; set; }
+        }
+
+        public class RsaSignResult
+        {
+            public string Signature { get; set; }
+            public string PublicKey { get; set; }
+        }
+
+        public struct RustRsaKeyPairStruct
         {
             public IntPtr pub_key;
             public IntPtr priv_key;
         }
-        public struct RsaSignResult
+        public struct RsaSignResultStruct
         {
             public IntPtr signature;
             public IntPtr public_key;
         }
 
         [DllImport("performant_encryption.dll")]
-        private static extern RustRsaKeyPair get_key_pair(int key_size);
+        private static extern RustRsaKeyPairStruct get_key_pair(int key_size);
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr rsa_encrypt(string publicKey, string dataToEncrypt);
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr rsa_decrypt(string privateKey, string dataToDecrypt);
         [DllImport("performant_encryption.dll")]
-        private static extern RsaSignResult rsa_sign(string dataToSign, int keySize);
+        private static extern RsaSignResultStruct rsa_sign(string dataToSign, int keySize);
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr rsa_sign_with_key(string privateKey, string dataToSign);
         [DllImport("performant_encryption.dll")]
@@ -38,7 +51,7 @@ namespace EasDotnetSdk.Asymmetric
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr RsaSignWithKey(string privateKey, string dataToSign)
+        public string RsaSignWithKey(string privateKey, string dataToSign)
         {
             if (string.IsNullOrEmpty(privateKey))
             {
@@ -54,7 +67,10 @@ namespace EasDotnetSdk.Asymmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return rsa_sign_with_key(privateKey, dataToSign);
+            IntPtr signedPtr = rsa_sign_with_key(privateKey, dataToSign);
+            string signed = Marshal.PtrToStringAnsi(signedPtr);
+            RSAWrapper.free_cstring(signedPtr);
+            return signed;
         }
         public bool RsaVerify(string publicKey, string dataToVerify, string signature)
         {
@@ -93,9 +109,17 @@ namespace EasDotnetSdk.Asymmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return rsa_sign(dataToSign, keySize);
+            RsaSignResultStruct resultPtrStruct = rsa_sign(dataToSign, keySize);
+            RsaSignResult signed = new RsaSignResult()
+            {
+                PublicKey = Marshal.PtrToStringAnsi(resultPtrStruct.public_key),
+                Signature = Marshal.PtrToStringAnsi(resultPtrStruct.signature)
+            };
+            RSAWrapper.free_cstring(resultPtrStruct.public_key);
+            RSAWrapper.free_cstring(resultPtrStruct.signature);
+            return signed;
         }
-        public IntPtr RsaDecrypt(string privateKey, string dataToDecrypt)
+        public string RsaDecrypt(string privateKey, string dataToDecrypt)
         {
             if (string.IsNullOrEmpty(privateKey) || string.IsNullOrEmpty(dataToDecrypt))
             {
@@ -106,10 +130,13 @@ namespace EasDotnetSdk.Asymmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return rsa_decrypt(privateKey, dataToDecrypt);
+            IntPtr decryptPtr = rsa_decrypt(privateKey, dataToDecrypt);
+            string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
+            RSAWrapper.free_cstring(decryptPtr);
+            return decrypt;
         }
 
-        public IntPtr RsaEncrypt(string publicKey, string dataToEncrypt)
+        public string RsaEncrypt(string publicKey, string dataToEncrypt)
         {
             if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(dataToEncrypt))
             {
@@ -120,10 +147,13 @@ namespace EasDotnetSdk.Asymmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return rsa_encrypt(publicKey, dataToEncrypt);
+            IntPtr encryptPtr = rsa_encrypt(publicKey, dataToEncrypt);
+            string encrypt = Marshal.PtrToStringAnsi(encryptPtr);
+            RSAWrapper.free_cstring(encryptPtr);
+            return encrypt;
         }
 
-        public RustRsaKeyPair GetKeyPair(int keySize)
+        public RsaKeyPairResult GetKeyPair(int keySize)
         {
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
             {
@@ -134,7 +164,15 @@ namespace EasDotnetSdk.Asymmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return get_key_pair(keySize);
+            RustRsaKeyPairStruct keyPairStruct = get_key_pair(keySize);
+            RsaKeyPairResult result = new RsaKeyPairResult()
+            {
+                PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+            };
+            RSAWrapper.free_cstring(keyPairStruct.pub_key);
+            RSAWrapper.free_cstring(keyPairStruct.priv_key);
+            return result;
         }
     }
 }
