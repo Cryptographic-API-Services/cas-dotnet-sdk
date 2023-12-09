@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Asymmetric.Windows;
+using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
 
@@ -6,10 +7,10 @@ namespace CasDotnetSdk.Asymmetric
 {
     public class RSAWrapper
     {
-        private readonly OperatingSystemDeterminator _operatingSystem;
+        private readonly OSPlatform _platform;
         public RSAWrapper()
         {
-            this._operatingSystem = new OperatingSystemDeterminator();
+            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
         }
 
         public class RsaKeyPairResult
@@ -24,32 +25,16 @@ namespace CasDotnetSdk.Asymmetric
             public string PublicKey { get; set; }
         }
 
-        private struct RustRsaKeyPairStruct
+        internal struct RustRsaKeyPairStruct
         {
             public IntPtr pub_key;
             public IntPtr priv_key;
         }
-        private struct RsaSignResultStruct
+        internal struct RsaSignResultStruct
         {
             public IntPtr signature;
             public IntPtr public_key;
         }
-
-        [DllImport("performant_encryption.dll")]
-        private static extern RustRsaKeyPairStruct get_key_pair(int key_size);
-        [DllImport("performant_encryption.dll")]
-        private static extern IntPtr rsa_encrypt(string publicKey, string dataToEncrypt);
-        [DllImport("performant_encryption.dll")]
-        private static extern IntPtr rsa_decrypt(string privateKey, string dataToDecrypt);
-        [DllImport("performant_encryption.dll")]
-        private static extern RsaSignResultStruct rsa_sign(string dataToSign, int keySize);
-        [DllImport("performant_encryption.dll")]
-        private static extern IntPtr rsa_sign_with_key(string privateKey, string dataToSign);
-        [DllImport("performant_encryption.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        private static extern bool rsa_verify(string publicKey, string dataToVerify, string signature);
-        [DllImport("performant_encryption.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
 
         public string RsaSignWithKey(string privateKey, string dataToSign)
         {
@@ -62,15 +47,17 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide data to sign with the private key");
             }
 
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            IntPtr signedPtr = rsa_sign_with_key(privateKey, dataToSign);
-            string signed = Marshal.PtrToStringAnsi(signedPtr);
-            RSAWrapper.free_cstring(signedPtr);
-            return signed;
+            else
+            {
+                IntPtr signedPtr = RSAWindowsWrapper.rsa_sign_with_key(privateKey, dataToSign);
+                string signed = Marshal.PtrToStringAnsi(signedPtr);
+                RSAWindowsWrapper.free_cstring(signedPtr);
+                return signed;
+            }
         }
         public bool RsaVerify(string publicKey, string dataToVerify, string signature)
         {
@@ -86,12 +73,15 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You must provide that digital signature that was provided by our signing");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return rsa_verify(publicKey, dataToVerify, signature);
+            else
+            {
+                return RSAWindowsWrapper.rsa_verify(publicKey, dataToVerify, signature);
+            }
         }
 
         public RsaSignResult RsaSign(string dataToSign, int keySize)
@@ -104,20 +94,23 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You must provide a valid key bit size to sign with RSA");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            RsaSignResultStruct resultPtrStruct = rsa_sign(dataToSign, keySize);
-            RsaSignResult signed = new RsaSignResult()
+            else
             {
-                PublicKey = Marshal.PtrToStringAnsi(resultPtrStruct.public_key),
-                Signature = Marshal.PtrToStringAnsi(resultPtrStruct.signature)
-            };
-            RSAWrapper.free_cstring(resultPtrStruct.public_key);
-            RSAWrapper.free_cstring(resultPtrStruct.signature);
-            return signed;
+                RsaSignResultStruct resultPtrStruct = RSAWindowsWrapper.rsa_sign(dataToSign, keySize);
+                RsaSignResult signed = new RsaSignResult()
+                {
+                    PublicKey = Marshal.PtrToStringAnsi(resultPtrStruct.public_key),
+                    Signature = Marshal.PtrToStringAnsi(resultPtrStruct.signature)
+                };
+                RSAWindowsWrapper.free_cstring(resultPtrStruct.public_key);
+                RSAWindowsWrapper.free_cstring(resultPtrStruct.signature);
+                return signed;
+            }
         }
         public string RsaDecrypt(string privateKey, string dataToDecrypt)
         {
@@ -125,15 +118,18 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You need to provide a private key and data to decrypt to use RsaCrypt");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            IntPtr decryptPtr = rsa_decrypt(privateKey, dataToDecrypt);
-            string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
-            RSAWrapper.free_cstring(decryptPtr);
-            return decrypt;
+            else
+            {
+                IntPtr decryptPtr = RSAWindowsWrapper.rsa_decrypt(privateKey, dataToDecrypt);
+                string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
+                RSAWindowsWrapper.free_cstring(decryptPtr);
+                return decrypt;
+            }
         }
 
         public string RsaEncrypt(string publicKey, string dataToEncrypt)
@@ -142,15 +138,18 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You need to provide a public key and data to encrypt to use RsaEncrypt");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            IntPtr encryptPtr = rsa_encrypt(publicKey, dataToEncrypt);
-            string encrypt = Marshal.PtrToStringAnsi(encryptPtr);
-            RSAWrapper.free_cstring(encryptPtr);
-            return encrypt;
+            else
+            {
+                IntPtr encryptPtr = RSAWindowsWrapper.rsa_encrypt(publicKey, dataToEncrypt);
+                string encrypt = Marshal.PtrToStringAnsi(encryptPtr);
+                RSAWindowsWrapper.free_cstring(encryptPtr);
+                return encrypt;
+            }
         }
 
         public RsaKeyPairResult GetKeyPair(int keySize)
@@ -159,20 +158,23 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("Please pass in a valid key size.");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            RustRsaKeyPairStruct keyPairStruct = get_key_pair(keySize);
-            RsaKeyPairResult result = new RsaKeyPairResult()
+            else
             {
-                PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
-                PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
-            };
-            RSAWrapper.free_cstring(keyPairStruct.pub_key);
-            RSAWrapper.free_cstring(keyPairStruct.priv_key);
-            return result;
+                RustRsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSAWindowsWrapper.free_cstring(keyPairStruct.pub_key);
+                RSAWindowsWrapper.free_cstring(keyPairStruct.priv_key);
+                return result;
+            }
         }
     }
 }
