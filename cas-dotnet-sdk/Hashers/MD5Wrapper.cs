@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Hashers.Windows;
+using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
 
@@ -6,19 +7,11 @@ namespace CasDotnetSdk.Hashers
 {
     public class MD5Wrapper
     {
-        private readonly OperatingSystemDeterminator _operatingSystem;
+        private readonly OSPlatform _platform;
         public MD5Wrapper()
         {
-            this._operatingSystem = new OperatingSystemDeterminator();
+            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
         }
-
-        [DllImport("performant_encryption.dll")]
-        private static extern IntPtr md5_hash_string(string toHash);
-        [DllImport("performant_encryption.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        private static extern bool md5_hash_verify(string hashToVerify, string toHash);
-        [DllImport("performant_encryption.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
 
         public string Hash(string toHash)
         {
@@ -26,15 +19,18 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide data to hash the string");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            IntPtr hashedPtr = md5_hash_string(toHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            MD5Wrapper.free_cstring(hashedPtr);
-            return hashed;
+            else
+            {
+                IntPtr hashedPtr = MD5WindowsWrapper.md5_hash_string(toHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                MD5WindowsWrapper.free_cstring(hashedPtr);
+                return hashed;
+            }
         }
 
         public bool Verify(string hashToVerify, string toHash)
@@ -47,12 +43,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a string to hash to verify");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return md5_hash_verify(hashToVerify, toHash);
+            else
+            {
+                return MD5WindowsWrapper.md5_hash_verify(hashToVerify, toHash);
+            }
         }
     }
 }
