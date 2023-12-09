@@ -21,14 +21,17 @@ namespace EasDotnetSdk.PasswordHashers
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr HashPassword(string passwordToHash)
+        public string HashPassword(string passwordToHash)
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return bcrypt_hash(passwordToHash);
+            IntPtr hashedPtr = bcrypt_hash(passwordToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            BcryptWrapper.free_cstring(hashedPtr);
+            return hashed;
         }
         public bool Verify(string hashedPassword, string unhashed)
         {
