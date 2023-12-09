@@ -1,9 +1,9 @@
-﻿using EasDotnetSdk.Helpers;
-using EasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.PasswordHashers;
 using System.Runtime.InteropServices;
 using Xunit;
 
-namespace EasDotnetSdk.Tests
+namespace CasDotnetSdkTests.Tests
 {
     public class BcryptWrapperTests
     {

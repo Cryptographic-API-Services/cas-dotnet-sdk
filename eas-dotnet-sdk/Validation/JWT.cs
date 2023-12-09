@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace EasDotnetSdk
+namespace CasDotnetSdk
 {
     public class JWT
     {

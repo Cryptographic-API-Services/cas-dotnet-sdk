@@ -1,10 +1,10 @@
-﻿using EasDotnetSdk.Helpers;
-using EasDotnetSdk.Signatures;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Signatures;
 using System.Runtime.InteropServices;
 using Xunit;
-using static EasDotnetSdk.Signatures.ED25519Wrapper;
+using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
-namespace EasDotnetSdk.Tests
+namespace CasDotnetSdkTests.Tests
 {
     public class ED25519WrapperTests
     {

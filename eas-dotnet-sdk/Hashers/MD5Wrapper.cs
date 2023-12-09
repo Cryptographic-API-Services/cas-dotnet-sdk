@@ -1,8 +1,8 @@
-﻿using EasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
 
-namespace EasDotnetSdk.Hashers
+namespace CasDotnetSdk.Hashers
 {
     public class MD5Wrapper
     {

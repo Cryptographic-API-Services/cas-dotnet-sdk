@@ -1,10 +1,10 @@
-﻿using EasDotnetSdk.Asymmetric;
-using EasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Helpers;
 using System.Runtime.InteropServices;
 using Xunit;
-using static EasDotnetSdk.Asymmetric.RSAWrapper;
+using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
-namespace EasDotnetSdk.Tests
+namespace CasDotnetSdkTests.Tests
 {
     public class RSAWrapperTests
     {

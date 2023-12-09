@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace EasDotnetSdk.Helpers
+namespace CasDotnetSdk.Helpers
 {
     /// <summary>
     /// Simple class that contains a method to get the current operating system platform.

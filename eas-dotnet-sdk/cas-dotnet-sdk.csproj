@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Asymmetric\" />
     <Folder Include="Validation\" />
     <Folder Include="Symmetric\" />
     <Folder Include="Signatures\" />

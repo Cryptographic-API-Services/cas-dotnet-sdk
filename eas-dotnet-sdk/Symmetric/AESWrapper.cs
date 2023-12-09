@@ -1,9 +1,9 @@
-﻿using EasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace EasDotnetSdk.Symmetric
+namespace CasDotnetSdk.Symmetric
 {
     public class AESWrapper
     {

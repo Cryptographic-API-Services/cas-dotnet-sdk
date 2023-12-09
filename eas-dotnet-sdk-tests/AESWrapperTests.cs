@@ -1,11 +1,11 @@
-﻿using EasDotnetSdk.Helpers;
-using EasDotnetSdk.Symmetric;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Symmetric;
 using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
-using static EasDotnetSdk.Symmetric.AESWrapper;
+using static CasDotnetSdk.Symmetric.AESWrapper;
 
-namespace EasDotnetSdk.Tests
+namespace CasDotnetSdkTests.Tests
 {
     public class AESWrapperTests
     {

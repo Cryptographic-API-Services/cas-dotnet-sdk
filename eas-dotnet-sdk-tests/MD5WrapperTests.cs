@@ -1,9 +1,9 @@
-﻿using EasDotnetSdk.Hashers;
-using EasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Hashers;
+using CasDotnetSdk.Helpers;
 using System.Runtime.InteropServices;
 using Xunit;
 
-namespace EasDotnetSdk.Tests
+namespace CasDotnetSdkTests.Tests
 {
     public class MD5WrapperTests
     {
