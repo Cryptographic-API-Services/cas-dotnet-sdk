@@ -10,7 +10,6 @@
     <Folder Include="Validation\" />
     <Folder Include="Symmetric\" />
     <Folder Include="Signatures\" />
-    <Folder Include="PasswordHashers\" />
   </ItemGroup>
 
   <ItemGroup>

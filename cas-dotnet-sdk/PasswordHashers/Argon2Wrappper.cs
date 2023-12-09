@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.PasswordHashers.Windows;
 using System;
 using System.Runtime.InteropServices;
 
@@ -6,35 +7,30 @@ namespace CasDotnetSdk.PasswordHashers
 {
     public class Argon2Wrappper
     {
-        private readonly OperatingSystemDeterminator _operatingSystem;
+        private readonly OSPlatform _platform;
 
         public Argon2Wrappper()
         {
-            this._operatingSystem = new OperatingSystemDeterminator();
+            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
         }
-
-        [DllImport("performant_encryption.dll")]
-        private static extern IntPtr argon2_hash(string passToHash);
-        [DllImport("performant_encryption.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        private static extern bool argon2_verify(string hashedPassword, string passToVerify);
-        [DllImport("performant_encryption.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
             {
                 throw new Exception("You must provide a password to hash using argon2");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            IntPtr hashedPtr = argon2_hash(passToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            Argon2Wrappper.free_cstring(hashedPtr);
-            return hashed;
+            else
+            {
+                IntPtr hashedPtr = Argon2WindowsWrappper.argon2_hash(passToHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                Argon2WindowsWrappper.free_cstring(hashedPtr);
+                return hashed;
+            }
         }
         public bool VerifyPassword(string hashedPasswrod, string password)
         {
@@ -42,12 +38,15 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
             }
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
+
+            if (this._platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return argon2_verify(hashedPasswrod, password);
+            else
+            {
+                return Argon2WindowsWrappper.argon2_verify(hashedPasswrod, password);
+            }
         }
     }
 }
