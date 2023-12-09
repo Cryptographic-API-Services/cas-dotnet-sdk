@@ -12,16 +12,21 @@ namespace EasDotnetSdk.Symmetric
         {
             this._operatingSystem = new OperatingSystemDeterminator();
         }
-        public struct AesEncrypt
+        public class AesEncryptResult
+        {
+            public string Key { get; set; }
+            public string CipherText { get; set; }
+        }
+        private struct AesEncryptStruct
         {
             public IntPtr key { get; set; }
             public IntPtr ciphertext { get; set; }
         }
 
         [DllImport("performant_encryption.dll")]
-        private static extern AesEncrypt aes256_encrypt_string(string nonceKey, string dataToEncrypt);
+        private static extern AesEncryptStruct aes256_encrypt_string(string nonceKey, string dataToEncrypt);
         [DllImport("performant_encryption.dll")]
-        private static extern AesEncrypt aes128_encrypt_string(string nonceKey, string dataToEncrypt);
+        private static extern AesEncryptStruct aes128_encrypt_string(string nonceKey, string dataToEncrypt);
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr aes256_decrypt_string(string nonceKey, string key, string dataToDecrypt);
         [DllImport("performant_encryption.dll")]
@@ -38,7 +43,7 @@ namespace EasDotnetSdk.Symmetric
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public AesEncrypt Aes128Encrypt(string nonceKey, string dataToEncrypt)
+        public AesEncryptResult Aes128Encrypt(string nonceKey, string dataToEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -53,20 +58,31 @@ namespace EasDotnetSdk.Symmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes128_encrypt_string(nonceKey, dataToEncrypt);
+            AesEncryptStruct encryptStruct = aes128_encrypt_string(nonceKey, dataToEncrypt);
+            AesEncryptResult result = new AesEncryptResult()
+            {
+                CipherText = Marshal.PtrToStringAnsi(encryptStruct.ciphertext),
+                Key = Marshal.PtrToStringAnsi(encryptStruct.key)
+            };
+            AESWrapper.free_cstring(encryptStruct.key);
+            AESWrapper.free_cstring(encryptStruct.ciphertext);
+            return result;
         }
 
-        public IntPtr Aes128Key()
+        public string Aes128Key()
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes_128_key();
+            IntPtr keyPtr = aes_128_key();
+            string key = Marshal.PtrToStringAnsi(keyPtr);
+            AESWrapper.free_cstring(keyPtr);
+            return key;
         }
 
-        public IntPtr DecryptAES128WithKey(string nonceKey, string key, string dataToDecrypt)
+        public string DecryptAES128WithKey(string nonceKey, string key, string dataToDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -85,10 +101,13 @@ namespace EasDotnetSdk.Symmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes128_decrypt_string(nonceKey, key, dataToDecrypt);
+            IntPtr decryptPtr = aes128_decrypt_string(nonceKey, key, dataToDecrypt);
+            string decrypted = Marshal.PtrToStringAnsi(decryptPtr);
+            AESWrapper.free_cstring(decryptPtr);
+            return decrypted;
         }
 
-        public IntPtr EncryptAES128WithKey(string nonceKey, string key, string dataToEncrypt)
+        public string EncryptAES128WithKey(string nonceKey, string key, string dataToEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -107,16 +126,22 @@ namespace EasDotnetSdk.Symmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes_128_encrypt_string_with_key(nonceKey, key, dataToEncrypt);
+            IntPtr encryptedPtr = aes_128_encrypt_string_with_key(nonceKey, key, dataToEncrypt);
+            string encrypted = Marshal.PtrToStringAnsi(encryptedPtr);
+            AESWrapper.free_cstring(encryptedPtr);
+            return encrypted;
         }
-        public IntPtr Aes256Key()
+        public string Aes256Key()
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes_256_key();
+            IntPtr keyPtr = aes_256_key();
+            string key = Marshal.PtrToStringAnsi(keyPtr);
+            AESWrapper.free_cstring(keyPtr);
+            return key;
         }
 
         /// <summary>
@@ -127,7 +152,7 @@ namespace EasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
 
-        public AesEncrypt EncryptPerformant(string nonceKey, string toEncrypt)
+        public AesEncryptResult Aes256Encrypt(string nonceKey, string toEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -142,9 +167,17 @@ namespace EasDotnetSdk.Symmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes256_encrypt_string(nonceKey, toEncrypt);
+            AesEncryptStruct encryptStruct = aes256_encrypt_string(nonceKey, toEncrypt);
+            AesEncryptResult result = new AesEncryptResult()
+            {
+                CipherText = Marshal.PtrToStringAnsi(encryptStruct.ciphertext),
+                Key = Marshal.PtrToStringAnsi(encryptStruct.key)
+            };
+            AESWrapper.free_cstring(encryptStruct.key);
+            AESWrapper.free_cstring(encryptStruct.ciphertext);
+            return result;
         }
-        public IntPtr DecryptPerformant(string nonceKey, string key, string toDecrypt)
+        public string Aes256Decrypt(string nonceKey, string key, string toDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -163,7 +196,10 @@ namespace EasDotnetSdk.Symmetric
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return aes256_decrypt_string(nonceKey, key, toDecrypt);
+            IntPtr decryptPtr = aes256_decrypt_string(nonceKey, key, toDecrypt);
+            string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
+            AESWrapper.free_cstring(decryptPtr);
+            return decrypt;
         }
         public string GenerateAESNonce()
         {
