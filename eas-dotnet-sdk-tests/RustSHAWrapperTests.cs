@@ -27,9 +27,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPtr = this._wrapper.SHA512HashString(this._testString);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHAWrapper.free_cstring(hashedPtr);
+                string hashed = this._wrapper.SHA512HashString(this._testString);
                 Assert.NotNull(hashed);
                 Assert.NotEmpty(hashed);
                 Assert.NotEqual(hashed, this._testString);
@@ -46,9 +44,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPtr = this._wrapper.SHA256HashString(this._testString);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHAWrapper.free_cstring(hashedPtr);
+                string hashed = this._wrapper.SHA256HashString(this._testString);
                 Assert.NotNull(hashed);
                 Assert.NotEmpty(hashed);
                 Assert.NotEqual(hashed, this._testString);
