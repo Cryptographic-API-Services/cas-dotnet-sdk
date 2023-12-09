@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Symmetric;
 using System.Runtime.InteropServices;
-using System.Text;
 using Xunit;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
