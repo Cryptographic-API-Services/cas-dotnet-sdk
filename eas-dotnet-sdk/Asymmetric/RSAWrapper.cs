@@ -24,12 +24,12 @@ namespace EasDotnetSdk.Asymmetric
             public string PublicKey { get; set; }
         }
 
-        public struct RustRsaKeyPairStruct
+        private struct RustRsaKeyPairStruct
         {
             public IntPtr pub_key;
             public IntPtr priv_key;
         }
-        public struct RsaSignResultStruct
+        private struct RsaSignResultStruct
         {
             public IntPtr signature;
             public IntPtr public_key;
