@@ -19,7 +19,7 @@ namespace EasDotnetSdk.Hashers
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr SHA512HashString(string stringTohash)
+        public string SHA512HashString(string stringTohash)
         {
             if (string.IsNullOrEmpty(stringTohash))
             {
@@ -30,9 +30,12 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return sha512(stringTohash);
+            IntPtr hashedPtr = sha512(stringTohash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            SHAWrapper.free_cstring(hashedPtr);
+            return hashed;
         }
-        public IntPtr SHA256HashString(string stringToHash)
+        public string SHA256HashString(string stringToHash)
         {
             if (string.IsNullOrEmpty(stringToHash))
             {
@@ -43,7 +46,10 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return sha256(stringToHash);
+            IntPtr hashedPtr = sha256(stringToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            SHAWrapper.free_cstring(hashedPtr);
+            return hashed;
         }
     }
 }

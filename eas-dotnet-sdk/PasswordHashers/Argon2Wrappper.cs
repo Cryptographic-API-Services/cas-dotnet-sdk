@@ -20,7 +20,7 @@ namespace EasDotnetSdk.PasswordHashers
         private static extern bool argon2_verify(string hashedPassword, string passToVerify);
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
-        public IntPtr HashPassword(string passToHash)
+        public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
             {
@@ -31,7 +31,10 @@ namespace EasDotnetSdk.PasswordHashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return argon2_hash(passToHash);
+            IntPtr hashedPtr = argon2_hash(passToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            Argon2Wrappper.free_cstring(hashedPtr);
+            return hashed;
         }
         public bool VerifyPassword(string hashedPasswrod, string password)
         {

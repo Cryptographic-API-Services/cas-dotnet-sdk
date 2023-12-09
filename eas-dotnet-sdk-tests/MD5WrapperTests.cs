@@ -26,9 +26,7 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string dataToHash = "HashThisData";
-                IntPtr hashedPtr = this._md5Wrapper.Hash(dataToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                MD5Wrapper.free_cstring(hashedPtr);
+                string hashed = this._md5Wrapper.Hash(dataToHash);
                 Assert.NotEmpty(hashed);
                 Assert.NotNull(hashed);
                 Assert.NotEqual(dataToHash, hashed);
@@ -46,9 +44,7 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string dataToHash = "HashThisData";
-                IntPtr hashedPtr = this._md5Wrapper.Hash(dataToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                MD5Wrapper.free_cstring(hashedPtr);
+                string hashed = this._md5Wrapper.Hash(dataToHash);
                 Assert.NotEmpty(hashed);
                 Assert.NotNull(hashed);
                 Assert.NotEqual(dataToHash, hashed);

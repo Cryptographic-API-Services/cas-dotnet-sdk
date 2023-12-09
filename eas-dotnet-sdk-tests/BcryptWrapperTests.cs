@@ -28,10 +28,8 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPasswordPtr = this._cryptWrapper.HashPassword(this._testPassword);
-                string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-                BcryptWrapper.free_cstring(hashedPasswordPtr);
-                Assert.NotEqual(hashedPassword, this._testPassword);
+                string hashed = this._cryptWrapper.HashPassword(this._testPassword);
+                Assert.NotEqual(hashed, this._testPassword);
             }
         }
 
@@ -45,9 +43,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr hashedPasswordPtr = this._cryptWrapper.HashPassword(this._testPassword);
-                string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-                BcryptWrapper.free_cstring(hashedPasswordPtr);
+                string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
                 Assert.True(this._cryptWrapper.Verify(hashedPassword, this._testPassword));
             }
         }

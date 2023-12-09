@@ -34,22 +34,11 @@ namespace EasDotnetSdk.Tests
             {
                 string dataToEncrypt = "DataToEncrypt";
                 string nonce = "TestingNonce";
-                RustRsaKeyPair keyPair = this._rsaWrapper.GetKeyPair(2048);
-                AesEncrypt encryptedData = this._aesWrapper.EncryptPerformant(nonce, dataToEncrypt);
-                string ciphertext = Marshal.PtrToStringAnsi(encryptedData.ciphertext);
-                string aesKey = Marshal.PtrToStringAnsi(encryptedData.key);
-                string publicKey = Marshal.PtrToStringAnsi(keyPair.pub_key);
-                IntPtr encryptedAesKeyPtr = this._rsaWrapper.RsaEncrypt(publicKey, aesKey);
-                string encryptedAesKey = Marshal.PtrToStringAnsi(encryptedAesKeyPtr);
-
-                AESWrapper.free_cstring(encryptedData.ciphertext);
-                AESWrapper.free_cstring(encryptedData.key);
-                RSAWrapper.free_cstring(keyPair.pub_key);
-                RSAWrapper.free_cstring(keyPair.priv_key);
-                RSAWrapper.free_cstring(encryptedAesKeyPtr);
-
-                Assert.NotEqual(aesKey, encryptedAesKey);
-                Assert.NotEqual(dataToEncrypt, ciphertext);
+                RsaKeyPairResult keyPair = this._rsaWrapper.GetKeyPair(2048);
+                AesEncryptResult encryptedResult = this._aesWrapper.Aes256Encrypt(nonce, dataToEncrypt);
+                string encryptedAesKey = this._rsaWrapper.RsaEncrypt(keyPair.PublicKey, encryptedResult.Key);
+                Assert.NotEqual(encryptedResult.Key, encryptedAesKey);
+                Assert.NotEqual(dataToEncrypt, encryptedResult.CipherText);
             }
         }
 
@@ -65,29 +54,12 @@ namespace EasDotnetSdk.Tests
             {
                 string dataToEncrypt = "DataToEncrypt";
                 string nonce = "TestingNonce";
-                RustRsaKeyPair keyPair = this._rsaWrapper.GetKeyPair(2048);
-                AesEncrypt encryptedData = this._aesWrapper.EncryptPerformant(nonce, dataToEncrypt);
-                string ciphertext = Marshal.PtrToStringAnsi(encryptedData.ciphertext);
-                string aesKey = Marshal.PtrToStringAnsi(encryptedData.key);
-                string publicKey = Marshal.PtrToStringAnsi(keyPair.pub_key);
-                string privateKey = Marshal.PtrToStringAnsi(keyPair.priv_key);
-                IntPtr encryptedAesKeyPtr = this._rsaWrapper.RsaEncrypt(publicKey, aesKey);
-                string encryptedAesKey = Marshal.PtrToStringAnsi(encryptedAesKeyPtr);
-
-                IntPtr decryptedAesKeyPtr = this._rsaWrapper.RsaDecrypt(privateKey, encryptedAesKey);
-                string decryptedAesKey = Marshal.PtrToStringAnsi(decryptedAesKeyPtr);
-                IntPtr decryptedDataPtr = this._aesWrapper.DecryptPerformant(nonce, decryptedAesKey, ciphertext);
-                string decryptedData = Marshal.PtrToStringAnsi(decryptedDataPtr);
-
-                RSAWrapper.free_cstring(keyPair.pub_key);
-                RSAWrapper.free_cstring(keyPair.priv_key);
-                AESWrapper.free_cstring(encryptedData.ciphertext);
-                AESWrapper.free_cstring(encryptedData.key);
-                AESWrapper.free_cstring(encryptedAesKeyPtr);
-                AESWrapper.free_cstring(decryptedDataPtr);
-
-
-                Assert.Equal(decryptedData, dataToEncrypt);
+                RsaKeyPairResult keyPair = this._rsaWrapper.GetKeyPair(2048);
+                AesEncryptResult encryptedResult = this._aesWrapper.Aes256Encrypt(nonce, dataToEncrypt);
+                string encryptedAesKey = this._rsaWrapper.RsaEncrypt(keyPair.PublicKey, encryptedResult.Key);
+                string decryptedAesKey = this._rsaWrapper.RsaDecrypt(keyPair.PrivateKey, encryptedAesKey);
+                string decrypted = this._aesWrapper.Aes256Decrypt(nonce, decryptedAesKey, encryptedResult.CipherText);
+                Assert.Equal(decrypted, dataToEncrypt);
             }
         }
     }

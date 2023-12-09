@@ -27,9 +27,7 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string password = "DoNotUSETHISPASS@!";
-                IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
-                string hash = Marshal.PtrToStringUTF8(hashPtr);
-                Argon2Wrappper.free_cstring(hashPtr);
+                string hash = this._argon2Wrapper.HashPassword(password);
                 Assert.NotEqual(password, hash);
             }
         }
@@ -45,9 +43,7 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string password = "TestPasswordToVerify";
-                IntPtr hashPtr = this._argon2Wrapper.HashPassword(password);
-                string hash = Marshal.PtrToStringUTF8(hashPtr);
-                Argon2Wrappper.free_cstring(hashPtr);
+                string hash = this._argon2Wrapper.HashPassword(password);
                 bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
                 Assert.True(isValid);
             }

@@ -30,11 +30,8 @@ namespace EasDotnetSdk.Tests
             {
                 string nonceKey = this._aESWrapper.GenerateAESNonce();
                 string dataToEncrypt = "TestDataToIUSADKJALSD";
-                AesEncrypt result = this._aESWrapper.Aes128Encrypt(nonceKey, dataToEncrypt);
-                string encrypted = Marshal.PtrToStringAnsi(result.ciphertext);
-                AESWrapper.free_cstring(result.key);
-                AESWrapper.free_cstring(result.ciphertext);
-                Assert.NotEqual(encrypted, dataToEncrypt);
+                AesEncryptResult result = this._aESWrapper.Aes128Encrypt(nonceKey, dataToEncrypt);
+                Assert.NotEqual(result.CipherText, dataToEncrypt);
             }
         }
 
@@ -49,13 +46,9 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string nonceKey = this._aESWrapper.GenerateAESNonce();
-                IntPtr keyPtr = this._aESWrapper.Aes128Key();
-                string key = Marshal.PtrToStringAnsi(keyPtr);
-                AESWrapper.free_cstring(keyPtr);
+                string key = this._aESWrapper.Aes128Key();
                 string dataToEncrypt = "EncryptThisString";
-                IntPtr encryptedPtr = this._aESWrapper.EncryptAES128WithKey(nonceKey, key, dataToEncrypt);
-                string encrypted = Marshal.PtrToStringAnsi(encryptedPtr);
-                AESWrapper.free_cstring(encryptedPtr);
+                string encrypted = this._aESWrapper.EncryptAES128WithKey(nonceKey, key, dataToEncrypt);
                 Assert.NotEqual(dataToEncrypt, encrypted);
             }
         }
@@ -70,9 +63,7 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr keyPtr = this._aESWrapper.Aes128Key();
-                string key = Marshal.PtrToStringAnsi(keyPtr);
-                AESWrapper.free_cstring(keyPtr);
+                string key = this._aESWrapper.Aes128Key();
                 Assert.True(!string.IsNullOrEmpty(key));
             }
         }
@@ -88,16 +79,10 @@ namespace EasDotnetSdk.Tests
             else
             {
                 string nonceKey = this._aESWrapper.GenerateAESNonce();
-                IntPtr keyPtr = this._aESWrapper.Aes128Key();
-                string key = Marshal.PtrToStringAnsi(keyPtr);
-                AESWrapper.free_cstring(keyPtr);
+                string key = this._aESWrapper.Aes128Key();
                 string dataToEncrypt = "EncryptThisString";
-                IntPtr encryptedPtr = this._aESWrapper.EncryptAES128WithKey(nonceKey, key, dataToEncrypt);
-                string encrypted = Marshal.PtrToStringAnsi(encryptedPtr);
-                AESWrapper.free_cstring(encryptedPtr);
-                IntPtr decryptedPtr = this._aESWrapper.DecryptAES128WithKey(nonceKey, key, encrypted);
-                string decrypted = Marshal.PtrToStringAnsi(decryptedPtr);
-                AESWrapper.free_cstring(decryptedPtr);
+                string encrypted = this._aESWrapper.EncryptAES128WithKey(nonceKey, key, dataToEncrypt);
+                string decrypted = this._aESWrapper.DecryptAES128WithKey(nonceKey, key, encrypted);
                 Assert.Equal(dataToEncrypt, decrypted);
             }
         }
@@ -112,15 +97,13 @@ namespace EasDotnetSdk.Tests
             }
             else
             {
-                IntPtr keyPtr = this._aESWrapper.Aes256Key();
-                string key = Marshal.PtrToStringAnsi(keyPtr);
-                AESWrapper.free_cstring(keyPtr);
+                string key = this._aESWrapper.Aes256Key();
                 Assert.True(!string.IsNullOrEmpty(key));
             }
         }
 
         [Fact]
-        public void EncryptPerformant()
+        public void Aes256Encrypt()
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
@@ -131,16 +114,13 @@ namespace EasDotnetSdk.Tests
             {
                 string nonceKey = this._aESWrapper.GenerateAESNonce();
                 string toEncrypt = "Text to encrypt";
-                AesEncrypt encrypted = this._aESWrapper.EncryptPerformant(nonceKey, toEncrypt);
-                string cipherText = Convert.ToBase64String(Encoding.ASCII.GetBytes(Marshal.PtrToStringAnsi(encrypted.ciphertext)));
-                AESWrapper.free_cstring(encrypted.ciphertext);
-                AESWrapper.free_cstring(encrypted.key);
-                Assert.NotEqual(toEncrypt, cipherText);
+                AesEncryptResult encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, toEncrypt);
+                Assert.NotEqual(toEncrypt, encrypted.CipherText);
             }
         }
 
         [Fact]
-        public void DecryptPerformant()
+        public void Aes256Decrypt()
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
@@ -151,14 +131,8 @@ namespace EasDotnetSdk.Tests
             {
                 string nonceKey = this._aESWrapper.GenerateAESNonce();
                 string toEncrypt = "Text to encrypt";
-                AesEncrypt encrypted = this._aESWrapper.EncryptPerformant(nonceKey, toEncrypt);
-                string cipherText = Marshal.PtrToStringAnsi(encrypted.ciphertext);
-                string key = Marshal.PtrToStringAnsi(encrypted.key);
-                AESWrapper.free_cstring(encrypted.ciphertext);
-                AESWrapper.free_cstring(encrypted.key);
-                IntPtr decryptedPtr = this._aESWrapper.DecryptPerformant(nonceKey, key, cipherText);
-                string decrypted = Marshal.PtrToStringAnsi(decryptedPtr);
-                AESWrapper.free_cstring(decryptedPtr);
+                AesEncryptResult encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, toEncrypt);
+                string decrypted = this._aESWrapper.Aes256Decrypt(nonceKey, encrypted.Key, encrypted.CipherText);
                 Assert.Equal(toEncrypt, decrypted);
             }
         }

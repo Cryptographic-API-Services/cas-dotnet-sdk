@@ -23,7 +23,7 @@ namespace EasDotnetSdk.Hashers
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr Blake2512(string toHash)
+        public string Blake2512(string toHash)
         {
             if (string.IsNullOrEmpty(toHash))
             {
@@ -34,7 +34,10 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return blake2_512(toHash);
+            IntPtr hashedPtr = blake2_512(toHash);
+            string hashedString = Marshal.PtrToStringAnsi(hashedPtr);
+            Blake2Wrapper.free_cstring(hashedPtr);
+            return hashedString;
         }
         public bool Blake2512Verify(string dataToVerify, string hash)
         {
@@ -54,7 +57,7 @@ namespace EasDotnetSdk.Hashers
             return blake2_512_verify(dataToVerify, hash);
         }
 
-        public IntPtr Blake2256(string toHash)
+        public string Blake2256(string toHash)
         {
             if (string.IsNullOrEmpty(toHash))
             {
@@ -65,7 +68,10 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return blake2_256(toHash);
+            IntPtr hashedPtr = blake2_256(toHash);
+            string hashedStr = Marshal.PtrToStringAnsi(hashedPtr);
+            Blake2Wrapper.free_cstring(hashedPtr);
+            return hashedStr;
         }
 
         public bool Blake2256Verify(string dataToVerify, string hash)

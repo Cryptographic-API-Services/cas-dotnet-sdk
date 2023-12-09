@@ -12,7 +12,14 @@ namespace EasDotnetSdk.Signatures
         {
             this._operatingSystem = new OperatingSystemDeterminator();
         }
-        public struct Ed25519SignatureResult
+
+        public class Ed25519SignatureResult
+        {
+            public string Signature { get; set; }
+            public string PublicKey { get; set; }
+        }
+
+        private struct Ed25519SignatureStruct
         {
             public IntPtr Signature { get; set; }
             public IntPtr Public_Key { get; set; }
@@ -21,7 +28,7 @@ namespace EasDotnetSdk.Signatures
         [DllImport("performant_encryption.dll")]
         private static extern IntPtr get_ed25519_key_pair();
         [DllImport("performant_encryption.dll")]
-        private static extern Ed25519SignatureResult sign_with_key_pair(string keyBytes, string dataToSign);
+        private static extern Ed25519SignatureStruct sign_with_key_pair(string keyBytes, string dataToSign);
         [DllImport("performant_encryption.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         private static extern bool verify_with_key_pair(string keyBytes, string signature, string dataToVerify);
@@ -31,14 +38,17 @@ namespace EasDotnetSdk.Signatures
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr GetKeyPair()
+        public string GetKeyPair()
         {
             OSPlatform platform = this._operatingSystem.GetOperatingSystem();
             if (platform == OSPlatform.Linux)
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return get_ed25519_key_pair();
+            IntPtr keyPairPtr = get_ed25519_key_pair();
+            string keyPair = Marshal.PtrToStringAnsi(keyPairPtr);
+            ED25519Wrapper.free_cstring(keyPairPtr);
+            return keyPair;
         }
         public Ed25519SignatureResult Sign(string keyBytes, string dataToSign)
         {
@@ -55,7 +65,15 @@ namespace EasDotnetSdk.Signatures
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return sign_with_key_pair(keyBytes, dataToSign);
+            Ed25519SignatureStruct signatureStruct = sign_with_key_pair(keyBytes, dataToSign);
+            Ed25519SignatureResult result = new Ed25519SignatureResult()
+            {
+                Signature = Marshal.PtrToStringAnsi(signatureStruct.Signature),
+                PublicKey = Marshal.PtrToStringAnsi(signatureStruct.Public_Key)
+            };
+            ED25519Wrapper.free_cstring(signatureStruct.Signature);
+            ED25519Wrapper.free_cstring(signatureStruct.Public_Key);
+            return result;
         }
 
         public bool Verify(string keyBytes, string signature, string dataToVerify)
