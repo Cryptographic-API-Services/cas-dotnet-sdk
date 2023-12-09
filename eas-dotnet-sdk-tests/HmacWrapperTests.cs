@@ -27,9 +27,7 @@ namespace EasDotnetSdk.Tests
             {
                 string key = "HmacKey";
                 string message = "message to sign";
-                IntPtr signaturePtr = this._hmacWrapper.HmacSign(key, message);
-                string signature = Marshal.PtrToStringAnsi(signaturePtr);
-                HmacWrapper.free_cstring(signaturePtr);
+                string signature = this._hmacWrapper.HmacSign(key, message);
                 Assert.NotNull(signature);
                 Assert.NotEqual(message, signature);
             }
@@ -47,10 +45,8 @@ namespace EasDotnetSdk.Tests
             {
                 string key = "HmacKey";
                 string message = "message to sign";
-                IntPtr signaturePtr = this._hmacWrapper.HmacSign(key, message);
-                string signature = Marshal.PtrToStringAnsi(signaturePtr);
+                string signature = this._hmacWrapper.HmacSign(key, message);
                 bool isValid = this._hmacWrapper.HmacVerify(key, message, signature);
-                HmacWrapper.free_cstring(signaturePtr);
                 Assert.Equal(true, isValid);
             }
         }

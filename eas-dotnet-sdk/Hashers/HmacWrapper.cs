@@ -21,7 +21,7 @@ namespace EasDotnetSdk.Hashers
         [DllImport("performant_encryption.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        public IntPtr HmacSign(string key, string message)
+        public string HmacSign(string key, string message)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -36,7 +36,10 @@ namespace EasDotnetSdk.Hashers
             {
                 throw new NotImplementedException("Linux version not yet supported");
             }
-            return hmac_sign(key, message);
+            IntPtr signedPtr = hmac_sign(key, message);
+            string signed = Marshal.PtrToStringAnsi(signedPtr);
+            HmacWrapper.free_cstring(signedPtr);
+            return signed;
         }
         public bool HmacVerify(string key, string message, string signature)
         {
