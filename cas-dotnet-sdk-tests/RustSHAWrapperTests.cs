@@ -1,6 +1,5 @@
 ﻿using CasDotnetSdk.Hashers;
 using CasDotnetSdk.Helpers;
-using System.Runtime.InteropServices;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -20,35 +19,19 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void SHA512Hash()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string hashed = this._wrapper.SHA512HashString(this._testString);
-                Assert.NotNull(hashed);
-                Assert.NotEmpty(hashed);
-                Assert.NotEqual(hashed, this._testString);
-            }
+            string hashed = this._wrapper.SHA512HashString(this._testString);
+            Assert.NotNull(hashed);
+            Assert.NotEmpty(hashed);
+            Assert.NotEqual(hashed, this._testString);
         }
 
         [Fact]
         public async Task SHA256Hash()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string hashed = this._wrapper.SHA256HashString(this._testString);
-                Assert.NotNull(hashed);
-                Assert.NotEmpty(hashed);
-                Assert.NotEqual(hashed, this._testString);
-            }
+            string hashed = this._wrapper.SHA256HashString(this._testString);
+            Assert.NotNull(hashed);
+            Assert.NotEmpty(hashed);
+            Assert.NotEqual(hashed, this._testString);
         }
     }
 }
