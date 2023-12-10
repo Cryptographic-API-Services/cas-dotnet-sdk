@@ -1,7 +1,9 @@
 ﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Hybrid;
 using CasDotnetSdk.Symmetric;
 using Xunit;
 using static CasDotnetSdk.Asymmetric.RSAWrapper;
+using static CasDotnetSdk.Hybrid.AESRSAHybridWrapper;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
 namespace CasDotnetSdkTests.Tests
@@ -9,36 +11,30 @@ namespace CasDotnetSdkTests.Tests
     public class AESRSAHybridEncryptionTests
     {
         private readonly AESWrapper _aesWrapper;
-        private readonly RSAWrapper _rsaWrapper;
+        private readonly AESRSAHybridWrapper _hybridWrapper;
 
         public AESRSAHybridEncryptionTests()
         {
             this._aesWrapper = new AESWrapper();
-            this._rsaWrapper = new RSAWrapper();
+            this._hybridWrapper = new AESRSAHybridWrapper();
         }
 
         [Fact]
         public void AESRSAHybridEncrypt()
         {
             string dataToEncrypt = "DataToEncrypt";
-            string nonce = "TestingNonce";
-            RsaKeyPairResult keyPair = this._rsaWrapper.GetKeyPair(2048);
-            AesEncryptResult encryptedResult = this._aesWrapper.Aes256Encrypt(nonce, dataToEncrypt);
-            string encryptedAesKey = this._rsaWrapper.RsaEncrypt(keyPair.PublicKey, encryptedResult.Key);
-            Assert.NotEqual(encryptedResult.Key, encryptedAesKey);
-            Assert.NotEqual(dataToEncrypt, encryptedResult.CipherText);
+            string nonce = this._aesWrapper.GenerateAESNonce();
+            AESRSAHybridEncryptResult result = this._hybridWrapper.AES256RSAHybridEncrypt(dataToEncrypt, nonce, 2048, 256);
+            Assert.NotEqual(dataToEncrypt, result.CipherText);
         }
 
         [Fact]
         public void AESRSAHybridDecrypt()
         {
             string dataToEncrypt = "DataToEncrypt";
-            string nonce = "TestingNonce";
-            RsaKeyPairResult keyPair = this._rsaWrapper.GetKeyPair(2048);
-            AesEncryptResult encryptedResult = this._aesWrapper.Aes256Encrypt(nonce, dataToEncrypt);
-            string encryptedAesKey = this._rsaWrapper.RsaEncrypt(keyPair.PublicKey, encryptedResult.Key);
-            string decryptedAesKey = this._rsaWrapper.RsaDecrypt(keyPair.PrivateKey, encryptedAesKey);
-            string decrypted = this._aesWrapper.Aes256Decrypt(nonce, decryptedAesKey, encryptedResult.CipherText);
+            string nonce = this._aesWrapper.GenerateAESNonce();
+            AESRSAHybridEncryptResult result = this._hybridWrapper.AES256RSAHybridEncrypt(dataToEncrypt, nonce, 2048, 256);
+            string decrypted = this._hybridWrapper.AES256RSAHybridDecrypt(result);
             Assert.Equal(decrypted, dataToEncrypt);
         }
     }
