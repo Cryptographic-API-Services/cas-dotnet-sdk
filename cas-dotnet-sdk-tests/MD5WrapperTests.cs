@@ -8,11 +8,9 @@ namespace CasDotnetSdkTests.Tests
     public class MD5WrapperTests
     {
         private MD5Wrapper _md5Wrapper { get; set; }
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public MD5WrapperTests()
         {
             _md5Wrapper = new MD5Wrapper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

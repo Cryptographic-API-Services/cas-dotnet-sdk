@@ -8,11 +8,9 @@ namespace CasDotnetSdkTests.Tests
     public class HmacWrapperTests
     {
         private HmacWrapper _hmacWrapper { get; set; }
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public HmacWrapperTests()
         {
             this._hmacWrapper = new HmacWrapper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

@@ -8,12 +8,10 @@ namespace CasDotnetSdkTests.Tests
     {
         private SHAWrapper _wrapper;
         private string _testString;
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public SHAWrapperTests()
         {
             this._wrapper = new SHAWrapper();
             this._testString = "Test hash to hash";
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

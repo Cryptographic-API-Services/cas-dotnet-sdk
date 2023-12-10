@@ -8,12 +8,10 @@ namespace CasDotnetSdkTests.Tests
     public class Argon2WrapperTests
     {
         private Argon2Wrappper _argon2Wrapper;
-        private readonly OperatingSystemDeterminator _operatingSystem;
 
         public Argon2WrapperTests()
         {
             this._argon2Wrapper = new Argon2Wrappper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

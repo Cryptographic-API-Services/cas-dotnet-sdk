@@ -9,12 +9,10 @@ namespace CasDotnetSdkTests.Tests
     public class AESWrapperTests
     {
         private readonly AESWrapper _aESWrapper;
-        private readonly OperatingSystemDeterminator _operatingSystem;
 
         public AESWrapperTests()
         {
             this._aESWrapper = new AESWrapper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

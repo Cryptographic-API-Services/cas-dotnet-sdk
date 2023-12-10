@@ -8,12 +8,10 @@ namespace CasDotnetSdkTests.Tests
     public class Blake2WrapperTests
     {
         private readonly Blake2Wrapper _wrapper;
-        private readonly OperatingSystemDeterminator _operatingSystem;
 
         public Blake2WrapperTests()
         {
             this._wrapper = new Blake2Wrapper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

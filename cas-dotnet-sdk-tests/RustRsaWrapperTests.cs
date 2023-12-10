@@ -10,12 +10,10 @@ namespace CasDotnetSdkTests.Tests
     {
         private readonly RSAWrapper _RSAWrapper;
         private readonly RsaKeyPairResult _encryptDecryptKeyPair;
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public RSAWrapperTests()
         {
             this._RSAWrapper = new RSAWrapper();
             this._encryptDecryptKeyPair = this._RSAWrapper.GetKeyPair(4096);
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

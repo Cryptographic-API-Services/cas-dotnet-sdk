@@ -9,11 +9,9 @@ namespace CasDotnetSdkTests.Tests
     public class ED25519WrapperTests
     {
         private readonly ED25519Wrapper _wrapper;
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public ED25519WrapperTests()
         {
             this._wrapper = new ED25519Wrapper();
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]
