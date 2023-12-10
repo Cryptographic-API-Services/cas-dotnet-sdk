@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Asymmetric.Windows;
+﻿using CasDotnetSdk.Asymmetric.Linux;
+using CasDotnetSdk.Asymmetric.Windows;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -49,7 +50,10 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr signedPtr = RSALinuxWrapper.rsa_sign_with_key(privateKey, dataToSign);
+                string signed = Marshal.PtrToStringAnsi(signedPtr);
+                RSALinuxWrapper.free_cstring(signedPtr);
+                return signed;
             }
             else
             {
@@ -76,7 +80,7 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return RSALinuxWrapper.rsa_verify(publicKey, dataToVerify, signature);
             }
             else
             {
@@ -97,7 +101,15 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                RsaSignResultStruct resultPtrStruct = RSALinuxWrapper.rsa_sign(dataToSign, keySize);
+                RsaSignResult signed = new RsaSignResult()
+                {
+                    PublicKey = Marshal.PtrToStringAnsi(resultPtrStruct.public_key),
+                    Signature = Marshal.PtrToStringAnsi(resultPtrStruct.signature)
+                };
+                RSALinuxWrapper.free_cstring(resultPtrStruct.public_key);
+                RSALinuxWrapper.free_cstring(resultPtrStruct.signature);
+                return signed;
             }
             else
             {
@@ -121,7 +133,10 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr decryptPtr = RSALinuxWrapper.rsa_decrypt(privateKey, dataToDecrypt);
+                string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
+                RSALinuxWrapper.free_cstring(decryptPtr);
+                return decrypt;
             }
             else
             {
@@ -141,7 +156,10 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr encryptPtr = RSALinuxWrapper.rsa_encrypt(publicKey, dataToEncrypt);
+                string encrypt = Marshal.PtrToStringAnsi(encryptPtr);
+                RSALinuxWrapper.free_cstring(encryptPtr);
+                return encrypt;
             }
             else
             {
@@ -161,7 +179,15 @@ namespace CasDotnetSdk.Asymmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                RustRsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSALinuxWrapper.free_cstring(keyPairStruct.pub_key);
+                RSALinuxWrapper.free_cstring(keyPairStruct.priv_key);
+                return result;
             }
             else
             {
