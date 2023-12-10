@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Validation\" />
-    <Folder Include="Signatures\" />
+    <Folder Include="Asymmetric\" />
+    <Folder Include="Hashers\" />
+	<Folder Include="Helpers\" />
+	<Folder Include="PasswordHashers\" />
+	<Folder Include="Signatures\" />
+	<Folder Include="Symmetric\" />
   </ItemGroup>
 
   <ItemGroup>
