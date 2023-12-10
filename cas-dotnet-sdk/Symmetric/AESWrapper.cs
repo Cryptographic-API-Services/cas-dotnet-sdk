@@ -38,7 +38,15 @@ namespace CasDotnetSdk.Symmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                AesEncryptStruct encryptStruct = AESLinuxWrapper.aes128_encrypt_string(nonceKey, dataToEncrypt);
+                AesEncryptResult result = new AesEncryptResult()
+                {
+                    CipherText = Marshal.PtrToStringAnsi(encryptStruct.ciphertext),
+                    Key = Marshal.PtrToStringAnsi(encryptStruct.key)
+                };
+                AESLinuxWrapper.free_cstring(encryptStruct.key);
+                AESLinuxWrapper.free_cstring(encryptStruct.ciphertext);
+                return result;
             }
             else
             {
@@ -58,7 +66,10 @@ namespace CasDotnetSdk.Symmetric
         {
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr keyPtr = AESLinuxWrapper.aes_128_key();
+                string key = Marshal.PtrToStringAnsi(keyPtr);
+                AESLinuxWrapper.free_cstring(keyPtr);
+                return key;
             }
             else
             {
@@ -86,7 +97,10 @@ namespace CasDotnetSdk.Symmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr decryptPtr = AESLinuxWrapper.aes128_decrypt_string(nonceKey, key, dataToDecrypt);
+                string decrypted = Marshal.PtrToStringAnsi(decryptPtr);
+                AESLinuxWrapper.free_cstring(decryptPtr);
+                return decrypted;
             }
             else
             {
@@ -114,7 +128,10 @@ namespace CasDotnetSdk.Symmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr encryptedPtr = AESLinuxWrapper.aes_128_encrypt_string_with_key(nonceKey, key, dataToEncrypt);
+                string encrypted = Marshal.PtrToStringAnsi(encryptedPtr);
+                AESLinuxWrapper.free_cstring(encryptedPtr);
+                return encrypted;
             }
             else
             {
@@ -128,7 +145,10 @@ namespace CasDotnetSdk.Symmetric
         {
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr keyPtr = AESLinuxWrapper.aes_256_key();
+                string key = Marshal.PtrToStringAnsi(keyPtr);
+                AESLinuxWrapper.free_cstring(keyPtr);
+                return key;
             }
             else
             {
@@ -160,7 +180,15 @@ namespace CasDotnetSdk.Symmetric
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                AesEncryptStruct encryptStruct = AESLinuxWrapper.aes256_encrypt_string(nonceKey, toEncrypt);
+                AesEncryptResult result = new AesEncryptResult()
+                {
+                    CipherText = Marshal.PtrToStringAnsi(encryptStruct.ciphertext),
+                    Key = Marshal.PtrToStringAnsi(encryptStruct.key)
+                };
+                AESLinuxWrapper.free_cstring(encryptStruct.key);
+                AESLinuxWrapper.free_cstring(encryptStruct.ciphertext);
+                return result;
             }
             else
             {
@@ -192,7 +220,10 @@ namespace CasDotnetSdk.Symmetric
             
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr decryptPtr = AESLinuxWrapper.aes256_decrypt_string(nonceKey, key, toDecrypt);
+                string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
+                AESLinuxWrapper.free_cstring(decryptPtr);
+                return decrypt;
             }
             else
             {
