@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Windows;
+﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -22,7 +23,10 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr hashedPtr = MD5LinuxWrapper.md5_hash_string(toHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                MD5LinuxWrapper.free_cstring(hashedPtr);
+                return hashed;
             }
             else
             {
@@ -46,7 +50,7 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return MD5LinuxWrapper.md5_hash_verify(hashToVerify, toHash);
             }
             else
             {

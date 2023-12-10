@@ -18,38 +18,22 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void CreateHash()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string dataToHash = "HashThisData";
-                string hashed = this._md5Wrapper.Hash(dataToHash);
-                Assert.NotEmpty(hashed);
-                Assert.NotNull(hashed);
-                Assert.NotEqual(dataToHash, hashed);
-            }
+            string dataToHash = "HashThisData";
+            string hashed = this._md5Wrapper.Hash(dataToHash);
+            Assert.NotEmpty(hashed);
+            Assert.NotNull(hashed);
+            Assert.NotEqual(dataToHash, hashed);
         }
 
         [Fact]
         public async Task VerifyHash()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string dataToHash = "HashThisData";
-                string hashed = this._md5Wrapper.Hash(dataToHash);
-                Assert.NotEmpty(hashed);
-                Assert.NotNull(hashed);
-                Assert.NotEqual(dataToHash, hashed);
-                Assert.True(this._md5Wrapper.Verify(hashed, dataToHash));
-            }
+            string dataToHash = "HashThisData";
+            string hashed = this._md5Wrapper.Hash(dataToHash);
+            Assert.NotEmpty(hashed);
+            Assert.NotNull(hashed);
+            Assert.NotEqual(dataToHash, hashed);
+            Assert.True(this._md5Wrapper.Verify(hashed, dataToHash));
         }
     }
 }
