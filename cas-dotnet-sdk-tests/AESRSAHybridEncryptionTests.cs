@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.Symmetric;
+using Xunit;
 using static CasDotnetSdk.Asymmetric.RSAWrapper;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 

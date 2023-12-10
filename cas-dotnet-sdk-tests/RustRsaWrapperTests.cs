@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric;
+using Xunit;
 using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace CasDotnetSdkTests.Tests

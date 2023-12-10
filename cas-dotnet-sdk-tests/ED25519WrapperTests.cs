@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Signatures;
+using Xunit;
 using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
 namespace CasDotnetSdkTests.Tests

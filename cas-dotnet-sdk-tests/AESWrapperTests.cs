@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Symmetric;
+using Xunit;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
 namespace CasDotnetSdkTests.Tests
