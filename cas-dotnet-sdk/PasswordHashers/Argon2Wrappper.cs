@@ -76,5 +76,22 @@ namespace CasDotnetSdk.PasswordHashers
                 return Argon2WindowsWrappper.argon2_verify(hashedPasswrod, password);
             }
         }
+
+        public bool VerifyPasswordThread(string hashedPasswrod, string password)
+        {
+            if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
+            {
+                throw new Exception("You must provide a hashed password and password to verify with argon2");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                return Argon2LinuxWrappper.argon2_verify_thread(hashedPasswrod, password);
+            }
+            else
+            {
+                return Argon2WindowsWrappper.argon2_verify_thread(hashedPasswrod, password);
+            }
+        }
     }
 }

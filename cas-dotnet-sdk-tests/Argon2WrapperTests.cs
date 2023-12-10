@@ -21,6 +21,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void HashPasswordThread()
+        {
+            string password = "DoNotUSETHISPASS@!";
+            string hash = this._argon2Wrapper.HashPasswordThread(password);
+            Assert.NotEqual(password, hash);
+        }
+
+        [Fact]
         public void Verify()
         {
             string password = "TestPasswordToVerify";
@@ -30,11 +38,12 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void HashPasswordThread()
+        public void VerifyThread()
         {
-            string password = "DoNotUSETHISPASS@!";
+            string password = "TestPasswordToVerify";
             string hash = this._argon2Wrapper.HashPasswordThread(password);
-            Assert.NotEqual(password, hash);
+            bool isValid = this._argon2Wrapper.VerifyPasswordThread(hash, password);
+            Assert.True(isValid);
         }
     }
 }
