@@ -21,31 +21,15 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void HashPassword()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string hashed = this._cryptWrapper.HashPassword(this._testPassword);
-                Assert.NotEqual(hashed, this._testPassword);
-            }
+            string hashed = this._cryptWrapper.HashPassword(this._testPassword);
+            Assert.NotEqual(hashed, this._testPassword);
         }
 
         [Fact]
         public async Task Verify()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
-                Assert.True(this._cryptWrapper.Verify(hashedPassword, this._testPassword));
-            }
+            string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
+            Assert.True(this._cryptWrapper.Verify(hashedPassword, this._testPassword));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using System;
 using System.Runtime.InteropServices;
@@ -17,7 +18,10 @@ namespace CasDotnetSdk.PasswordHashers
         {
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash(passwordToHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                BcryptLinuxWrapper.free_cstring(hashedPtr);
+                return hashed;
             }
             else
             {
@@ -31,7 +35,7 @@ namespace CasDotnetSdk.PasswordHashers
         {
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword);
             }
             else
             {
