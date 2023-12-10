@@ -54,7 +54,7 @@ namespace CasDotnetSdk.Symmetric
                 AesEncryptResult result = new AesEncryptResult()
                 {
                     CipherText = Marshal.PtrToStringAnsi(encryptStruct.ciphertext),
-                    Key = Marshal.PtrToStringAnsi(encryptStruct.key)
+                    Key = Marshal.PtrToStringAnsi(encryptStruct.key),
                 };
                 AESWindowsWrapper.free_cstring(encryptStruct.key);
                 AESWindowsWrapper.free_cstring(encryptStruct.ciphertext);
