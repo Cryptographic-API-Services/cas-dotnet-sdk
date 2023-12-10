@@ -18,37 +18,21 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void HmacSign()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string key = "HmacKey";
-                string message = "message to sign";
-                string signature = this._hmacWrapper.HmacSign(key, message);
-                Assert.NotNull(signature);
-                Assert.NotEqual(message, signature);
-            }
+            string key = "HmacKey";
+            string message = "message to sign";
+            string signature = this._hmacWrapper.HmacSign(key, message);
+            Assert.NotNull(signature);
+            Assert.NotEqual(message, signature);
         }
 
         [Fact]
         public void HmacVerify()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string key = "HmacKey";
-                string message = "message to sign";
-                string signature = this._hmacWrapper.HmacSign(key, message);
-                bool isValid = this._hmacWrapper.HmacVerify(key, message, signature);
-                Assert.Equal(true, isValid);
-            }
+            string key = "HmacKey";
+            string message = "message to sign";
+            string signature = this._hmacWrapper.HmacSign(key, message);
+            bool isValid = this._hmacWrapper.HmacVerify(key, message, signature);
+            Assert.Equal(true, isValid);
         }
     }
 }

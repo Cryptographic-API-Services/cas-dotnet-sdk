@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Windows;
+﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -26,7 +27,10 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr signedPtr = HmacLinuxWrapper.hmac_sign(key, message);
+                string signed = Marshal.PtrToStringAnsi(signedPtr);
+                HmacLinuxWrapper.free_cstring(signedPtr);
+                return signed;
             }
             else
             {
@@ -53,7 +57,7 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return HmacLinuxWrapper.hmac_verify(key, message, signature);
             }
             else
             {
