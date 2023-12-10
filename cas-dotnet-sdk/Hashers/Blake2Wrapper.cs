@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Windows;
+﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -22,7 +23,10 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr hashedPtr = Blake2LinuxWrapper.blake2_512(toHash);
+                string hashedString = Marshal.PtrToStringAnsi(hashedPtr);
+                Blake2LinuxWrapper.free_cstring(hashedPtr);
+                return hashedString;
             }
             else
             {
@@ -45,7 +49,7 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return Blake2LinuxWrapper.blake2_512_verify(dataToVerify, hash);
             }
             else
             {
@@ -62,7 +66,10 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr hashedPtr = Blake2LinuxWrapper.blake2_256(toHash);
+                string hashedStr = Marshal.PtrToStringAnsi(hashedPtr);
+                Blake2LinuxWrapper.free_cstring(hashedPtr);
+                return hashedStr;
             }
             else
             {
@@ -86,7 +93,7 @@ namespace CasDotnetSdk.Hashers
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return Blake2LinuxWrapper.blake2_256_verify(dataToVerify, hash);
             }
             else
             {
