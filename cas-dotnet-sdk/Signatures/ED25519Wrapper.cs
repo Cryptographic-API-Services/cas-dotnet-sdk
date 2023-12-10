@@ -31,7 +31,10 @@ namespace CasDotnetSdk.Signatures
         {
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                IntPtr keyPairPtr = ED25519LinuxWrapper.get_ed25519_key_pair();
+                string keyPair = Marshal.PtrToStringAnsi(keyPairPtr);
+                ED25519LinuxWrapper.free_cstring(keyPairPtr);
+                return keyPair;
             }
             else
             {
@@ -54,7 +57,15 @@ namespace CasDotnetSdk.Signatures
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                Ed25519SignatureStruct signatureStruct = ED25519LinuxWrapper.sign_with_key_pair(keyBytes, dataToSign);
+                Ed25519SignatureResult result = new Ed25519SignatureResult()
+                {
+                    Signature = Marshal.PtrToStringAnsi(signatureStruct.Signature),
+                    PublicKey = Marshal.PtrToStringAnsi(signatureStruct.Public_Key)
+                };
+                ED25519LinuxWrapper.free_cstring(signatureStruct.Signature);
+                ED25519LinuxWrapper.free_cstring(signatureStruct.Public_Key);
+                return result;
             }
             else
             {
@@ -87,7 +98,7 @@ namespace CasDotnetSdk.Signatures
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return ED25519LinuxWrapper.verify_with_key_pair(keyBytes, signature, dataToVerify);
             }
             else
             {
@@ -111,7 +122,7 @@ namespace CasDotnetSdk.Signatures
 
             if (this._platform == OSPlatform.Linux)
             {
-                throw new NotImplementedException("Linux version not yet supported");
+                return ED25519LinuxWrapper.verify_with_public_key(publicKey, signature, dataToVerify);
             }
             else
             {

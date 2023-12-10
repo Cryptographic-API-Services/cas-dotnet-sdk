@@ -19,69 +19,37 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void GetKeyPair()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string keyPair = this._wrapper.GetKeyPair();
-                Assert.NotNull(keyPair);
-            }
+            string keyPair = this._wrapper.GetKeyPair();
+            Assert.NotNull(keyPair);
         }
 
         [Fact]
         public void SignData()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string keyPair = this._wrapper.GetKeyPair();
-                Ed25519SignatureResult signedData = this._wrapper.Sign(keyPair, "SignThisData");
-                Assert.NotNull(signedData.Signature);
-                Assert.NotNull(signedData.PublicKey);
-            }
+            string keyPair = this._wrapper.GetKeyPair();
+            Ed25519SignatureResult signedData = this._wrapper.Sign(keyPair, "SignThisData");
+            Assert.NotNull(signedData.Signature);
+            Assert.NotNull(signedData.PublicKey);
         }
 
         [Fact]
         public void Verify()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string keyPair = this._wrapper.GetKeyPair();
-                string dataToSign = "TestData12345";
-                Ed25519SignatureResult signatureResult = this._wrapper.Sign(keyPair, dataToSign);
-                bool isValid = this._wrapper.Verify(keyPair, signatureResult.Signature, dataToSign);
-                Assert.Equal(true, isValid);
-            }
+            string keyPair = this._wrapper.GetKeyPair();
+            string dataToSign = "TestData12345";
+            Ed25519SignatureResult signatureResult = this._wrapper.Sign(keyPair, dataToSign);
+            bool isValid = this._wrapper.Verify(keyPair, signatureResult.Signature, dataToSign);
+            Assert.Equal(true, isValid);
         }
 
         [Fact]
         public async void VerifyWithPublicKey()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string keyPair = this._wrapper.GetKeyPair();
-                string dataToSign = "welcomeHome";
-                Ed25519SignatureResult result = this._wrapper.Sign(keyPair, dataToSign);
-                bool isValid = this._wrapper.VerifyWithPublicKey(result.PublicKey, result.Signature, dataToSign);
-                Assert.Equal(true, isValid);
-            }
+            string keyPair = this._wrapper.GetKeyPair();
+            string dataToSign = "welcomeHome";
+            Ed25519SignatureResult result = this._wrapper.Sign(keyPair, dataToSign);
+            bool isValid = this._wrapper.VerifyWithPublicKey(result.PublicKey, result.Signature, dataToSign);
+            Assert.Equal(true, isValid);
         }
     }
 }
