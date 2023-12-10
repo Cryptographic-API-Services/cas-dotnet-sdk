@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk", "cas-dotnet-sdk\cas-dotnet-sdk.csproj", "{60DF9C41-29DB-4BB9-BE19-A0F6A7E02A59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-tests", "cas-dotnet-sdk-tests\cas-dotnet-sdk-tests.csproj", "{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60DF9C41-29DB-4BB9-BE19-A0F6A7E02A59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60DF9C41-29DB-4BB9-BE19-A0F6A7E02A59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60DF9C41-29DB-4BB9-BE19-A0F6A7E02A59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60DF9C41-29DB-4BB9-BE19-A0F6A7E02A59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4227D23-9C04-470C-BD8B-0B7BCF1C6E4A}
+	EndGlobalSection
+EndGlobal
