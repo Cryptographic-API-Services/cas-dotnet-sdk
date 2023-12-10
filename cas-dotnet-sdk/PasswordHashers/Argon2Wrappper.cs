@@ -14,6 +14,30 @@ namespace CasDotnetSdk.PasswordHashers
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
         }
+
+        public string HashPasswordThread(string passToHash)
+        {
+            if (string.IsNullOrEmpty(passToHash))
+            {
+                throw new Exception("You must provide a password to hash using argon2");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                IntPtr hashedPtr = Argon2LinuxWrappper.argon2_hash_thread(passToHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                Argon2LinuxWrappper.free_cstring(hashedPtr);
+                return hashed;
+            }
+            else
+            {
+                IntPtr hashedPtr = Argon2WindowsWrappper.argon2_hash_thread(passToHash);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                Argon2WindowsWrappper.free_cstring(hashedPtr);
+                return hashed;
+            }
+        }
+
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))

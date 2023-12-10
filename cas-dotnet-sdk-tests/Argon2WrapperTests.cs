@@ -28,5 +28,13 @@ namespace CasDotnetSdkTests.Tests
             bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
             Assert.True(isValid);
         }
+
+        [Fact]
+        public void HashPasswordThread()
+        {
+            string password = "DoNotUSETHISPASS@!";
+            string hash = this._argon2Wrapper.HashPasswordThread(password);
+            Assert.NotEqual(password, hash);
+        }
     }
 }
