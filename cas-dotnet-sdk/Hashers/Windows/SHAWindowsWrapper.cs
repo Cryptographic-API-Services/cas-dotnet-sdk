@@ -10,11 +10,11 @@ namespace CasDotnetSdk.Hashers.Windows
     internal static class SHAWindowsWrapper
     {
 
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr sha512(string password);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr sha256(string password);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
     }
 }

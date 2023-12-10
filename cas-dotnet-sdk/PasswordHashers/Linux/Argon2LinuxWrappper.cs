@@ -10,12 +10,12 @@ namespace CasDotnetSdk.PasswordHashers.Linux
     internal static class Argon2LinuxWrappper
     {
 
-        [DllImport("performant_encryption.so")]
+        [DllImport("cas_core_lib.so")]
         public static extern IntPtr argon2_hash(string passToHash);
-        [DllImport("performant_encryption.so")]
+        [DllImport("cas_core_lib.so")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool argon2_verify(string hashedPassword, string passToVerify);
-        [DllImport("performant_encryption.so")]
+        [DllImport("cas_core_lib.so")]
         public static extern void free_cstring(IntPtr stringToFree);
     }
 }

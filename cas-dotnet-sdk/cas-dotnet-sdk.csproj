@@ -20,10 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="performant_encryption.dll">
+    <None Update="cas_core_lib.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="performant_encryption.so">
+    <None Update="cas_core_lib.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

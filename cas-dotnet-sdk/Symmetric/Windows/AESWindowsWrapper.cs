@@ -10,24 +10,24 @@ namespace CasDotnetSdk.Symmetric.Windows
 {
     internal static class AESWindowsWrapper
     {
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern AesEncryptStruct aes256_encrypt_string(string nonceKey, string dataToEncrypt);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern AesEncryptStruct aes128_encrypt_string(string nonceKey, string dataToEncrypt);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes256_decrypt_string(string nonceKey, string key, string dataToDecrypt);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_256_key();
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_128_key();
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes256_encrypt_string_with_key(string nonceKey, string key, string dataToEncrypt);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_128_encrypt_string_with_key(string nonceKey, string key, string dataToEncrypt);
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes128_decrypt_string(string nonceKey, string key, string dataToEncrypt);
 
-        [DllImport("performant_encryption.dll")]
+        [DllImport("cas_core_lib.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
     }
 }
