@@ -1,7 +1,5 @@
 ﻿using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers;
-using System.Runtime.InteropServices;
-using Xunit;
 
 namespace CasDotnetSdkTests.Tests
 {

@@ -217,7 +217,7 @@ namespace CasDotnetSdk.Symmetric
             {
                 throw new Exception("You must provide data to decrypt with AES 256");
             }
-            
+
             if (this._platform == OSPlatform.Linux)
             {
                 IntPtr decryptPtr = AESLinuxWrapper.aes256_decrypt_string(nonceKey, key, toDecrypt);

@@ -1,8 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Symmetric;
-using System.Runtime.InteropServices;
-using Xunit;
 using static CasDotnetSdk.Asymmetric.RSAWrapper;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 

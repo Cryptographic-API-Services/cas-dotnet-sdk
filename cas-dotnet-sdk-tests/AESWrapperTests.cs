@@ -1,7 +1,4 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Symmetric;
-using System.Runtime.InteropServices;
-using Xunit;
+﻿using CasDotnetSdk.Symmetric;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
 namespace CasDotnetSdkTests.Tests

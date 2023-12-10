@@ -1,7 +1,4 @@
 ﻿using CasDotnetSdk.Hashers;
-using CasDotnetSdk.Helpers;
-using System.Runtime.InteropServices;
-using Xunit;
 
 namespace CasDotnetSdkTests.Tests
 {

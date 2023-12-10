@@ -1,7 +1,4 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Signatures;
-using System.Runtime.InteropServices;
-using Xunit;
+﻿using CasDotnetSdk.Signatures;
 using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
 namespace CasDotnetSdkTests.Tests

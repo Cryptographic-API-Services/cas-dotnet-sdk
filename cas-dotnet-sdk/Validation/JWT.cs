@@ -1,8 +1,4 @@
-﻿
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
