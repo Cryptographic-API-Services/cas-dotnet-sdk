@@ -19,34 +19,18 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void HashPassword()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string password = "DoNotUSETHISPASS@!";
-                string hash = this._argon2Wrapper.HashPassword(password);
-                Assert.NotEqual(password, hash);
-            }
+            string password = "DoNotUSETHISPASS@!";
+            string hash = this._argon2Wrapper.HashPassword(password);
+            Assert.NotEqual(password, hash);
         }
 
         [Fact]
         public void Verify()
         {
-            OSPlatform platform = this._operatingSystem.GetOperatingSystem();
-            if (platform == OSPlatform.Linux)
-            {
-                throw new NotImplementedException("Linux version not yet supported");
-            }
-            else
-            {
-                string password = "TestPasswordToVerify";
-                string hash = this._argon2Wrapper.HashPassword(password);
-                bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
-                Assert.True(isValid);
-            }
+            string password = "TestPasswordToVerify";
+            string hash = this._argon2Wrapper.HashPassword(password);
+            bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
+            Assert.True(isValid);
         }
     }
 }
