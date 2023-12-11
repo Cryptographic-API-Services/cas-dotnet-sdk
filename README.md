@@ -19,3 +19,15 @@ Argon2Wrappper argon2Wrapper = new Argon2Wrappper();
 string password = "DoNotDoThisWithMe!@#";
 string hashed = argon2Wrapper.HashPassword(password);
 ```
+
+- SCrypt
+  
+| Library | 50 Password Hashes in (s) |
+| --- | --- |
+| [CAS SCrypt](https://github.com/Crytographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/PasswordHashers/Argon2Wrappper.cs) | 03.5280257 (s) |
+| [SCrypt.NET](https://github.com/viniciuschiele/scrypt) | 02.4595297 (s) |
+```csharp
+SCryptWrapper scrypt = new SCryptWrapper();
+string password = "SCryptPasswordHash!@#$";
+string hashed = scrypt.HashPassword(password);
+```
