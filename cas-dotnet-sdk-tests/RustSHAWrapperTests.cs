@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers;
+using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -23,12 +24,32 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void SHA512HashBytes()
+        {
+            byte[] data = Encoding.UTF8.GetBytes(this._testString);
+            byte[] hashed = this._wrapper.SHA512HashBytes(data);
+            Assert.NotNull(hashed);
+            Assert.NotEmpty(hashed);
+            Assert.True(hashed.Length > 0);
+        }
+
+        [Fact]
         public async Task SHA256Hash()
         {
             string hashed = this._wrapper.SHA256HashString(this._testString);
             Assert.NotNull(hashed);
             Assert.NotEmpty(hashed);
             Assert.NotEqual(hashed, this._testString);
+        }
+
+        [Fact]
+        public void SHA256HashBytes()
+        {
+            byte[] data = Encoding.UTF8.GetBytes(this._testString);
+            byte[] hashed = this._wrapper.SHA256HashBytes(data);
+            Assert.NotNull(hashed);
+            Assert.NotEmpty(hashed);
+            Assert.True(hashed.Length > 0);
         }
     }
 }
