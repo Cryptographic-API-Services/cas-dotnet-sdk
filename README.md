@@ -36,6 +36,23 @@ SHAWrapper shaWrapper = new SHAWrapper();
 byte[] newSha = shaWrapper.SHA512HashBytes(data);
 ```
 
+- HMAC
+
+| Library | 50 Hashes in (s) |
+| --- | --- |
+| [CAS HMAC](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Hashers/HmacWrapper.cs) | 00.0060037 (s) |
+| [HMAC256 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-8.0) | 00.0042263 (s) |
+```csharp
+string toHash = "C#IsASuperDuperLanguage";
+string key = "HmacKeyForSigning";
+byte[] data = Encoding.UTF8.GetBytes(toHash);
+byte[] message = Encoding.UTF8.GetBytes(key);
+
+DateTime start = DateTime.Now;
+HmacWrapper hmacWrapper = new HmacWrapper();
+byte[] hmacSigned = hmacWrapper.HmacSignBytes(data, message);
+```
+
 ### Password Hashers
 - Argon2
   
