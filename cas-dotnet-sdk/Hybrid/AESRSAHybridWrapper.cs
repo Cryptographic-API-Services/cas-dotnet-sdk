@@ -19,7 +19,7 @@ namespace CasDotnetSdk.Hybrid
             this._rsaWrapper = new RSAWrapper();
         }
 
-        public class AESRSAHybridEncryptResult()
+        public class AESRSAHybridEncryptResult
         {
             public RsaKeyPairResult KeyPair { get; set; }
             public string CipherText { get; set; }
