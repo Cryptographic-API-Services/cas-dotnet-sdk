@@ -1,6 +1,8 @@
 # cas-dotnet-sdk
 
 ## Consuming Library Documentation
+**Note: All work is experimental and we understand benchmarks might not be the most optimal however we feel that large modern day microservices architectures utilizing multiple languages will benefit from a standardized subset of libraries.**
+
 This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool.
 [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib)
 
@@ -30,4 +32,16 @@ string hashed = argon2Wrapper.HashPassword(password);
 SCryptWrapper scrypt = new SCryptWrapper();
 string password = "SCryptPasswordHash!@#$";
 string hashed = scrypt.HashPassword(password);
+```
+
+- BCrypt
+  
+| Library | 50 Password Hashes in (s) |
+| --- | --- |
+| [CAS BCrypt](https://github.com/Crytographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/PasswordHashers/BcryptWrapper.cs) | 11.5030224 (s) |
+| [BCrypt.Net-Core](https://github.com/neoKushan/BCrypt.Net-Core) | 03.3583425 (s) |
+```csharp
+BcryptWrapper bcrypt = new BcryptWrapper();
+string password = "BCryptPasswordHasher!@#$%";
+string hashed = bcrypt.HashPassword(password);
 ```
