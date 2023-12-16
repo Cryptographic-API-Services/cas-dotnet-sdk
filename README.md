@@ -28,7 +28,7 @@ byte[] newSha = shaWrapper.SHA256HashBytes(data);
 | Library | 50 Hashes in (s) |
 | --- | --- |
 | [CAS SHA512](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Hashers/SHAWrapper.cs) | 00.0059154 (s) |
-| [SHA256 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha512managed?view=net-7.0) | 00.0042587 (s) |
+| [SHA512 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha512managed?view=net-8.0) | 00.0042587 (s) |
 ```csharp
 string toHash = "newShaToHash";
 byte[] data = Encoding.UTF8.GetBytes(toHash);
