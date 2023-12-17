@@ -20,6 +20,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void GetKeyPairBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            Assert.NotNull(keyPair);
+            Assert.NotEmpty(keyPair);
+        }
+
+        [Fact]
         public void SignData()
         {
             string keyPair = this._wrapper.GetKeyPair();

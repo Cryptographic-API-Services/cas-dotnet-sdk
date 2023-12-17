@@ -21,10 +21,30 @@ namespace CasDotnetSdk.Signatures
             public string PublicKey { get; set; }
         }
 
+        public class Ed25519ByteSignatureResult
+        {
+            public byte[] Signature { get; set; }
+            public byte[] PublicKey { get; set; }
+        }
+
         internal struct Ed25519SignatureStruct
         {
             public IntPtr Signature { get; set; }
             public IntPtr Public_Key { get; set; }
+        }
+
+        internal struct Ed25519KeyPairBytesResultStruct
+        {
+            public IntPtr key_pair { get; set; }
+            public int length { get; set; }
+        }
+
+        internal struct Ed25519ByteSignatureResultStruct
+        {
+            public IntPtr signature_byte_ptr { get; set; }
+            public int signature_length { get; set; }
+            public IntPtr public_key { get; set; }
+            public int public_key_length { get; set; }
         }
 
         public string GetKeyPair()
@@ -44,6 +64,27 @@ namespace CasDotnetSdk.Signatures
                 return keyPair;
             }
         }
+
+        public byte[] GetKeyPairBytes()
+        {
+            if (this._platform == OSPlatform.Linux)
+            {
+                Ed25519KeyPairBytesResultStruct resultStruct = ED25519LinuxWrapper.get_ed25519_key_pair_bytes();
+                byte[] keyPairResult = new byte[resultStruct.length];
+                Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
+                ED25519LinuxWrapper.free_bytes(resultStruct.key_pair);
+                return keyPairResult;
+            }
+            else
+            {
+                Ed25519KeyPairBytesResultStruct resultStruct = ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
+                byte[] keyPairResult = new byte[resultStruct.length];
+                Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
+                ED25519WindowsWrapper.free_bytes(resultStruct.key_pair);
+                return keyPairResult;
+            }
+        }
+
         public Ed25519SignatureResult Sign(string keyBytes, string dataToSign)
         {
             if (string.IsNullOrEmpty(keyBytes))
