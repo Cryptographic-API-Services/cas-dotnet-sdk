@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers;
+using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -23,6 +24,16 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void Blake2512HashBytes()
+        {
+            byte[] message = Encoding.UTF8.GetBytes("MessageToHashWithBlake2");
+            byte[] hash = this._wrapper.Blake2512Bytes(message);
+            Assert.NotNull(hash);
+            Assert.NotEmpty(hash);
+            Assert.NotEqual(message, hash);
+        }
+
+        [Fact]
         public void Blake2256Hash()
         {
             string message = "hello world";
@@ -40,6 +51,15 @@ namespace CasDotnetSdkTests.Tests
             string hash = this._wrapper.Blake2512(message);
             bool result = this._wrapper.Blake2512Verify(messageToVerify, hash);
             Assert.Equal(result, true);
+        }
+
+        [Fact]
+        public void Blake2512VerifyBytes()
+        {
+            byte[] toHash = Encoding.UTF8.GetBytes("BadStuffToHash");
+            byte[] hashed = this._wrapper.Blake2512Bytes(toHash);
+            bool isValid = this._wrapper.Blake2512VerifyBytes(hashed, toHash);
+            Assert.True(isValid);
         }
 
         [Fact]
