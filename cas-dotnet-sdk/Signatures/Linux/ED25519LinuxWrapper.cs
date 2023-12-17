@@ -31,6 +31,10 @@ namespace CasDotnetSdk.Signatures.Linux
         public static extern bool verify_with_public_key(string publicKey, string signature, string dataToVerify);
 
         [DllImport("cas_core_lib.so")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool verify_with_public_key_bytes(byte[] publicKey, int publicKeyLength, byte[] signature, int signatureLength, byte[] dataToVerify, int dataToVerifyLength);
+
+        [DllImport("cas_core_lib.so")]
         public static extern void free_cstring(IntPtr stringToFree);
 
 

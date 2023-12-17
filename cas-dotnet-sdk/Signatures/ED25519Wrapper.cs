@@ -239,5 +239,29 @@ namespace CasDotnetSdk.Signatures
                 return ED25519WindowsWrapper.verify_with_public_key(publicKey, signature, dataToVerify);
             }
         }
+
+        public bool VerifyWithPublicKeyBytes(byte[] publicKey, byte[] signature, byte[] dataToVerify)
+        {
+            if (publicKey?.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for the public key to verify with ED25519-Dalek");
+            }
+            if (signature?.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for the signature to verify with ED25519-Dalek");
+            }
+            if (dataToVerify?.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to verify for the signature to verify with ED25519-Dalek");
+            }
+            if (this._platform == OSPlatform.Linux)
+            {
+                return ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            }
+            else
+            {
+                return ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            }
+        }
     }
 }

@@ -78,5 +78,14 @@ namespace CasDotnetSdkTests.Tests
             bool isValid = this._wrapper.VerifyWithPublicKey(result.PublicKey, result.Signature, dataToSign);
             Assert.Equal(true, isValid);
         }
+
+        [Fact]
+        public void VerifyWithPublicKeyBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsBadDataToVerifyWithEd25519-Dalek");
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            bool isValid = this._wrapper.VerifyWithPublicKeyBytes(result.PublicKey, result.Signature, dataToSign);
+        }
     }
 }
