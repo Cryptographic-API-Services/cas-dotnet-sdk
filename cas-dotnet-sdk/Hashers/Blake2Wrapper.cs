@@ -131,6 +131,29 @@ namespace CasDotnetSdk.Hashers
                 return hashedStr;
             }
         }
+        public byte[] Blake2256Bytes(byte[] toHash)
+        {
+            if (toHash == null || toHash.Length == 0)
+            {
+                throw new Exception("You must provide an array of allocated data to hash with Blake2 256");
+            }
+            if (this._platform == OSPlatform.Linux)
+            {
+                Blake2HashByteResult hashedResult = Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length);
+                byte[] result = new byte[hashedResult.length];
+                Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
+                Blake2LinuxWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                return result;
+            }
+            else
+            {
+                Blake2HashByteResult hashedResult = Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
+                byte[] result = new byte[hashedResult.length];
+                Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
+                Blake2WindowsWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                return result;
+            }
+        }
 
         public bool Blake2256Verify(string dataToVerify, string hash)
         {
@@ -150,6 +173,27 @@ namespace CasDotnetSdk.Hashers
             else
             {
                 return Blake2WindowsWrapper.blake2_256_verify(dataToVerify, hash);
+            }
+        }
+
+        public bool Blake2256BytesVerify(byte[] hashedData, byte[] toCompare)
+        {
+            if (hashedData == null || hashedData.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for the previously hashed data to compare with Blake 2 256");
+            }
+            if (toCompare == null || toCompare.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for the data to compare with Blake 2 256");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                return Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
+            }
+            else
+            {
+                return Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
             }
         }
     }
