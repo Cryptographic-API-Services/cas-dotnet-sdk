@@ -189,6 +189,32 @@ namespace CasDotnetSdk.Signatures
                 return ED25519WindowsWrapper.verify_with_key_pair(keyBytes, signature, dataToVerify);
             }
         }
+
+        public bool VerifyBytes(byte[] keyPair, byte[] signature, byte[] dataToVerify)
+        {
+            if (keyPair?.Length == 0)
+            {
+                throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
+            }
+            if (signature?.Length == 0)
+            {
+                throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
+            }
+            if (dataToVerify?.Length == 0)
+            {
+                throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                return ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            }
+            else
+            {
+                return ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            }
+        }
+
         public bool VerifyWithPublicKey(string publicKey, string signature, string dataToVerify)
         {
             if (string.IsNullOrEmpty(publicKey))

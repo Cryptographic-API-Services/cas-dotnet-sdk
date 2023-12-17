@@ -56,7 +56,17 @@ namespace CasDotnetSdkTests.Tests
             string dataToSign = "TestData12345";
             Ed25519SignatureResult signatureResult = this._wrapper.Sign(keyPair, dataToSign);
             bool isValid = this._wrapper.Verify(keyPair, signatureResult.Signature, dataToSign);
-            Assert.Equal(true, isValid);
+            Assert.True(isValid);
+        }
+
+        [Fact]
+        public void VerifyBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsGarbageDataThatShouldBeIncreased");
+            Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytes(keyPair, dataToSign);
+            bool isValid = this._wrapper.VerifyBytes(keyPair, signatureResult.Signature, dataToSign);
+            Assert.True(isValid);
         }
 
         [Fact]
