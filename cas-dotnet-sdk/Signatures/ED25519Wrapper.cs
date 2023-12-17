@@ -122,6 +122,49 @@ namespace CasDotnetSdk.Signatures
             }
         }
 
+        public Ed25519ByteSignatureResult SignBytes(byte[] keyBytes, byte[] dataToSign)
+        {
+            if (keyBytes == null || keyBytes.Length == 0)
+            {
+                throw new Exception("You must provide an array allocated with key data to Sign with ED25519-Dalek");
+            }
+            if (dataToSign == null || dataToSign.Length == 0)
+            {
+                throw new Exception("You must provide an array allocated with data to Sign with ED25519-Dalek");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                Ed25519ByteSignatureResultStruct resultStruct = ED25519LinuxWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
+                byte[] publicKeyResult = new byte[resultStruct.public_key_length];
+                Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, resultStruct.public_key_length);
+                ED25519LinuxWrapper.free_bytes(resultStruct.public_key);
+                byte[] signatureResult = new byte[resultStruct.signature_length];
+                Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
+                ED25519LinuxWrapper.free_bytes(resultStruct.signature_byte_ptr);
+                return new Ed25519ByteSignatureResult()
+                {
+                    PublicKey = publicKeyResult,
+                    Signature = signatureResult
+                };
+            }
+            else
+            {
+                Ed25519ByteSignatureResultStruct resultStruct = ED25519WindowsWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
+                byte[] publicKeyResult = new byte[resultStruct.public_key_length];
+                Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, resultStruct.public_key_length);
+                ED25519WindowsWrapper.free_bytes(resultStruct.public_key);
+                byte[] signatureResult = new byte[resultStruct.signature_length];
+                Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
+                ED25519WindowsWrapper.free_bytes(resultStruct.signature_byte_ptr);
+                return new Ed25519ByteSignatureResult()
+                {
+                    PublicKey = publicKeyResult,
+                    Signature = signatureResult
+                };
+            }
+        }
+
         public bool Verify(string keyBytes, string signature, string dataToVerify)
         {
             if (string.IsNullOrEmpty(keyBytes))

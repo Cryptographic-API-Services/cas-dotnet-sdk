@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Signatures;
+using System.Text;
 using Xunit;
 using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
@@ -34,6 +35,18 @@ namespace CasDotnetSdkTests.Tests
             Ed25519SignatureResult signedData = this._wrapper.Sign(keyPair, "SignThisData");
             Assert.NotNull(signedData.Signature);
             Assert.NotNull(signedData.PublicKey);
+        }
+
+        [Fact]
+        public void SignDataByes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("SignThisDataWithEd25519Dalek");
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            Assert.NotNull(result.Signature);
+            Assert.NotNull(result.PublicKey);
+            Assert.NotEmpty(result.Signature);
+            Assert.NotEmpty(result.PublicKey);
         }
 
         [Fact]
