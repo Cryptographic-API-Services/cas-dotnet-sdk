@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Signatures;
+using System.Text;
 using Xunit;
 using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
@@ -20,6 +21,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void GetKeyPairBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            Assert.NotNull(keyPair);
+            Assert.NotEmpty(keyPair);
+        }
+
+        [Fact]
         public void SignData()
         {
             string keyPair = this._wrapper.GetKeyPair();
@@ -29,13 +38,35 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void SignDataByes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("SignThisDataWithEd25519Dalek");
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            Assert.NotNull(result.Signature);
+            Assert.NotNull(result.PublicKey);
+            Assert.NotEmpty(result.Signature);
+            Assert.NotEmpty(result.PublicKey);
+        }
+
+        [Fact]
         public void Verify()
         {
             string keyPair = this._wrapper.GetKeyPair();
             string dataToSign = "TestData12345";
             Ed25519SignatureResult signatureResult = this._wrapper.Sign(keyPair, dataToSign);
             bool isValid = this._wrapper.Verify(keyPair, signatureResult.Signature, dataToSign);
-            Assert.Equal(true, isValid);
+            Assert.True(isValid);
+        }
+
+        [Fact]
+        public void VerifyBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsGarbageDataThatShouldBeIncreased");
+            Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytes(keyPair, dataToSign);
+            bool isValid = this._wrapper.VerifyBytes(keyPair, signatureResult.Signature, dataToSign);
+            Assert.True(isValid);
         }
 
         [Fact]
@@ -46,6 +77,15 @@ namespace CasDotnetSdkTests.Tests
             Ed25519SignatureResult result = this._wrapper.Sign(keyPair, dataToSign);
             bool isValid = this._wrapper.VerifyWithPublicKey(result.PublicKey, result.Signature, dataToSign);
             Assert.Equal(true, isValid);
+        }
+
+        [Fact]
+        public void VerifyWithPublicKeyBytes()
+        {
+            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsBadDataToVerifyWithEd25519-Dalek");
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            bool isValid = this._wrapper.VerifyWithPublicKeyBytes(result.PublicKey, result.Signature, dataToSign);
         }
     }
 }
