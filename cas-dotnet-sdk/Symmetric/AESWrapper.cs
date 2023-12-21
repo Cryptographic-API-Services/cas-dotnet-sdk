@@ -214,6 +214,40 @@ namespace CasDotnetSdk.Symmetric
                 return result;
             }
         }
+
+        public byte[] Aes256EncryptBytes(string nonceKey, string key, byte[] toEncrypt)
+        {
+            if (string.IsNullOrEmpty(nonceKey))
+            {
+                throw new Exception("You must provide a nonce to encrypt with AES 256");
+            }
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("You must provide a key  to encrypt with AES 256");
+            }
+            if (toEncrypt == null || toEncrypt.Length <= 0)
+            {
+                throw new Exception("You must provide allocated data to encrypt with AES 256");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, key, toEncrypt, toEncrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+                AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                return result;
+            }
+            else
+            {
+                AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, key, toEncrypt, toEncrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+                AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                return result;
+            }
+        }
+
         public string Aes256Decrypt(string nonceKey, string key, string toDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
@@ -242,6 +276,39 @@ namespace CasDotnetSdk.Symmetric
                 string decrypt = Marshal.PtrToStringAnsi(decryptPtr);
                 AESWindowsWrapper.free_cstring(decryptPtr);
                 return decrypt;
+            }
+        }
+
+        public byte[] Aes256DecryptBytes(string nonceKey, string key, byte[] toDecrypt)
+        {
+            if (string.IsNullOrEmpty(nonceKey))
+            {
+                throw new Exception("You must provide a nonce to decrypt with AES 256");
+            }
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("You must provide a key  to decrypt with AES 256");
+            }
+            if (toDecrypt == null || toDecrypt.Length <= 0)
+            {
+                throw new Exception("You must provide allocated data to decrypt with AES 256");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, key, toDecrypt, toDecrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
+                AESLinuxWrapper.free_bytes(encryptResult.plaintext);
+                return result;
+            }
+            else
+            {
+                AesBytesDecrypt encryptResult = AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, key, toDecrypt, toDecrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
+                AESWindowsWrapper.free_bytes(encryptResult.plaintext);
+                return result;
             }
         }
 
