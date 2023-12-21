@@ -6,11 +6,13 @@
 This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool.
 [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib)
 
+## [Parallel Implementation Benchmarks](./docs/PARALLEL.md)
+
 ## Examples
 **Note: Benchmarks are performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
 
 ### Symmetric
-- AES 256
+- [AES 256](./docs/PARALLEL.md)
 
 | Library | 50 Encrypts in (s) |
 | --- | --- |
