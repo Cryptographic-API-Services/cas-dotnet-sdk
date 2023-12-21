@@ -1,13 +1,53 @@
 # cas-dotnet-sdk
 
 ## Consuming Library Documentation
-**Note: All work is experimental and we understand benchmarks might not be the most optimal however we feel that large modern day microservices architectures utilizing multiple languages will benefit from a standardized subset of libraries.**
+**Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
 
 This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool.
 [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib)
 
 ## Examples
 **Note: Benchmarks are performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
+
+### Symmetric
+- AES 256
+
+| Library | 50 Encrypts in (s) |
+| --- | --- |
+| [CAS AES-256](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Symmetric/AESWrapper.cs) | 00.0068827 (s) |
+| [AES C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-8.0)| 00.0079577 (s) |
+```csharp
+AESWrapper aesWrapper = new AESWrapper();
+string nonceKey = aesWrapper.GenerateAESNonce();
+string key2 = aesWrapper.Aes256Key();
+byte[] encrypted = aesWrapper.Aes256EncryptBytes(nonceKey, key2, data);
+```
+
+
+### Signatures 
+- ED25519
+
+| Library | 50 Signatures in (s) |
+| --- | --- |
+| [CAS ED25519](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Signatures/ED25519Wrapper.cs) | 00.0073306 (s) |
+| [NSec Ed25519](https://nsec.rocks/docs/api/nsec.cryptography.signaturealgorithm)| 00.0241969 (s) |
+```csharp
+ED25519Wrapper ed25519Wrapper = new ED25519Wrapper();
+byte[] keyPair = ed25519Wrapper.GetKeyPairBytes();
+Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair, data);
+```
+
+| Library | 50 Verifications in (s) |
+| --- | --- |
+| [CAS ED25519](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Signatures/ED25519Wrapper.cs) | 00.0091130 (s) |
+| [NSec Ed25519](https://nsec.rocks/docs/api/nsec.cryptography.signaturealgorithm)| 00.0273138 (s) |
+```csharp
+ED25519Wrapper ed25519Wrapper = new ED25519Wrapper();
+byte[] keyPair = ed25519Wrapper.GetKeyPairBytes();
+Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair, data);
+bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, signature.Signature, data);
+```
+
 
 ### Hashers
 - SHA256

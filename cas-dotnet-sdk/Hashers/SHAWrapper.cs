@@ -14,6 +14,12 @@ namespace CasDotnetSdk.Hashers
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
         }
 
+        internal struct SHAHashByteResult
+        {
+            public IntPtr result_bytes_ptr;
+            public int length;
+        }
+
         public string SHA512HashString(string stringTohash)
         {
             if (string.IsNullOrEmpty(stringTohash))
@@ -49,18 +55,18 @@ namespace CasDotnetSdk.Hashers
             }
             if (this._platform == OSPlatform.Linux)
             {
-                IntPtr hashedPtr = SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length);
-                byte[] result = new byte[dataToHash.Length];
-                Marshal.Copy(hashedPtr, result, 0, dataToHash.Length);
-                SHALinuxWrapper.free_bytes(hashedPtr);
+                SHAHashByteResult hashedPtr = SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length);
+                byte[] result = new byte[hashedPtr.length];
+                Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+                SHALinuxWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 return result;
             }
             else
             {
-                IntPtr hashedPtr = SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
-                byte[] result = new byte[dataToHash.Length];
-                Marshal.Copy(hashedPtr, result, 0, dataToHash.Length);
-                SHAWindowsWrapper.free_bytes(hashedPtr);
+                SHAHashByteResult hashedPtr = SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
+                byte[] result = new byte[hashedPtr.length];
+                Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+                SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 return result;
             }
         }
@@ -101,18 +107,18 @@ namespace CasDotnetSdk.Hashers
             }
             if (this._platform == OSPlatform.Linux)
             {
-                IntPtr hashedPtr = SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length);
-                byte[] result = new byte[dataToHash.Length];
-                Marshal.Copy(hashedPtr, result, 0, dataToHash.Length);
-                SHALinuxWrapper.free_bytes(hashedPtr);
+                SHAHashByteResult hashedPtr = SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length);
+                byte[] result = new byte[hashedPtr.length];
+                Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+                SHALinuxWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 return result;
             }
             else
             {
-                IntPtr hashedPtr = SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
-                byte[] result = new byte[dataToHash.Length];
-                Marshal.Copy(hashedPtr, result, 0, dataToHash.Length);
-                SHAWindowsWrapper.free_bytes(hashedPtr);
+                SHAHashByteResult hashedPtr = SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
+                byte[] result = new byte[hashedPtr.length];
+                Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+                SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 return result;
             }
         }

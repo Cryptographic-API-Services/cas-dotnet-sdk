@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Symmetric;
+using System.Text;
 using Xunit;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
@@ -24,6 +25,16 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void Aes128BytesEncrypt()
+        {
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes128Key();
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
+            Assert.NotEqual(dataToEncrypt, encrypted);
+        }
+
+        [Fact]
         public void Aes128EncryptWithKey()
         {
             string nonceKey = this._aESWrapper.GenerateAESNonce();
@@ -38,6 +49,18 @@ namespace CasDotnetSdkTests.Tests
         {
             string key = this._aESWrapper.Aes128Key();
             Assert.True(!string.IsNullOrEmpty(key));
+        }
+
+        [Fact]
+        public void Aes128BytesDecrypt()
+        {
+
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes128Key();
+            byte[] dataToEncrypt = Encoding.ASCII.GetBytes("Thisisthedatathatne1233123123123123123edstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aESWrapper.Aes128BytesDecrypt(nonceKey, key, encrypted);
+            Assert.Equal(dataToEncrypt, decrypted);
         }
 
         [Fact]
@@ -75,6 +98,28 @@ namespace CasDotnetSdkTests.Tests
             AesEncryptResult encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, toEncrypt);
             string decrypted = this._aESWrapper.Aes256Decrypt(nonceKey, encrypted.Key, encrypted.CipherText);
             Assert.Equal(toEncrypt, decrypted);
+        }
+
+        [Fact]
+        public void Aes256BytesEncrypt()
+        {
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes256Key();
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(nonceKey, key, dataToEncrypt);
+            Assert.NotEqual(dataToEncrypt, encrypted);
+        }
+
+        [Fact]
+        public void Aes256BytesDecrypt()
+        {
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes256Key();
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aESWrapper.Aes256DecryptBytes(nonceKey, key, encrypted);
+            Assert.Equal(dataToEncrypt, decrypted);
+            Assert.NotEqual(dataToEncrypt, encrypted);
         }
     }
 }
