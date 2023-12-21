@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Symmetric;
+using System.Text;
 using Xunit;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
@@ -24,6 +25,16 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void Aes128BytesEncrypt()
+        {
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes128Key();
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
+            Assert.NotEqual(dataToEncrypt, encrypted);
+        }
+
+        [Fact]
         public void Aes128EncryptWithKey()
         {
             string nonceKey = this._aESWrapper.GenerateAESNonce();
@@ -38,6 +49,18 @@ namespace CasDotnetSdkTests.Tests
         {
             string key = this._aESWrapper.Aes128Key();
             Assert.True(!string.IsNullOrEmpty(key));
+        }
+
+        [Fact]
+        public void Aes128BytesDecrypt()
+        {
+
+            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            string key = this._aESWrapper.Aes128Key();
+            byte[] dataToEncrypt = Encoding.ASCII.GetBytes("Thisisthedatathatne1233123123123123123edstobeEncrypted#@$*(&");
+            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aESWrapper.Aes128BytesDecrypt(nonceKey, key, encrypted);
+            Assert.Equal(dataToEncrypt, decrypted);
         }
 
         [Fact]
