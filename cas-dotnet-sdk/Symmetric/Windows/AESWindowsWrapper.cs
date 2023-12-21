@@ -8,18 +8,25 @@ namespace CasDotnetSdk.Symmetric.Windows
     {
         [DllImport("cas_core_lib.dll")]
         public static extern AesEncryptStruct aes256_encrypt_string(string nonceKey, string dataToEncrypt);
+
         [DllImport("cas_core_lib.dll")]
         public static extern AesEncryptStruct aes128_encrypt_string(string nonceKey, string dataToEncrypt);
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes256_decrypt_string(string nonceKey, string key, string dataToDecrypt);
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_256_key();
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_128_key();
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes256_encrypt_string_with_key(string nonceKey, string key, string dataToEncrypt);
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes_128_encrypt_string_with_key(string nonceKey, string key, string dataToEncrypt);
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr aes128_decrypt_string(string nonceKey, string key, string dataToEncrypt);
 
@@ -28,9 +35,6 @@ namespace CasDotnetSdk.Symmetric.Windows
 
         [DllImport("cas_core_lib.dll")]
         public static extern AesBytesDecrypt aes_128_decrypt_bytes_with_key(string nonceKey, string key, byte[] dataToDecrypt, int dataToDecryptLength);
-
-
-
 
         [DllImport("cas_core_lib.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
