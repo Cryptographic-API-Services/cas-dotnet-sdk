@@ -5,8 +5,8 @@
 
 |Method|50 hashes in seconds (s)|
 |---|---|
-| CAS Argon2 HashPasswordsThread  | 00.2123454  |
-| CAS Argon2 HashPassword | 00.3589130 |
+| CAS Argon2 HashPasswordsThread  | 00.2123454 (s)  |
+| CAS Argon2 HashPassword | 00.3589130 (s) |
 ```csharp
 Argon2Wrappper wrapper = new Argon2Wrappper();
 string myPassword = "1230912380912809askljddkjaskjld";
