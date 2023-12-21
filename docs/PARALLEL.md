@@ -1,3 +1,5 @@
+# Parallel Method Implementation Benchmarks
+
 ## Password Hashers
 - Argon2 Hash
 
