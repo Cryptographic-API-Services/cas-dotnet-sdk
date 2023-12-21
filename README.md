@@ -9,6 +9,21 @@ This C# nuget package is dependent on our Rust layer that contains methods to ru
 ## Examples
 **Note: Benchmarks are performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
 
+### Symmetric
+- AES 256
+
+| Library | 50 Encrypts in (s) |
+| --- | --- |
+| [CAS AES-256](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Symmetric/AESWrapper.cs) | 00.0068827 (s) |
+| [AES C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-8.0)| 00.0079577 (s) |
+```csharp
+AESWrapper aesWrapper = new AESWrapper();
+string nonceKey = aesWrapper.GenerateAESNonce();
+string key2 = aesWrapper.Aes256Key();
+byte[] encrypted = aesWrapper.Aes256EncryptBytes(nonceKey, key2, data);
+```
+
+
 ### Signatures 
 - ED25519
 
