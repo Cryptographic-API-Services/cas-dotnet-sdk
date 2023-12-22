@@ -1,31 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-    <RootNamespace>CasDotnetSdk</RootNamespace>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+		<RootNamespace>CasDotnetSdk</RootNamespace>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>cas-dotnet-sdk</Title>
+		<PackageProjectUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</PackageProjectUrl>
+		<PackageIcon>icon.jpeg</PackageIcon>
+		<Version>1.1.1</Version>
+		<Authors>Mike Mulchrone</Authors>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Asymmetric\" />
-    <Folder Include="Hashers\" />
-	<Folder Include="Helpers\" />
-	<Folder Include="PasswordHashers\" />
-	<Folder Include="Signatures\" />
-	<Folder Include="Symmetric\" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="lib\**" />
+	  <EmbeddedResource Remove="lib\**" />
+	  <None Remove="lib\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Asymmetric\" />
+		<Folder Include="Hashers\" />
+		<Folder Include="Helpers\" />
+		<Folder Include="PasswordHashers\" />
+		<Folder Include="Signatures\" />
+		<Folder Include="Symmetric\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="cas_core_lib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="cas_core_lib.so">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\icon.jpeg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="cas_core_lib.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="cas_core_lib.so">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Content Include="cas_core_lib.dll">
+			<Pack>True</Pack>
+			<PackagePath>\lib\net8.0</PackagePath>
+		</Content>
+		<Content Include="cas_core_lib.so">
+			<Pack>True</Pack>
+			<PackagePath>\lib\net8.0</PackagePath>
+		</Content>
+	</ItemGroup>
 </Project>
