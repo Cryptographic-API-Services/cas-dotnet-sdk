@@ -8,7 +8,7 @@
 		<Title>cas-dotnet-sdk</Title>
 		<PackageProjectUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</PackageProjectUrl>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.1.1</Version>
+		<Version>1.1.6</Version>
 		<Authors>Mike Mulchrone</Authors>
 	</PropertyGroup>
 
@@ -28,34 +28,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\icon.jpeg">
+		<Content Include="..\icon.jpeg">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="cas_core_lib.dll">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="cas_core_lib.so">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-
-	<ItemGroup>
-		<Content Include="cas_core_lib.dll">
-			<Pack>True</Pack>
-			<PackagePath>\lib\net8.0</PackagePath>
 		</Content>
 		<Content Include="cas_core_lib.so">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
 		</Content>
+		<Content Include="cas_core_lib.dll">
+			<Pack>True</Pack>
+			<PackagePath>\lib\net8.0</PackagePath>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="cas_core_lib.so">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Update="cas_core_lib.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 </Project>
