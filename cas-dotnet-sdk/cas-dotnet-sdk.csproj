@@ -32,22 +32,20 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</Content>
-		<Content Include="cas_core_lib.so">
+		<EmbeddedResource Include="cas_core_lib.so">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
-		</Content>
-		<Content Include="cas_core_lib.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="cas_core_lib.dll">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
-		</Content>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Update="cas_core_lib.so">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Update="cas_core_lib.dll">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
+	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.3" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
 	</ItemGroup>
 </Project>

@@ -3,6 +3,7 @@ using CasDotnetSdk.Asymmetric.Windows;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CasDotnetSdk.Asymmetric
 {
@@ -184,6 +185,7 @@ namespace CasDotnetSdk.Asymmetric
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
                 RSAWindowsWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                string testing = Encoding.UTF8.GetString(result);
                 return result;
             }
         }
