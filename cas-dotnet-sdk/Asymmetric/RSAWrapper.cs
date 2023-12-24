@@ -159,6 +159,35 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
+        public byte[] RsaDecryptBytes(string privateKey, byte[] dataToDecrypt)
+        {
+            if (string.IsNullOrEmpty(privateKey))
+            {
+                throw new Exception("You must provide a public key to decrypt with RSA");
+            }
+            if (dataToDecrypt == null || dataToDecrypt.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to decrypt with RSA");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaDecryptBytesResult decryptResult = RSALinuxWrapper.rsa_decrypt_bytes(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSALinuxWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                return result;
+            }
+            else
+            {
+                RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSAWindowsWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                return result;
+            }
+        }
+
         public string RsaEncrypt(string publicKey, string dataToEncrypt)
         {
             if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(dataToEncrypt))
