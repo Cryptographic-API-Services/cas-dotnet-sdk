@@ -37,6 +37,18 @@ namespace CasDotnetSdk.Asymmetric
             public IntPtr public_key;
         }
 
+        internal struct RsaEncryptBytesResult
+        {
+            public IntPtr encrypted_result_ptr;
+            public int length;
+        }
+
+        internal struct RsaDecryptBytesResult
+        {
+            public IntPtr decrypted_result_ptr;
+            public int length;
+        }
+
         public string RsaSignWithKey(string privateKey, string dataToSign)
         {
             if (string.IsNullOrEmpty(privateKey))
