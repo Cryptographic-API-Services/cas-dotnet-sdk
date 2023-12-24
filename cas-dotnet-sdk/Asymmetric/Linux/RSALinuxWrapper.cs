@@ -13,13 +13,13 @@ namespace CasDotnetSdk.Asymmetric.Linux
         public static extern IntPtr rsa_encrypt(string publicKey, string dataToEncrypt);
 
         [DllImport("cas_core_lib.so")]
-        public static extern IntPtr rsa_encrypt_bytes(byte[] publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);
+        public static extern RsaEncryptBytesResult rsa_encrypt_bytes(string publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);
 
         [DllImport("cas_core_lib.so")]
         public static extern IntPtr rsa_decrypt(string publicKey, string dataToDecrypt);
 
         [DllImport("cas_core_lib.so")]
-        public static extern IntPtr rsa_decrypt_bytes(byte[] privateKey, byte[] dataToDecrypt, int dataToDecryptLenght);
+        public static extern RsaDecryptBytesResult rsa_decrypt_bytes(string privateKey, byte[] dataToDecrypt, int dataToDecryptLenght);
 
         [DllImport("cas_core_lib.so")]
         public static extern RsaSignResultStruct rsa_sign(string dataToSign, int keySize);
