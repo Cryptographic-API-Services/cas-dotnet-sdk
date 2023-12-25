@@ -67,12 +67,31 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public async Task RsaSignBytes()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
+            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(4096);
+            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytes(keys.PrivateKey, dataToSign);
+            Assert.NotEqual(dataToSign, signature);
+        }
+
+        [Fact]
         public async void RsaVerify()
         {
             string dataToSign = "Data That Needs To Be Verified";
             RsaSignResult result = this._RSAWrapper.RsaSign(dataToSign, 4096);
             bool isValid = this._RSAWrapper.RsaVerify(result.PublicKey, dataToSign, result.Signature);
             Assert.Equal(true, isValid);
+        }
+
+        [Fact]
+        public async Task RsaVerifyBytes()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
+            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(4096);
+            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytes(keys.PrivateKey, dataToSign);
+            bool isValid = this._RSAWrapper.RsaVerifyBytes(keys.PublicKey, dataToSign, signature);
+            Assert.True(isValid);
         }
 
         [Fact]

@@ -50,6 +50,12 @@ namespace CasDotnetSdk.Asymmetric
             public int length;
         }
 
+        internal struct RsaSignBytesResults
+        {
+            public IntPtr signature_raw_ptr;
+            public int length;
+        }
+
         public string RsaSignWithKey(string privateKey, string dataToSign)
         {
             if (string.IsNullOrEmpty(privateKey))
@@ -76,6 +82,35 @@ namespace CasDotnetSdk.Asymmetric
                 return signed;
             }
         }
+
+        public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
+        {
+            if (string.IsNullOrEmpty(privateKey))
+            {
+                throw new Exception("You must provide a private key to sign with RSA");
+            }
+            if (dataToSign == null || dataToSign.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to sign with RSA");
+            }
+
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaSignBytesResults signResult = RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
+                byte[] result = new byte[signResult.length];
+                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+                RSALinuxWrapper.free_bytes(signResult.signature_raw_ptr);
+                return result;
+            }
+            else
+            {
+                RsaSignBytesResults signResult = RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
+                byte[] result = new byte[signResult.length];
+                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+                RSAWindowsWrapper.free_bytes(signResult.signature_raw_ptr);
+                return result;
+            }
+        }
         public bool RsaVerify(string publicKey, string dataToVerify, string signature)
         {
             if (string.IsNullOrEmpty(publicKey))
@@ -98,6 +133,30 @@ namespace CasDotnetSdk.Asymmetric
             else
             {
                 return RSAWindowsWrapper.rsa_verify(publicKey, dataToVerify, signature);
+            }
+        }
+
+        public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
+        {
+            if (string.IsNullOrEmpty(publicKey))
+            {
+                throw new Exception("You must provide a public key to verify with RSA");
+            }
+            if (dataToVerify == null || dataToVerify.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to verify with RSA");
+            }
+            if (signature == null || signature.Length == 0)
+            {
+                throw new Exception("You must provide an allocated signature to verify with RSA");
+            }
+            if (this._platform == OSPlatform.Linux)
+            {
+                return RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+            }
+            else
+            {
+                return RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
             }
         }
 
