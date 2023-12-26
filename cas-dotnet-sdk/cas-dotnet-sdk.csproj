@@ -6,10 +6,12 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>cas-dotnet-sdk</Title>
-		<PackageProjectUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</PackageProjectUrl>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.1.6</Version>
+		<Version>1.1.7</Version>
 		<Authors>Mike Mulchrone</Authors>
+		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
+		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -32,22 +34,32 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</Content>
-		<Content Include="cas_core_lib.so">
+		<Content Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Content>
+		<EmbeddedResource Include="cas_core_lib.so">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
-		</Content>
-		<Content Include="cas_core_lib.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="cas_core_lib.dll">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
-		</Content>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Update="cas_core_lib.so">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Update="cas_core_lib.dll">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
+	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.3" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
