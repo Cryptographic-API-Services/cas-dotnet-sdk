@@ -39,6 +39,10 @@
 			<PackagePath>\</PackagePath>
 		</Content>
 		<EmbeddedResource Include="cas_core_lib.so">
+			<PackagePath>\lib\net8.0</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="cas_core_lib.dll">
 			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -56,10 +60,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.3" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
 	</ItemGroup>
 </Project>
