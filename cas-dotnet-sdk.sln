@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-tests", "cas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-helpers", "..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj", "{9FEF948B-2365-4729-8517-CBA42BAD48FA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-benchmarks", "cas-dotnet-sdk-benchmarks\cas-dotnet-sdk-benchmarks.csproj", "{1045FF5C-0322-411F-894F-DC5CB6AF7BFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{9FEF948B-2365-4729-8517-CBA42BAD48FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FEF948B-2365-4729-8517-CBA42BAD48FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FEF948B-2365-4729-8517-CBA42BAD48FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1045FF5C-0322-411F-894F-DC5CB6AF7BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1045FF5C-0322-411F-894F-DC5CB6AF7BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1045FF5C-0322-411F-894F-DC5CB6AF7BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1045FF5C-0322-411F-894F-DC5CB6AF7BFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
