@@ -20,29 +20,6 @@ namespace CasDotnetSdk.Hashers
             public int length;
         }
 
-        public string SHA512HashString(string stringTohash)
-        {
-            if (string.IsNullOrEmpty(stringTohash))
-            {
-                throw new Exception("Please provide a string to hash");
-            }
-
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = SHALinuxWrapper.sha512(stringTohash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHALinuxWrapper.free_cstring(hashedPtr);
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = SHAWindowsWrapper.sha512(stringTohash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHAWindowsWrapper.free_cstring(hashedPtr);
-                return hashed;
-            }
-        }
-
         public byte[] SHA512HashBytes(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -68,30 +45,6 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 return result;
-            }
-        }
-
-
-        public string SHA256HashString(string stringToHash)
-        {
-            if (string.IsNullOrEmpty(stringToHash))
-            {
-                throw new Exception("Please provide a string to hash");
-            }
-
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = SHALinuxWrapper.sha256(stringToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHALinuxWrapper.free_cstring(hashedPtr);
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = SHAWindowsWrapper.sha256(stringToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                SHAWindowsWrapper.free_cstring(hashedPtr);
-                return hashed;
             }
         }
 
