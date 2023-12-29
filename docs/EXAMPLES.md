@@ -9,7 +9,7 @@
 | [AES C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-8.0)| 00.0079577 (s) |
 ```csharp
 AESWrapper aesWrapper = new AESWrapper();
-string nonceKey = aesWrapper.GenerateAESNonce();
+string nonceKey = aesWrapper.GenerateAESNonce();;
 string key2 = aesWrapper.Aes256Key();
 byte[] encrypted = aesWrapper.Aes256EncryptBytes(nonceKey, key2, data);
 ```
