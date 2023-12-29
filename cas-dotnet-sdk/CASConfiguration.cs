@@ -1,5 +1,7 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.Types.ApiRequests;
+using CASHelpers;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CasDotnetSdk
@@ -45,8 +47,12 @@ namespace CasDotnetSdk
             {
                 response = await httpClient.GetAsync(url);
             }
-
-
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            GetTokenResponse tokenResponse = JsonSerializer.Deserialize<GetTokenResponse>(await response.Content.ReadAsStringAsync(), options);
+            Token = tokenResponse.Token;
             return apiKey;
         }
     }
