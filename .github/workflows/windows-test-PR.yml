@@ -18,6 +18,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: Cryptographic-API-Services/cas-dotnet-helpers
+        path: ..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
