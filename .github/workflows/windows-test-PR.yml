@@ -15,8 +15,7 @@ jobs:
     - name: Checkout cas-dotnet-helpers
       uses: actions/checkout@v3
       with:
-        name: Cryptographic-API-Services/cas-dotnet-helpers
-        ref: main
+        repository: Cryptographic-API-Services/cas-dotnet-helpers
         path: cas-dotnet-helpers
     - name: Checkout cas-dotnet-sdk
       uses: actions/checkout@v3
