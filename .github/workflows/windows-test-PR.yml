@@ -12,11 +12,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
+	- name: Checkout cas-dotnet-helpers
     - uses: actions/checkout@v3
       with:
         name: Cryptographic-API-Services/cas-dotnet-helpers
         ref: main
         path: cas-dotnet-helpers
+	- name: Checkout cas-dotnet-sdk
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
