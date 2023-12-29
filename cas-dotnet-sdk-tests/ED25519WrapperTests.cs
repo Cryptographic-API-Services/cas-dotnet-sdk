@@ -14,27 +14,11 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void GetKeyPair()
-        {
-            string keyPair = this._wrapper.GetKeyPair();
-            Assert.NotNull(keyPair);
-        }
-
-        [Fact]
         public void GetKeyPairBytes()
         {
             byte[] keyPair = this._wrapper.GetKeyPairBytes();
             Assert.NotNull(keyPair);
             Assert.NotEmpty(keyPair);
-        }
-
-        [Fact]
-        public void SignData()
-        {
-            string keyPair = this._wrapper.GetKeyPair();
-            Ed25519SignatureResult signedData = this._wrapper.Sign(keyPair, "SignThisData");
-            Assert.NotNull(signedData.Signature);
-            Assert.NotNull(signedData.PublicKey);
         }
 
         [Fact]
@@ -50,16 +34,6 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void Verify()
-        {
-            string keyPair = this._wrapper.GetKeyPair();
-            string dataToSign = "TestData12345";
-            Ed25519SignatureResult signatureResult = this._wrapper.Sign(keyPair, dataToSign);
-            bool isValid = this._wrapper.Verify(keyPair, signatureResult.Signature, dataToSign);
-            Assert.True(isValid);
-        }
-
-        [Fact]
         public void VerifyBytes()
         {
             byte[] keyPair = this._wrapper.GetKeyPairBytes();
@@ -67,16 +41,6 @@ namespace CasDotnetSdkTests.Tests
             Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytes(keyPair, dataToSign);
             bool isValid = this._wrapper.VerifyBytes(keyPair, signatureResult.Signature, dataToSign);
             Assert.True(isValid);
-        }
-
-        [Fact]
-        public async void VerifyWithPublicKey()
-        {
-            string keyPair = this._wrapper.GetKeyPair();
-            string dataToSign = "welcomeHome";
-            Ed25519SignatureResult result = this._wrapper.Sign(keyPair, dataToSign);
-            bool isValid = this._wrapper.VerifyWithPublicKey(result.PublicKey, result.Signature, dataToSign);
-            Assert.Equal(true, isValid);
         }
 
         [Fact]
