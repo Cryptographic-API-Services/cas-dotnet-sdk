@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk", "cas-dotne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-tests", "cas-dotnet-sdk-tests\cas-dotnet-sdk-tests.csproj", "{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-helpers", "..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj", "{9FEF948B-2365-4729-8517-CBA42BAD48FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-helpers", "cas-dotnet-helpers\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj", "{9FEF948B-2365-4729-8517-CBA42BAD48FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
