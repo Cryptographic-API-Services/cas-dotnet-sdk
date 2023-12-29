@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.PasswordHashers;
+using CASHelpers;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -8,12 +8,10 @@ namespace CasDotnetSdkTests.Tests
     {
         private readonly SCryptWrapper _scrypt;
         private readonly string _password;
-        private readonly OperatingSystemDeterminator _operatingSystem;
         public SCryptWrapperTests()
         {
             this._scrypt = new SCryptWrapper();
             this._password = "TestPasswordToHash";
-            this._operatingSystem = new OperatingSystemDeterminator();
         }
 
         [Fact]

@@ -11,7 +11,7 @@ namespace CasDotnetSdk.Hashers.Windows
 
         [DllImport("cas_core_lib.dll")]
         public static extern Blake2HashByteResult blake2_512_bytes(byte[] toHash, int toHashLength);
-        
+
         [DllImport("cas_core_lib.dll")]
         public static extern IntPtr blake2_256(string toHash);
 

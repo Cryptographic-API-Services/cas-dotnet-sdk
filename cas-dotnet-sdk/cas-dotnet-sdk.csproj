@@ -23,7 +23,6 @@
 	<ItemGroup>
 		<Folder Include="Asymmetric\" />
 		<Folder Include="Hashers\" />
-		<Folder Include="Helpers\" />
 		<Folder Include="PasswordHashers\" />
 		<Folder Include="Signatures\" />
 		<Folder Include="Symmetric\" />
@@ -52,5 +51,9 @@
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.0.3" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
 	</ItemGroup>
 </Project>

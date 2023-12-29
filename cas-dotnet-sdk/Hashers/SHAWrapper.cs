@@ -1,6 +1,6 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Windows;
-using CasDotnetSdk.Helpers;
+using CASHelpers;
 using System;
 using System.Runtime.InteropServices;
 

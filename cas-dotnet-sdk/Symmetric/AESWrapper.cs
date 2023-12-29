@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Symmetric.Linux;
+﻿using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Windows;
+using CASHelpers;
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -335,7 +335,7 @@ namespace CasDotnetSdk.Symmetric
                 AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
                 return result;
             }
-            else 
+            else
             {
                 AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, key, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];

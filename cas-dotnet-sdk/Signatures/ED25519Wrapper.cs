@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Signatures.Linux;
+﻿using CasDotnetSdk.Signatures.Linux;
 using CasDotnetSdk.Signatures.Windows;
+using CASHelpers;
 using System;
 using System.Runtime.InteropServices;
 

@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.PasswordHashers.Linux;
+﻿using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
+using CASHelpers;
 using System;
 using System.Runtime.InteropServices;
 

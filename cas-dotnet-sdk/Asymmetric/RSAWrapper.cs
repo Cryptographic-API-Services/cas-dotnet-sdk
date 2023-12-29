@@ -1,6 +1,6 @@
 ﻿using CasDotnetSdk.Asymmetric.Linux;
 using CasDotnetSdk.Asymmetric.Windows;
-using CasDotnetSdk.Helpers;
+using CASHelpers;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -281,7 +281,7 @@ namespace CasDotnetSdk.Asymmetric
             if (dataToEncrypt == null || dataToEncrypt.Length == 0)
             {
                 throw new Exception("You must provide allocated data to encrypt with RSA");
-            } 
+            }
 
             if (this._platform == OSPlatform.Linux)
             {
