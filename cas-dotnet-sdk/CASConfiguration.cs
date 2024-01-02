@@ -1,10 +1,5 @@
-﻿using CasDotnetSdk.Storage;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.UserAuthentication;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using CasDotnetSdk.Queues;
+using CasDotnetSdk.Storage;
 
 namespace CasDotnetSdk
 {
@@ -34,10 +29,18 @@ namespace CasDotnetSdk
             set { _TokenCache = value; }
         }
 
+        private static BenchmarkSenderRetryQueue _BenchmarkSenderQueue;
+
+        internal static BenchmarkSenderRetryQueue BenchmarkSenderQueue
+        {
+            get { return _BenchmarkSenderQueue; }
+            set { _BenchmarkSenderQueue = value; }
+        }
         static CASConfiguration()
         {
             Url = "https://localhost:7189";
             TokenCache = new TokenCache();
+            BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
         }
     }
 }
