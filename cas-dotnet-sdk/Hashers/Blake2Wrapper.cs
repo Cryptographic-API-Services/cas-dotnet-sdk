@@ -40,7 +40,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
                 Blake2LinuxWrapper.free_bytes(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
             else
@@ -50,7 +50,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
                 Blake2WindowsWrapper.free_bytes(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
         }
@@ -71,14 +71,14 @@ namespace CasDotnetSdk.Hashers
             {
                 bool result = Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
             else
             {
                 bool result = Blake2WindowsWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
         }
@@ -97,7 +97,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
                 Blake2LinuxWrapper.free_bytes(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
             else
@@ -107,7 +107,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
                 Blake2WindowsWrapper.free_bytes(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
         }
@@ -128,14 +128,14 @@ namespace CasDotnetSdk.Hashers
             {
                 bool result = Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
             else
             {
                 bool result = Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
             }
         }

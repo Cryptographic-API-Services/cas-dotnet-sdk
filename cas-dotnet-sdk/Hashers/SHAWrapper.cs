@@ -43,7 +43,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 SHALinuxWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
                 return result;
             }
             else
@@ -53,7 +53,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
                 return result;
             }
         }
@@ -76,7 +76,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 SHALinuxWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
                 return result;
             }
             else
@@ -86,7 +86,7 @@ namespace CasDotnetSdk.Hashers
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash);
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
                 return result;
             }
         }
