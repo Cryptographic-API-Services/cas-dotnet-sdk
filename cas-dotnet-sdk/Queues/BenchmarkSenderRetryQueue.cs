@@ -15,6 +15,7 @@ namespace CasDotnetSdk.Queues
         private int Interval { get; set; }
         public BenchmarkSenderRetryQueue()
         {
+            this.Queue = new ConcurrentQueue<BenchmarkSDKMethod>();
             this.Interval = 30;
             this.Timer = new Timer(CheckQueueForRequestsToSend, null, TimeSpan.FromSeconds(this.Interval), TimeSpan.FromSeconds(this.Interval));
         }

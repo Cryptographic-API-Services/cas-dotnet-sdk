@@ -14,7 +14,7 @@ namespace CasDotnetSdk.Storage
     internal class TokenCache
     {
         internal string Token { get; set; }
-        private DateTime TokenExpiresIn { get; set; }
+        public DateTime TokenExpiresIn { get; set; }
         private Timer Timer { get; set; }
         private int TimerInterval { get; set; }
 
