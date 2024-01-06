@@ -30,7 +30,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 BcryptLinuxWrapper.free_cstring(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
             else
@@ -39,7 +39,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 BcryptWindowsWrapper.free_cstring(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
         }
@@ -50,14 +50,14 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 bool result = BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
             else
             {
                 bool result = BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
         }

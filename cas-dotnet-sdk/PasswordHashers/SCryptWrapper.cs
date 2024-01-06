@@ -1,7 +1,10 @@
-﻿using CasDotnetSdk.PasswordHashers.Linux;
+﻿using CasDotnetSdk.Http;
+using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;
+using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
@@ -9,9 +12,11 @@ namespace CasDotnetSdk.PasswordHashers
     public class SCryptWrapper
     {
         private readonly OSPlatform _platform;
+        private readonly BenchmarkSender _benchmarkSender;
         public SCryptWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
+            this._benchmarkSender = new BenchmarkSender();
         }
         public string HashPassword(string passToHash)
         {
@@ -19,11 +24,15 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 throw new Exception("Please provide a password to hash");
             }
+
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
                 IntPtr hashedPtr = SCryptLinuxWrapper.scrypt_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 SCryptLinuxWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
                 return hashed;
             }
             else
@@ -31,6 +40,8 @@ namespace CasDotnetSdk.PasswordHashers
                 IntPtr hashedPtr = SCryptWindowsWrapper.scrypt_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 SCryptWindowsWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
                 return hashed;
             }
         }
@@ -41,13 +52,22 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 throw new Exception("Please provide a password and a hash to verify");
             }
+
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                return SCryptLinuxWrapper.scrypt_verify(password, hash);
+                bool result = SCryptLinuxWrapper.scrypt_verify(password, hash);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+                return result;
             }
             else
             {
-                return SCryptWindowsWrapper.scrypt_verify(password, hash);
+                
+                bool result = SCryptWindowsWrapper.scrypt_verify(password, hash);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+                return result;
             }
         }
     }
