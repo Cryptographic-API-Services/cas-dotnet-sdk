@@ -1,15 +1,20 @@
-﻿using CasDotnetSdk.PasswordHashers.Linux;
+﻿using CasDotnetSdk.Http;
+using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;
+using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace CasDotnetSdk.PasswordHashers
 {
     public class Argon2Wrappper
     {
         private readonly OSPlatform _platform;
+        private readonly BenchmarkSender _sender;
 
         internal struct Argon2ThreadResult
         {
@@ -20,6 +25,7 @@ namespace CasDotnetSdk.PasswordHashers
         public Argon2Wrappper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
+            this._sender = new BenchmarkSender();
         }
 
         public string[] HashPasswordsThread(string[] passwordsToHash)
@@ -29,6 +35,7 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a list of passwords to hash using argon2");
             }
 
+            DateTime start = DateTime.UtcNow;
             List<string> result = new List<string>();
             if (this._platform == OSPlatform.Linux)
             {
@@ -54,7 +61,10 @@ namespace CasDotnetSdk.PasswordHashers
                     Argon2WindowsWrappper.free_cstring(hashedResult[i]);
                 }
             }
-            return result.ToArray();
+            string[] stringArrayResult = result.ToArray();
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
+            return stringArrayResult;
         }
 
         public string HashPassword(string passToHash)
@@ -64,11 +74,14 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a password to hash using argon2");
             }
 
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
                 IntPtr hashedPtr = Argon2LinuxWrappper.argon2_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 Argon2LinuxWrappper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
                 return hashed;
             }
             else
@@ -76,6 +89,8 @@ namespace CasDotnetSdk.PasswordHashers
                 IntPtr hashedPtr = Argon2WindowsWrappper.argon2_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 Argon2WindowsWrappper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
                 return hashed;
             }
         }
@@ -86,13 +101,21 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
             }
 
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                return Argon2LinuxWrappper.argon2_verify(hashedPasswrod, password);
+
+                bool result = Argon2LinuxWrappper.argon2_verify(hashedPasswrod, password);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
+                return result;
             }
             else
             {
-                return Argon2WindowsWrappper.argon2_verify(hashedPasswrod, password);
+                bool result = Argon2WindowsWrappper.argon2_verify(hashedPasswrod, password);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
+                return result;
             }
         }
 
@@ -103,13 +126,20 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
             }
 
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                return Argon2LinuxWrappper.argon2_verify_thread(hashedPasswrod, password);
+                bool result = Argon2LinuxWrappper.argon2_verify_thread(hashedPasswrod, password);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
+                return result;
             }
             else
             {
-                return Argon2WindowsWrappper.argon2_verify_thread(hashedPasswrod, password);
+                bool result = Argon2WindowsWrappper.argon2_verify_thread(hashedPasswrod, password);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrappper));
+                return result;
             }
         }
     }
