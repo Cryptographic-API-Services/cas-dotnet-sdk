@@ -20,12 +20,21 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void RSA4096DigitalSignature()
+        public void SHA512RSA4096DigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
-            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHARSADigitalSignature(4096, dataToSign);
-            RSAWrapper rsaWrapper = new RSAWrapper();
-            bool result = rsaWrapper.RsaVerifyBytes(signature.PublicKey, dataToSign, signature.Signature);
+            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA512RSADigitalSignature(4096, dataToSign);
+            Assert.NotNull(signature.PublicKey);
+            Assert.NotNull(signature.PrivateKey);
+            Assert.NotEmpty(signature.Signature);
+        }
+
+        [Fact]
+        public void SHA512RSA2048DigitalSignatureVerify()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
+            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA512RSADigitalSignature(2048, dataToSign);
+            bool result = this._digitalSignatureWrapper.SHA512RSADigitalSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
         }
     }

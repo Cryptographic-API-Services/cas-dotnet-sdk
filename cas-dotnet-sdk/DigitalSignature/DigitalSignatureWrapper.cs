@@ -36,7 +36,7 @@ namespace CasDotnetSdk.DigitalSignature
             public int length { get; set; }
         }
 
-        public SHARSADigitalSignatureResult SHARSADigitalSignature(int rsaKeySize, byte[] dataToSign)
+        public SHARSADigitalSignatureResult SHA512RSADigitalSignature(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
             {
@@ -47,7 +47,7 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("Must provide an allocated data set to sign");
             }
 
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
                 SHARSADigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
@@ -58,7 +58,7 @@ namespace CasDotnetSdk.DigitalSignature
                 DigitalSignatureLinuxWrapper.free_cstring(result.public_key);
                 DigitalSignatureLinuxWrapper.free_cstring(result.private_key);
                 DigitalSignatureLinuxWrapper.free_bytes(result.signature);
-                DateTime end = DateTime.Now;
+                DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()
                 {
@@ -77,7 +77,7 @@ namespace CasDotnetSdk.DigitalSignature
                 DigitalSignatureWindowsWrapper.free_cstring(result.public_key);
                 DigitalSignatureWindowsWrapper.free_cstring(result.private_key);
                 DigitalSignatureWindowsWrapper.free_bytes(result.signature);
-                DateTime end = DateTime.Now;
+                DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()
                 {
@@ -85,6 +85,38 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
+            }
+        }
+
+        public bool SHA512RSADigitalSignatureVerify(string publicKey, byte[] dataToVerify, byte[] signature)
+        {
+            if (string.IsNullOrEmpty(publicKey))
+            {
+                throw new Exception("You must provide a public key to verify with SHA512 RSA Digital Signature");
+            }
+            if (dataToVerify == null || dataToVerify.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to verify");
+            }
+            if (signature == null || signature.Length == 0)
+            {
+                throw new Exception("You must provide a allocated signature to verify");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                bool result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(DigitalSignatureWrapper));
+                return result;
+            }
+            else
+            {
+                bool result = DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(DigitalSignatureWrapper));
+                return result;
             }
         }
     }
