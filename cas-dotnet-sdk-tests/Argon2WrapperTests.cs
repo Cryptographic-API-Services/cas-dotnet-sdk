@@ -5,11 +5,11 @@ namespace CasDotnetSdkTests.Tests
 {
     public class Argon2WrapperTests
     {
-        private Argon2Wrappper _argon2Wrapper;
+        private Argon2Wrapper _argon2Wrapper;
 
         public Argon2WrapperTests()
         {
-            this._argon2Wrapper = new Argon2Wrappper();
+            this._argon2Wrapper = new Argon2Wrapper();
         }
 
         [Fact]
