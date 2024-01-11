@@ -37,5 +37,23 @@ namespace CasDotnetSdkTests.Tests
             bool result = this._digitalSignatureWrapper.SHA512RSADigitalSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
         }
+
+        [Fact]
+        public void SHA512ED25519DigitalSignature()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsTheTestingDataToSign");
+            SHAED25519DalekDigitialSignatureResult result = this._digitalSignatureWrapper.SHA512ED25519DigitalSignature(dataToSign);
+            Assert.NotEmpty(result.PublicKey);
+            Assert.NotEmpty(result.Signature);
+        }
+
+        [Fact]
+        public void SHA512ED25519DigitalSignatureVerify()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsTheTestingDataToSign");
+            SHAED25519DalekDigitialSignatureResult result = this._digitalSignatureWrapper.SHA512ED25519DigitalSignature(dataToSign);
+            bool result2 = this._digitalSignatureWrapper.SHA512ED25519DigitalSignatureVerify(result.PublicKey, dataToSign, result.Signature);
+            Assert.True(result2);
+        }
     }
 }
