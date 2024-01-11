@@ -151,7 +151,7 @@ namespace CasDotnetSdk.DigitalSignature
                 byte[] signature = new byte[signatureResult.signature_length];
                 Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
                 DigitalSignatureLinuxWrapper.free_bytes(signatureResult.public_key);
-                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.signature_length);
+                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(DigitalSignatureWrapper));
                 return new SHAED25519DalekDigitialSignatureResult()
