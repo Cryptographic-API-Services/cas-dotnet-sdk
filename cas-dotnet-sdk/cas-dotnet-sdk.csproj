@@ -37,7 +37,7 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</Content>
-		<EmbeddedResource Include="cas_core_lib.so">
+		<EmbeddedResource Include="libcas_core_lib.so">
 			<PackagePath>\lib\net8.0</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</EmbeddedResource>

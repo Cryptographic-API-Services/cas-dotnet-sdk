@@ -17,6 +17,8 @@ namespace CasDotnetSdk.Storage
         public DateTime TokenExpiresIn { get; set; }
         private Timer Timer { get; set; }
         private int TimerInterval { get; set; }
+        internal string StripProductLicenseSignature { get; set; }
+        internal string ProductLicensePublicKey { get; set; }
 
         public TokenCache()
         {

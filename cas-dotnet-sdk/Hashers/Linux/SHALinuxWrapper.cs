@@ -6,16 +6,16 @@ namespace CasDotnetSdk.Hashers.Linux
 {
     internal static class SHALinuxWrapper
     {
-        [DllImport("cas_core_lib.so")]
+        [DllImport("libcas_core_lib.so")]
         public static extern SHAHashByteResult sha512_bytes(byte[] dataToHash, int dataLength);
 
-        [DllImport("cas_core_lib.so")]
+        [DllImport("libcas_core_lib.so")]
         public static extern SHAHashByteResult sha256_bytes(byte[] dataToHash, int dataLength);
 
-        [DllImport("cas_core_lib.so")]
+        [DllImport("libcas_core_lib.so")]
         public static extern void free_cstring(IntPtr stringToFree);
 
-        [DllImport("cas_core_lib.so")]
+        [DllImport("libcas_core_lib.so")]
         public static extern void free_bytes(IntPtr bytesToFree);
     }
 }
