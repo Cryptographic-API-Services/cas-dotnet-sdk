@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric.Linux;
+using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
@@ -17,47 +18,6 @@ namespace CasDotnetSdk.Asymmetric
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
-        }
-
-        public class RsaKeyPairResult
-        {
-            public string PublicKey { get; set; }
-            public string PrivateKey { get; set; }
-        }
-
-        public class RsaSignResult
-        {
-            public string Signature { get; set; }
-            public string PublicKey { get; set; }
-        }
-
-        internal struct RustRsaKeyPairStruct
-        {
-            public IntPtr pub_key;
-            public IntPtr priv_key;
-        }
-        internal struct RsaSignResultStruct
-        {
-            public IntPtr signature;
-            public IntPtr public_key;
-        }
-
-        internal struct RsaEncryptBytesResult
-        {
-            public IntPtr encrypted_result_ptr;
-            public int length;
-        }
-
-        internal struct RsaDecryptBytesResult
-        {
-            public IntPtr decrypted_result_ptr;
-            public int length;
-        }
-
-        internal struct RsaSignBytesResults
-        {
-            public IntPtr signature_raw_ptr;
-            public int length;
         }
 
         public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
@@ -204,7 +164,7 @@ namespace CasDotnetSdk.Asymmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                RustRsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair(keySize);
+                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair(keySize);
                 RsaKeyPairResult result = new RsaKeyPairResult()
                 {
                     PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
@@ -218,7 +178,7 @@ namespace CasDotnetSdk.Asymmetric
             }
             else
             {
-                RustRsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
+                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
                 RsaKeyPairResult result = new RsaKeyPairResult()
                 {
                     PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),

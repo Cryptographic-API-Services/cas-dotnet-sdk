@@ -21,7 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Asymmetric\" />
 		<Folder Include="Hashers\" />
 		<Folder Include="Signatures\" />
 		<Folder Include="Symmetric\" />
