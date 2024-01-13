@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.Symmetric;
 using System.Text;
 using Xunit;
-using static CasDotnetSdk.Symmetric.AESWrapper;
 
 namespace CasDotnetSdkTests.Tests
 {

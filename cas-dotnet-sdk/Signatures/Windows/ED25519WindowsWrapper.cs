@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.Signatures.Types;
 using System;
 using System.Runtime.InteropServices;
-using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
 namespace CasDotnetSdk.Signatures.Windows
 {
