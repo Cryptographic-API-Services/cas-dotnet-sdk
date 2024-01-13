@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
@@ -17,12 +18,6 @@ namespace CasDotnetSdk.Hashers
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
-        }
-
-        internal struct SHAHashByteResult
-        {
-            public IntPtr result_bytes_ptr;
-            public int length;
         }
 
         public byte[] SHA512HashBytes(byte[] dataToHash)

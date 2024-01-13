@@ -1,7 +1,7 @@
 ﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Asymmetric.Types;
 using System.Text;
 using Xunit;
-using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace CasDotnetSdkTests.Tests
 {

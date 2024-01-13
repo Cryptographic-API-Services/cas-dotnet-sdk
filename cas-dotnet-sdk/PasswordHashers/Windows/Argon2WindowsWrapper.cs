@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CasDotnetSdk.PasswordHashers.Types;
+using System;
 using System.Runtime.InteropServices;
-using static CasDotnetSdk.PasswordHashers.Argon2Wrapper;
 
 namespace CasDotnetSdk.PasswordHashers.Windows
 {

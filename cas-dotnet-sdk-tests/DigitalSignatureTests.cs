@@ -1,19 +1,14 @@
-﻿using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.DigitalSignature;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CasDotnetSdk.DigitalSignature;
+using CasDotnetSdk.DigitalSignature.Types;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using static CasDotnetSdk.DigitalSignature.DigitalSignatureWrapper;
 
 namespace CasDotnetSdkTests.Tests
 {
     public class DigitalSignatureTests
     {
         private readonly DigitalSignatureWrapper _digitalSignatureWrapper;
-        
+
         public DigitalSignatureTests()
         {
             this._digitalSignatureWrapper = new DigitalSignatureWrapper();

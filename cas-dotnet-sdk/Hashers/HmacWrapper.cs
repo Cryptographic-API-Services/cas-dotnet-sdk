@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
@@ -13,12 +14,6 @@ namespace CasDotnetSdk.Hashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
-
-        internal struct HmacSignByteResult
-        {
-            public IntPtr result_bytes_ptr;
-            public int length;
-        }
 
         public HmacWrapper()
         {

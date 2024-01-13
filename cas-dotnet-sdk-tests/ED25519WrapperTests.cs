@@ -1,7 +1,7 @@
 ﻿using CasDotnetSdk.Signatures;
+using CasDotnetSdk.Signatures.Types;
 using System.Text;
 using Xunit;
-using static CasDotnetSdk.Signatures.ED25519Wrapper;
 
 namespace CasDotnetSdkTests.Tests
 {
