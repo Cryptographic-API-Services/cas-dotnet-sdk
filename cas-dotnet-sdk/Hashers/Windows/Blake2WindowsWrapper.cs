@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CasDotnetSdk.Hashers.Types;
+using System;
 using System.Runtime.InteropServices;
-using static CasDotnetSdk.Hashers.Blake2Wrapper;
 
 namespace CasDotnetSdk.Hashers.Windows
 {

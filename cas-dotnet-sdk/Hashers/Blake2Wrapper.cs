@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
@@ -17,12 +18,6 @@ namespace CasDotnetSdk.Hashers
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
-        }
-
-        internal struct Blake2HashByteResult
-        {
-            public IntPtr result_bytes_ptr;
-            public int length;
         }
 
         public byte[] Blake2512Bytes(byte[] toHash)
