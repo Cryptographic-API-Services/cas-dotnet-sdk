@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Http;
 using CasDotnetSdk.PasswordHashers.Linux;
+using CasDotnetSdk.PasswordHashers.Types;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -14,12 +15,6 @@ namespace CasDotnetSdk.PasswordHashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;
-
-        internal struct Argon2ThreadResult
-        {
-            public IntPtr passwords { get; set; }
-            public int length { get; set; }
-        }
 
         public Argon2Wrapper()
         {
