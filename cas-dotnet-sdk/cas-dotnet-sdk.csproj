@@ -22,7 +22,6 @@
 
 	<ItemGroup>
 		<Folder Include="Hashers\" />
-		<Folder Include="Symmetric\" />
 		<Folder Include="Storage\" />
 	</ItemGroup>
 

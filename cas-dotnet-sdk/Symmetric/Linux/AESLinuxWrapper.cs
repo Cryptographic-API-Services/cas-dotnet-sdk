@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CasDotnetSdk.Symmetric.Types;
+using System;
 using System.Runtime.InteropServices;
 using static CasDotnetSdk.Symmetric.AESWrapper;
 
