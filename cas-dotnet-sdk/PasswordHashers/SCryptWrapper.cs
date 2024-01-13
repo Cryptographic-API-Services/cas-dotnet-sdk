@@ -63,7 +63,7 @@ namespace CasDotnetSdk.PasswordHashers
             }
             else
             {
-                
+
                 bool result = SCryptWindowsWrapper.scrypt_verify(password, hash);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));

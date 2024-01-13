@@ -55,7 +55,7 @@ namespace CasDotnetSdk.Queues
                         foreach (BenchmarkSDKMethod method in addBackToQueue)
                         {
                             this.Enqueue(method);
-                        } 
+                        }
                     }
                 });
             }

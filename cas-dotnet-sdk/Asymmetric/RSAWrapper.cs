@@ -6,7 +6,6 @@ using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CasDotnetSdk.Asymmetric
 {

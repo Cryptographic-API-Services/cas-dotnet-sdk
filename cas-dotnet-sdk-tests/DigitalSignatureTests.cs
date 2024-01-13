@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.DigitalSignature;
+using CasDotnetSdk.DigitalSignature.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
