@@ -123,7 +123,7 @@ string hashed = bcrypt.HashPassword(password);
 ```
 
 ### Hybrid Encryption
-- Argon2
+- AES / RSA
 
 
 ## We currently have no other libraries benchmark.
