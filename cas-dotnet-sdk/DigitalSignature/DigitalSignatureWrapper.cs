@@ -1,14 +1,12 @@
 ﻿using CasDotnetSdk.DigitalSignature.Linux;
+using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 using CasDotnetSdk.Http;
-using CasDotnetSdk.Symmetric;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 
 namespace CasDotnetSdk.DigitalSignature
 {
@@ -20,35 +18,6 @@ namespace CasDotnetSdk.DigitalSignature
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
-        }
-
-        public class SHARSADigitalSignatureResult
-        {
-            public string PublicKey { get; set; }
-            public string PrivateKey { get; set; }
-            public byte[] Signature { get; set; }
-        }
-
-        public struct SHARSADigitialSignatureResult
-        {
-            public IntPtr private_key { get; set; }
-            public IntPtr public_key { get; set; }
-            public IntPtr signature { get; set; }
-            public int length { get; set; }
-        }
-
-        public struct SHAED25519DalekDigitalSignatureResult
-        {
-            public IntPtr public_key { get; set; }
-            public int public_key_length { get; set; }
-            public IntPtr signature_raw_ptr { get; set; }
-            public int signature_length { get; set; }
-        }
-
-        public class SHAED25519DalekDigitialSignatureResult
-        {
-            public byte[] PublicKey { get; set; }
-            public byte[] Signature { get; set; }
         }
 
         public SHARSADigitalSignatureResult SHA512RSADigitalSignature(int rsaKeySize, byte[] dataToSign)
@@ -65,7 +34,7 @@ namespace CasDotnetSdk.DigitalSignature
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                SHARSADigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
+                SHARSAStructDigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
                 string publicKey = Marshal.PtrToStringAnsi(result.public_key);
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
@@ -84,7 +53,7 @@ namespace CasDotnetSdk.DigitalSignature
             }
             else
             {
-                SHARSADigitialSignatureResult result = DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
+                SHARSAStructDigitialSignatureResult result = DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
                 string publicKey = Marshal.PtrToStringAnsi(result.public_key);
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
@@ -145,7 +114,7 @@ namespace CasDotnetSdk.DigitalSignature
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                SHAED25519DalekDigitalSignatureResult signatureResult = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
+                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
                 byte[] publicKey = new byte[signatureResult.public_key_length];
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];
@@ -162,7 +131,7 @@ namespace CasDotnetSdk.DigitalSignature
             }
             else
             {
-                SHAED25519DalekDigitalSignatureResult signatureResult = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
+                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
                 byte[] publicKey = new byte[signatureResult.public_key_length];
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];

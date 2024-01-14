@@ -11,3 +11,6 @@ This requires an install of the Rust programming language. You can find instruct
 ## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
 
 ## [Parallel Examples / Benchmarks](./docs/PARALLEL.md)
+
+## Disclaimer
+Many of the cryptographic crates that are utilized in our core FFI [layer](https://github.com/Crytographic-API-Services/cas-core-lib) have never had a security audit performed. Utilize this SDK at your own risk.

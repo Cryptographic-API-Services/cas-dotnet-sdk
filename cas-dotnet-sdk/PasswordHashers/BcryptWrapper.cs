@@ -1,5 +1,4 @@
-﻿using CasDotnetSdk.Hashers;
-using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Http;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;

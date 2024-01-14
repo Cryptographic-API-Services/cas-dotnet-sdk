@@ -1,13 +1,13 @@
-﻿using System;
+﻿using CasDotnetSdk.Asymmetric.Types;
+using System;
 using System.Runtime.InteropServices;
-using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace CasDotnetSdk.Asymmetric.Linux
 {
     internal static class RSALinuxWrapper
     {
         [DllImport("libcas_core_lib.so")]
-        public static extern RustRsaKeyPairStruct get_key_pair(int key_size);
+        public static extern RsaKeyPairStruct get_key_pair(int key_size);
 
         [DllImport("libcas_core_lib.so")]
         public static extern RsaEncryptBytesResult rsa_encrypt_bytes(string publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);

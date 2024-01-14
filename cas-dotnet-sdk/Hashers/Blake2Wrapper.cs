@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
+using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
@@ -17,12 +18,6 @@ namespace CasDotnetSdk.Hashers
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
-        }
-
-        internal struct Blake2HashByteResult
-        {
-            public IntPtr result_bytes_ptr;
-            public int length;
         }
 
         public byte[] Blake2512Bytes(byte[] toHash)
@@ -66,7 +61,7 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide data to compare to verify with Blake 2 512");
             }
 
-            DateTime start = DateTime.UtcNow; 
+            DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);

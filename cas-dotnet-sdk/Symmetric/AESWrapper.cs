@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Http;
 using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Symmetric.Linux;
+using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -20,22 +21,7 @@ namespace CasDotnetSdk.Symmetric
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
-        public class AesEncryptResult
-        {
-            public string Key { get; set; }
-            public string CipherText { get; set; }
-        }
 
-        internal struct AesBytesEncrypt
-        {
-            public IntPtr ciphertext { get; set; }
-            public int length { get; set; }
-        }
-        internal struct AesBytesDecrypt
-        {
-            public IntPtr plaintext { get; set; }
-            public int length { get; set; }
-        }
         public string Aes128Key()
         {
             DateTime start = DateTime.UtcNow;
