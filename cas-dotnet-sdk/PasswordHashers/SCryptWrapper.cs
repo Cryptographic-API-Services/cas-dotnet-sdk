@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public class SCryptWrapper
+    public class SCryptWrapper : IPasswordHasherBase
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
@@ -46,6 +46,11 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
+        public string[] HashPasswordsThread(string[] passwordsToHash)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool VerifyPassword(string password, string hash)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
@@ -69,6 +74,11 @@ namespace CasDotnetSdk.PasswordHashers
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
                 return result;
             }
+        }
+
+        public bool VerifyPasswordThread(string hashedPasswrod, string password)
+        {
+            throw new NotImplementedException();
         }
     }
 }

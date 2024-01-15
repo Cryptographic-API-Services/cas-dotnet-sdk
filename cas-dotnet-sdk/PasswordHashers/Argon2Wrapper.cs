@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public class Argon2Wrapper
+    public class Argon2Wrapper : IPasswordHasherBase
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;

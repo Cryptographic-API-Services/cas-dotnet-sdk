@@ -27,5 +27,16 @@ namespace CasDotnetSdkTests.Tests
             string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
             Assert.True(this._cryptWrapper.Verify(hashedPassword, this._testPassword));
         }
+
+        [Fact]
+        public void FactoryTest()
+        {
+            IPasswordHasherBase wrapper = PasswordHasherFactory.Get(PasswordHasherType.BCrypt);
+            string badPassword = "Don't DO It";
+            string hahed = wrapper.HashPassword(badPassword);
+            Assert.NotNull(wrapper);
+            Assert.NotEqual(badPassword, hahed);
+            Assert.Equal(typeof(BcryptWrapper),wrapper.GetType());
+        }
     }
 }
