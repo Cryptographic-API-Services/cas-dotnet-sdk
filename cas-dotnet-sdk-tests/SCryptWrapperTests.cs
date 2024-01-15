@@ -29,5 +29,17 @@ namespace CasDotnetSdkTests.Tests
             bool isValid = this._scrypt.VerifyPassword(this._password, hashedPassword);
             Assert.True(isValid);
         }
+
+        [Fact]
+        public void FactoryTest()
+        {
+            IPasswordHasherBase wrapper = PasswordHasherFactory.Get(PasswordHasherType.SCrypt);
+            string badPassword = "Don't DO It";
+            string hahed = wrapper.HashPassword(badPassword);
+            Assert.NotNull(wrapper);
+            Assert.NotEqual(badPassword, hahed);
+            Assert.Equal(typeof(SCryptWrapper), wrapper.GetType());
+        }
+
     }
 }

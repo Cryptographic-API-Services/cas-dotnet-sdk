@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public class BcryptWrapper
+    public class BcryptWrapper : IPasswordHasherBase
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
@@ -42,6 +42,12 @@ namespace CasDotnetSdk.PasswordHashers
                 return hashed;
             }
         }
+
+        public string[] HashPasswordsThread(string[] passwordsToHash)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Verify(string hashedPassword, string unhashed)
         {
             DateTime start = DateTime.UtcNow;
@@ -59,6 +65,16 @@ namespace CasDotnetSdk.PasswordHashers
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
+        }
+
+        public bool VerifyPassword(string hashedPassword, string verifyPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool VerifyPasswordThread(string hashedPasswrod, string password)
+        {
+            throw new NotImplementedException();
         }
     }
 }

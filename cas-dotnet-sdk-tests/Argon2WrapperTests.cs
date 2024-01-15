@@ -36,5 +36,16 @@ namespace CasDotnetSdkTests.Tests
             bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
             Assert.True(isValid);
         }
+
+        [Fact]
+        public void FactoryTest()
+        {
+            IPasswordHasherBase wrapper = PasswordHasherFactory.Get(PasswordHasherType.Argon2);
+            string badPassword = "Don't DO It";
+            string hahed = wrapper.HashPassword(badPassword);
+            Assert.NotNull(wrapper);
+            Assert.NotEqual(badPassword, hahed);
+            Assert.Equal(typeof(Argon2Wrapper), wrapper.GetType());
+        }
     }
 }
