@@ -29,6 +29,7 @@ namespace CasDotnetSdkTests.Tests
         public void Decrypt()
         {
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("What is that? A New Router that I see?");
+            // Initializer creates our AES key, AES Nonce, and RSA Key Pair for us.
             AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(256, 4096);
             AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybrid(dataToEncrypt, initializer);
             byte[] plaintext = this._hybridEncryptionWrapper.DecryptAESRSAHybrid(initializer.RsaKeyPair.PrivateKey, result);
