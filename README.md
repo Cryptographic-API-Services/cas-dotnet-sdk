@@ -1,5 +1,7 @@
 # cas-dotnet-sdk
 
+Ever wanted all of your most useful cryptograpihc operations in one module and not have to surf documentation for various packages? 
+CAS is here to provide a unified development experience as an abstract layer to the RustCrypto and Dalek-Cryptography suite of algorithms.
 The official Nuget page can be found [here](https://www.nuget.org/packages/cas-dotnet-sdk).
 
 ## Consuming Library Documentation
