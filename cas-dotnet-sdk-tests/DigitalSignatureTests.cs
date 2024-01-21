@@ -79,5 +79,33 @@ namespace CasDotnetSdkTests.Tests
             bool result = this._digitalSignatureWrapper.SHA256RSADigitalSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
             Assert.False(result);
         }
+
+        [Fact]
+        public void SHA256ED25519DalekDigitalSiganture()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
+            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
+            Assert.NotEmpty(signature.PublicKey);
+            Assert.NotEmpty(signature.Signature);
+        }
+
+        [Fact]
+        public void SHA256ED25519DalekVerifyPass()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
+            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
+            bool result = this._digitalSignatureWrapper.SHA256ED25519DigitialSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void SHA256ED25519DalekVerifyFail()
+        {
+            byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
+            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
+            dataToSign = Encoding.UTF8.GetBytes("NotTheSameStuff");
+            bool result = this._digitalSignatureWrapper.SHA256ED25519DigitialSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
+            Assert.False(result);
+        }
     }
 }
