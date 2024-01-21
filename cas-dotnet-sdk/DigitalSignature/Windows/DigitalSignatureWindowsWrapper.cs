@@ -21,6 +21,13 @@ namespace CasDotnetSdk.DigitalSignature.Windows
         public static extern bool sha512_ed25519_digital_signature_verify(byte[] publicKey, int publicKeyLength, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
 
         [DllImport("cas_core_lib.dll")]
+        public static extern SHARSAStructDigitialSignatureResult sha_256_rsa_digital_signature(int rsaKeySize, byte[] dataToSign, int dataLength);
+
+        [DllImport("cas_core_lib.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool sha_256_rsa_digital_signature_verify(string publicKey, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
+
+        [DllImport("cas_core_lib.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
         [DllImport("cas_core_lib.dll")]
