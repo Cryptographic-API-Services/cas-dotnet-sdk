@@ -16,6 +16,7 @@
                     result = new SHAWrapper();
                     break;
                 case IHasherType.Blake2:
+                    result = new Blake2Wrapper();
                     break;
             }
             return result;
