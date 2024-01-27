@@ -51,7 +51,7 @@ bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, sign
 string toHash = "newShaToHash";
 byte[] data = Encoding.UTF8.GetBytes(toHash);
 SHAWrapper shaWrapper = new SHAWrapper();
-byte[] newSha = shaWrapper.SHA256HashBytes(data);
+byte[] newSha = shaWrapper.Hash256(data);
 ```
 
 - SHA512
@@ -64,7 +64,7 @@ byte[] newSha = shaWrapper.SHA256HashBytes(data);
 string toHash = "newShaToHash";
 byte[] data = Encoding.UTF8.GetBytes(toHash);
 SHAWrapper shaWrapper = new SHAWrapper();
-byte[] newSha = shaWrapper.SHA512HashBytes(data);
+byte[] newSha = shaWrapper.Hash512(data);
 ```
 
 - HMAC
