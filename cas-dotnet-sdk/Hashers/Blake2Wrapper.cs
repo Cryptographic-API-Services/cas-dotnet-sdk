@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
-    public class Blake2Wrapper
+    public class Blake2Wrapper : IHasherBase
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;
@@ -20,7 +20,7 @@ namespace CasDotnetSdk.Hashers
             this._sender = new BenchmarkSender();
         }
 
-        public byte[] Blake2512Bytes(byte[] toHash)
+        public byte[] Hash512(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
             {
@@ -50,7 +50,7 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
-        public bool Blake2512VerifyBytes(byte[] hashedData, byte[] toCompare)
+        public bool Verify512(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
             {
@@ -77,7 +77,7 @@ namespace CasDotnetSdk.Hashers
                 return result;
             }
         }
-        public byte[] Blake2256Bytes(byte[] toHash)
+        public byte[] Hash256(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
             {
@@ -107,7 +107,7 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
-        public bool Blake2256BytesVerify(byte[] hashedData, byte[] toCompare)
+        public bool Verify256(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
             {
