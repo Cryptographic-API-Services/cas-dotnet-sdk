@@ -139,7 +139,7 @@ namespace CasDotnetSdk.Hashers
                 SHALinuxWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
-                return result.Equals(hashedData);
+                return result.SequenceEqual(hashedData);
             }
             else
             {
@@ -149,7 +149,7 @@ namespace CasDotnetSdk.Hashers
                 SHAWindowsWrapper.free_bytes(hashedPtr.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
-                return result.Equals(hashedData);
+                return result.SequenceEqual(hashedData);
             }
         }
     }

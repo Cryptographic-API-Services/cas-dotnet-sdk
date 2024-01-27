@@ -52,5 +52,24 @@ namespace CasDotnetSdkTests.Tests
             Assert.NotEmpty(hashed);
             Assert.True(hashed.Length > 0);
         }
+
+        [Fact]
+        public void SHA256VerifyPass()
+        {
+            byte[] data = Encoding.UTF8.GetBytes(this._testString);
+            byte[] hashed = this._wrapper.Hash256(data);
+            bool isSame = this._wrapper.Verify256(data, hashed);
+            Assert.True(isSame);
+        }
+
+        [Fact]
+        public void SHA256VerifyFail()
+        {
+            byte[] data = Encoding.UTF8.GetBytes(this._testString);
+            byte[] hashed = this._wrapper.Hash256(data);
+            data = Encoding.UTF8.GetBytes("Not the same byte array");
+            bool isSame = this._wrapper.Verify256(data, hashed);
+            Assert.False(isSame);
+        }
     }
 }
