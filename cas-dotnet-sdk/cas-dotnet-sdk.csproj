@@ -21,7 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Hashers\" />
 		<Folder Include="Storage\" />
 	</ItemGroup>
 
