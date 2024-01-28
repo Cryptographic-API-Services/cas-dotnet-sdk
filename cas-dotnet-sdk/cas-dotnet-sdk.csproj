@@ -7,7 +7,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>cas-dotnet-sdk</Title>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.1.7</Version>
+		<Version>1.1.11</Version>
 		<Authors>Mike Mulchrone</Authors>
 		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
 		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -34,6 +34,7 @@
 			<PackagePath>\</PackagePath>
 		</Content>
 		<EmbeddedResource Include="libcas_core_lib.so">
+			<Pack>True</Pack>
 			<PackagePath>\lib\net8.0</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</EmbeddedResource>
@@ -45,11 +46,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="cas-helpers" Version="1.0.0" />
 	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
 	</ItemGroup>
 </Project>
