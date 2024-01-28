@@ -20,7 +20,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey keyPair2 = this._wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret shareSecret1 = this._wrapper.GenerateSharedSecret(keyPair1.SecretKey, keyPair2.PublicKey);
             X25519SharedSecret shareSecret2 = this._wrapper.GenerateSharedSecret(keyPair2.SecretKey, keyPair1.PublicKey);
-            Assert.True(shareSecret1.SharedSecret.SequenceEqual(shareSecret2.SharedSecret));
+            bool result = shareSecret1.SharedSecret.SequenceEqual(shareSecret2.SharedSecret);
+            Assert.True(result);
         }
     }
 }
