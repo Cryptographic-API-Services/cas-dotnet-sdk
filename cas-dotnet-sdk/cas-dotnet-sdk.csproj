@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
 		<RootNamespace>CasDotnetSdk</RootNamespace>
@@ -7,28 +6,25 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>cas-dotnet-sdk</Title>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.1.15</Version>
+		<Version>1.1.33</Version>
 		<Authors>Mike Mulchrone</Authors>
 		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
 		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<IncludeSymbols>False</IncludeSymbols>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <Compile Remove="lib\**" />
-	  <EmbeddedResource Remove="lib\**" />
-	  <None Remove="lib\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Storage\" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="..\icon.jpeg">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
+		</Content>
+		<Content Include="Contents/cas_core_lib.dll">
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/libcas_core_lib.so">
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="README.md">
 			<Pack>True</Pack>
@@ -37,31 +33,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Contents/**/*.*" copyToOutput="true">
-			<IncludeInPackage>true</IncludeInPackage>
-			<CopyToOutput>true</CopyToOutput>
-			<BuildAction>Content</BuildAction>
-			<copyToOutput>true</copyToOutput>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <PackageReference Include="cas-helpers" Version="1.0.0" />
 	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
-	  <PackageReference Include="NuGet.CommandLine" Version="6.8.0">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="Contents\cas_core_lib.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="Contents\libcas_core_lib.so">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	</ItemGroup>
 </Project>
