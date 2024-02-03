@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Http;
+using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;

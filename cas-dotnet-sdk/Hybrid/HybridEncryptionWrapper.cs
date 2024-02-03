@@ -2,6 +2,7 @@
 using CasDotnetSdk.Http;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Symmetric;
+using CasDotnetSdk.Symmetric.Types;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;

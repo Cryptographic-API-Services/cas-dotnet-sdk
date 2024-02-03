@@ -36,7 +36,7 @@ namespace CasDotnetSdkTests.Tests
             string hahed = wrapper.HashPassword(badPassword);
             Assert.NotNull(wrapper);
             Assert.NotEqual(badPassword, hahed);
-            Assert.Equal(typeof(BcryptWrapper), wrapper.GetType());
+            Assert.Equal(typeof(BcryptWrapper),wrapper.GetType());
         }
     }
 }
