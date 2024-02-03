@@ -109,6 +109,49 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        public Aes256KeyAndNonceX25519DiffieHellman Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
+        {
+            if (sharedSecret == null || sharedSecret.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+                string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
+                AESLinuxWrapper.free_cstring(result.aes_key_ptr);
+                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
+                AESLinuxWrapper.free_cstring(result.aes_nonce_ptr);
+                Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
+                {
+                    AesKey = aesKey,
+                    AesNonce = aesNonce
+                };
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return keyAndNonce;
+            }
+            else
+            {
+
+                Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+                string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
+                AESWindowsWrapper.free_cstring(result.aes_key_ptr);
+                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
+                AESWindowsWrapper.free_cstring(result.aes_nonce_ptr);
+                Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
+                {
+                    AesKey = aesKey,
+                    AesNonce = aesNonce
+                };
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return keyAndNonce;
+            }
+        }
+
         public byte[] Aes256EncryptBytes(string nonceKey, string key, byte[] toEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
