@@ -7,15 +7,16 @@
     }
     public static class DigitalSignatureFactory
     {
-        public static ISHADigitalSignature GetRSA(DigitalSignatureRSAType type)
+        public static IDigitalSignature GetRSA(DigitalSignatureRSAType type)
         {
-            ISHADigitalSignature signature = null;
+            IDigitalSignature signature = null;
             switch(type)
             {
                 case DigitalSignatureRSAType.SHA512ARSA:
                     signature = new SHA512DigitalSignatureWrapper();
                     break;
                 case DigitalSignatureRSAType.SHA256RSA:
+                    signature = new SHA256DigitalSignatureWrapper();
                     break;
             }
             return signature;

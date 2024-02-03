@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.DigitalSignature
 {
-    internal class SHA512DigitalSignatureWrapper : ISHADigitalSignature
+    public class SHA512DigitalSignatureWrapper : IDigitalSignature
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
@@ -21,7 +21,7 @@ namespace CasDotnetSdk.DigitalSignature
             this._benchmarkSender = new BenchmarkSender();
         }
 
-        public SHARSADigitalSignatureResult Create(int rsaKeySize, byte[] dataToSign)
+        public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
             {
@@ -73,7 +73,7 @@ namespace CasDotnetSdk.DigitalSignature
             }
         }
 
-        public bool Verify(string publicKey, byte[] dataToVerify, byte[] signature)
+        public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (string.IsNullOrEmpty(publicKey))
             {
