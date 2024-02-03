@@ -91,7 +91,8 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256ED25519DalekDigitalSiganture()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
-            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
+            SHAED25519DalekDigitialSignatureResult signature = wrapper.CreateED25519(dataToSign);
             Assert.NotEmpty(signature.PublicKey);
             Assert.NotEmpty(signature.Signature);
         }
@@ -100,8 +101,9 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256ED25519DalekVerifyPass()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
-            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
-            bool result = this._digitalSignatureWrapper.SHA256ED25519DigitialSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
+            SHAED25519DalekDigitialSignatureResult signature = wrapper.CreateED25519(dataToSign);
+            bool result = wrapper.VerifyED25519(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
         }
 
@@ -109,9 +111,10 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256ED25519DalekVerifyFail()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WatchMyStreamAndLearnWIthMe");
-            SHAED25519DalekDigitialSignatureResult signature = this._digitalSignatureWrapper.SHA256ED25519DigitialSignature(dataToSign);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
+            SHAED25519DalekDigitialSignatureResult signature = wrapper.CreateED25519(dataToSign);
             dataToSign = Encoding.UTF8.GetBytes("NotTheSameStuff");
-            bool result = this._digitalSignatureWrapper.SHA256ED25519DigitialSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
+            bool result = wrapper.VerifyED25519(signature.PublicKey, dataToSign, signature.Signature);
             Assert.False(result);
         }
     }
