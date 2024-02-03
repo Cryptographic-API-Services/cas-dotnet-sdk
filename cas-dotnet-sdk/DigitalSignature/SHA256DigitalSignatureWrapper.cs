@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.DigitalSignature
 {
-    internal class SHA256DigitalSignatureWrapper : IDigitalSignature
+    public class SHA256DigitalSignatureWrapper : IDigitalSignature
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
@@ -18,6 +18,11 @@ namespace CasDotnetSdk.DigitalSignature
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
+        }
+
+        public SHAED25519DalekDigitialSignatureResult CreateED25519(byte[] dataToSign)
+        {
+            throw new NotImplementedException();
         }
 
         public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
@@ -71,6 +76,11 @@ namespace CasDotnetSdk.DigitalSignature
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }
+        }
+
+        public bool VerifyED25519(byte[] publicKey, byte[] dataToVerify, byte[] signature)
+        {
+            throw new NotImplementedException();
         }
 
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)

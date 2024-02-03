@@ -18,7 +18,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512RSA4096DigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
-            IDigitalSignature digitalSignature = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA512ARSA);
+            IDigitalSignature digitalSignature = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA512);
             SHARSADigitalSignatureResult signature = digitalSignature.CreateRsa(4096, dataToSign);
             Assert.NotNull(signature.PublicKey);
             Assert.NotNull(signature.PrivateKey);
@@ -29,7 +29,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512RSA2048DigitalSignatureVerify()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
-            IDigitalSignature digitalSignature = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA512ARSA);
+            IDigitalSignature digitalSignature = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA512);
             SHARSADigitalSignatureResult signature = digitalSignature.CreateRsa(2048, dataToSign);
             bool result = digitalSignature.VerifyRsa(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
@@ -39,7 +39,8 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512ED25519DigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsTheTestingDataToSign");
-            SHAED25519DalekDigitialSignatureResult result = this._digitalSignatureWrapper.SHA512ED25519DigitalSignature(dataToSign);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA512);
+            SHAED25519DalekDigitialSignatureResult result = wrapper.CreateED25519(dataToSign);
             Assert.NotEmpty(result.PublicKey);
             Assert.NotEmpty(result.Signature);
         }
@@ -48,8 +49,9 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512ED25519DigitalSignatureVerify()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsTheTestingDataToSign");
-            SHAED25519DalekDigitialSignatureResult result = this._digitalSignatureWrapper.SHA512ED25519DigitalSignature(dataToSign);
-            bool result2 = this._digitalSignatureWrapper.SHA512ED25519DigitalSignatureVerify(result.PublicKey, dataToSign, result.Signature);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA512);
+            SHAED25519DalekDigitialSignatureResult result = wrapper.CreateED25519(dataToSign);
+            bool result2 = wrapper.VerifyED25519(result.PublicKey, dataToSign, result.Signature);
             Assert.True(result2);
         }
 
@@ -57,7 +59,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256RSADigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("SigningDataWithSHA256");
-            IDigitalSignature wrapper = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA256RSA);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
             SHARSADigitalSignatureResult signature = wrapper.CreateRsa(4096, dataToSign);
             Assert.NotNull(signature.PublicKey);
             Assert.NotNull(signature.PrivateKey);
@@ -68,7 +70,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256RSADigitalSignatureVerify()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("SigningDataWithSHA256");
-            IDigitalSignature wrapper = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA256RSA);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
             SHARSADigitalSignatureResult signature = wrapper.CreateRsa(4096, dataToSign);
             bool result = wrapper.VerifyRsa(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
@@ -78,7 +80,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256RSADigitalSignatureVerifyFail()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("SigningDataWithSHA256");
-            IDigitalSignature wrapper = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA256RSA);
+            IDigitalSignature wrapper = DigitalSignatureFactory.Get(DigitalSignatureRSAType.SHA256);
             SHARSADigitalSignatureResult signature = wrapper.CreateRsa(4096, dataToSign);
             dataToSign = Encoding.UTF8.GetBytes("NOtTheSameData");
             bool result = wrapper.VerifyRsa(signature.PublicKey, dataToSign, signature.Signature);

@@ -21,6 +21,50 @@ namespace CasDotnetSdk.DigitalSignature
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        public SHAED25519DalekDigitialSignatureResult CreateED25519(byte[] dataToSign)
+        {
+            if (dataToSign == null || dataToSign.Length == 0)
+            {
+                throw new Exception("You must provide an allocated data array to create a digital signature");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
+                byte[] publicKey = new byte[signatureResult.public_key_length];
+                Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
+                byte[] signature = new byte[signatureResult.signature_length];
+                Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
+                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.public_key);
+                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+                return new SHAED25519DalekDigitialSignatureResult()
+                {
+                    PublicKey = publicKey,
+                    Signature = signature,
+                };
+            }
+            else
+            {
+                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
+                byte[] publicKey = new byte[signatureResult.public_key_length];
+                Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
+                byte[] signature = new byte[signatureResult.signature_length];
+                Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
+                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.public_key);
+                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+                return new SHAED25519DalekDigitialSignatureResult()
+                {
+                    PublicKey = publicKey,
+                    Signature = signature,
+                };
+            }
+        }
+
         public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
@@ -70,6 +114,38 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
+            }
+        }
+
+        public bool VerifyED25519(byte[] publicKey, byte[] dataToVerify, byte[] signature)
+        {
+            if (publicKey == null || publicKey.Length == 0)
+            {
+                throw new Exception("You must provide a allocated array for the public to verify a digital signature");
+            }
+            if (dataToVerify == null || dataToVerify.Length == 0)
+            {
+                throw new Exception("You must provde an allocated array for the data to verify to verify a digital signature");
+            }
+            if (signature == null || signature.Length == 0)
+            {
+                throw new Exception("You must provide an allocated array for the signature to verfiy a digital signature");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                bool result = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+                return result;
+            }
+            else
+            {
+                bool result = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+                return result;
             }
         }
 
