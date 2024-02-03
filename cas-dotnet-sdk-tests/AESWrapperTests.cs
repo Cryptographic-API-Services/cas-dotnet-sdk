@@ -55,7 +55,7 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void Aes256X25519DiffieHellmanKeyAndNonce()
+        public void Aes256X25519DiffieHellmanKeyAndNonce() 
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();

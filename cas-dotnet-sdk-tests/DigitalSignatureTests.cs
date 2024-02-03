@@ -18,7 +18,8 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512RSA4096DigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
-            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA512RSADigitalSignature(4096, dataToSign);
+            ISHADigitalSignature digitalSignature = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA512ARSA);
+            SHARSADigitalSignatureResult signature = digitalSignature.Create(4096, dataToSign);
             Assert.NotNull(signature.PublicKey);
             Assert.NotNull(signature.PrivateKey);
             Assert.NotEmpty(signature.Signature);
@@ -28,8 +29,9 @@ namespace CasDotnetSdkTests.Tests
         public void SHA512RSA2048DigitalSignatureVerify()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("WelcomeHomeToSigningData");
-            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA512RSADigitalSignature(2048, dataToSign);
-            bool result = this._digitalSignatureWrapper.SHA512RSADigitalSignatureVerify(signature.PublicKey, dataToSign, signature.Signature);
+            ISHADigitalSignature digitalSignature = DigitalSignatureFactory.GetRSA(DigitalSignatureRSAType.SHA512ARSA);
+            SHARSADigitalSignatureResult signature = digitalSignature.Create(2048, dataToSign);
+            bool result = digitalSignature.Verify(signature.PublicKey, dataToSign, signature.Signature);
             Assert.True(result);
         }
 
@@ -55,7 +57,7 @@ namespace CasDotnetSdkTests.Tests
         public void SHA256RSADigitalSignature()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("SigningDataWithSHA256");
-            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA512RSADigitalSignature(4096, dataToSign);
+            SHARSADigitalSignatureResult signature = this._digitalSignatureWrapper.SHA256RSADigitalSignature(4096, dataToSign);
             Assert.NotNull(signature.PublicKey);
             Assert.NotNull(signature.PrivateKey);
             Assert.NotEmpty(signature.Signature);
