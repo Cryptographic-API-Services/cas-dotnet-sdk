@@ -11,7 +11,7 @@ namespace CasDotnetSdk.Hybrid.Types
         public string AesKey { get; set; }
         public string AesNonce { get; set; }
         public RsaKeyPairResult RsaKeyPair { get; set; }
-        public AESRSAHybridInitializer(int aesType, int rsaSize)
+        public AESRSAHybridInitializer(int aesType, int rsaSize) 
         {
             this.InitAes(aesType);
             this.InitRsaKeyPair(rsaSize);
