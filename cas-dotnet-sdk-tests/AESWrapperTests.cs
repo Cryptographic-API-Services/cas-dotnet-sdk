@@ -1,4 +1,7 @@
-﻿using CasDotnetSdk.Symmetric;
+﻿using CasDotnetSdk.KeyExchange;
+using CasDotnetSdk.KeyExchange.Types;
+using CasDotnetSdk.Symmetric;
+using CasDotnetSdk.Symmetric.Types;
 using System.Text;
 using Xunit;
 
@@ -7,10 +10,12 @@ namespace CasDotnetSdkTests.Tests
     public class AESWrapperTests
     {
         private readonly AESWrapper _aESWrapper;
+        private readonly X25519Wrapper _x25519Wrapper;
 
         public AESWrapperTests()
         {
             this._aESWrapper = new AESWrapper();
+            this._x25519Wrapper = new X25519Wrapper();
         }
 
         [Fact]
@@ -50,6 +55,20 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void Aes256X25519DiffieHellmanKeyAndNonce()
+        {
+            X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
+            X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
+            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+
+            Assert.True(aliceAesKeyAndNonce.AesNonce.SequenceEqual(bobAesKeyAndNonce.AesNonce));
+            Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
+        }
+
+        [Fact]
         public void Aes256BytesEncrypt()
         {
             string nonceKey = this._aESWrapper.GenerateAESNonce();
@@ -57,6 +76,26 @@ namespace CasDotnetSdkTests.Tests
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
             byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(nonceKey, key, dataToEncrypt);
             Assert.NotEqual(dataToEncrypt, encrypted);
+        }
+
+        [Fact]
+        public void Aes256X25519DiffieHellmanEncrypt()
+        {
+            X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
+            X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
+            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+
+
+            Assert.Equal(aliceAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesNonce);
+            Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
+
+            byte[] toEncrypt = Encoding.UTF8.GetBytes("EncryptThisText");
+            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(aliceAesKeyAndNonce.AesNonce, aliceAesKeyAndNonce.AesKey, toEncrypt);
+            byte[] plaintext = this._aESWrapper.Aes256DecryptBytes(bobAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesKey, encrypted);
+            Assert.Equal(toEncrypt, plaintext);
         }
 
         [Fact]

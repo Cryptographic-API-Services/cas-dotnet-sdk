@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.Http;
-using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
@@ -40,7 +39,7 @@ namespace CasDotnetSdk.Symmetric
                 string key = Marshal.PtrToStringAnsi(keyPtr);
                 AESWindowsWrapper.free_cstring(keyPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return key;
             }
         }
@@ -53,7 +52,7 @@ namespace CasDotnetSdk.Symmetric
                 string key = Marshal.PtrToStringAnsi(keyPtr);
                 AESLinuxWrapper.free_cstring(keyPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return key;
             }
             else
@@ -62,8 +61,51 @@ namespace CasDotnetSdk.Symmetric
                 string key = Marshal.PtrToStringAnsi(keyPtr);
                 AESWindowsWrapper.free_cstring(keyPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return key;
+            }
+        }
+
+        public Aes256KeyAndNonceX25519DiffieHellman Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
+        {
+            if (sharedSecret == null || sharedSecret.Length == 0)
+            {
+                throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+                string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
+                AESLinuxWrapper.free_cstring(result.aes_key_ptr);
+                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
+                AESLinuxWrapper.free_cstring(result.aes_nonce_ptr);
+                Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
+                {
+                    AesKey = aesKey,
+                    AesNonce = aesNonce
+                };
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return keyAndNonce;
+            }
+            else
+            {
+
+                Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+                string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
+                AESWindowsWrapper.free_cstring(result.aes_key_ptr);
+                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
+                AESWindowsWrapper.free_cstring(result.aes_nonce_ptr);
+                Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
+                {
+                    AesKey = aesKey,
+                    AesNonce = aesNonce
+                };
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return keyAndNonce;
             }
         }
 
@@ -90,7 +132,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
             else
@@ -100,7 +142,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
         }
@@ -128,7 +170,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
             else
@@ -138,7 +180,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
         }
@@ -166,7 +208,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
             else
@@ -176,7 +218,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
         }
@@ -204,7 +246,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AESLinuxWrapper.free_bytes(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
             else
@@ -214,7 +256,7 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AESWindowsWrapper.free_bytes(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
                 return result;
             }
         }
