@@ -70,11 +70,12 @@ namespace CasDotnetSdk
             if (!response.IsSuccessStatusCode)
             {
                 string errorMessage = await response.Content.ReadAsStringAsync();
+                // will stop the process by throwing an exception
                 throw new Exception(errorMessage);
             }
         }
 
-        static void OnProcessExit(object sender, EventArgs e)
+        private static void OnProcessExit(object sender, EventArgs e)
         {
             OnProcessExit onProcExit = new OnProcessExit();
             onProcExit.StartProcessCustomExit().GetAwaiter().GetResult();
