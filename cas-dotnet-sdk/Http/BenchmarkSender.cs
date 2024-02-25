@@ -35,6 +35,7 @@ namespace CasDotnetSdk.Http
 
                 HttpClientSingleton httpClient = HttpClientSingleton.Instance;
                 string url = CASConfiguration.Url + Constants.ApiRoutes.BenchmarkSDKMethodController + Constants.ApiRoutes.MethodBenchmark;
+                // TODO: encrypt with Diffie Hellman created AES 256 key from server. 
                 BenchmarkSDKMethod newBenchmark = new BenchmarkSDKMethod()
                 {
                     MethodDescription = methodDescription,
