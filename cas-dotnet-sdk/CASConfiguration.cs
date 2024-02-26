@@ -31,7 +31,7 @@ namespace CasDotnetSdk
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
                 _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
                 SendOSInformation(value).GetAwaiter().GetResult();
-                DiffieHellmanExchange.CreateSharedSecretWithServers().GetAwaiter().GetResult();
+                DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Http;
+using CasDotnetSdk.Types;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Collections.Concurrent;
@@ -10,17 +11,17 @@ namespace CasDotnetSdk.Queues
 {
     internal class BenchmarkSenderRetryQueue
     {
-        private ConcurrentQueue<BenchmarkSDKMethod> Queue { get; set; }
+        private ConcurrentQueue<BenchmarkMacAddressSDKMethod> Queue { get; set; }
         private Timer Timer { get; set; }
         private int Interval { get; set; }
         public BenchmarkSenderRetryQueue()
         {
-            this.Queue = new ConcurrentQueue<BenchmarkSDKMethod>();
-            this.Interval = 30;
+            this.Queue = new ConcurrentQueue<BenchmarkMacAddressSDKMethod>();
+            this.Interval = 45;
             this.Timer = new Timer(CheckQueueForRequestsToSend, null, TimeSpan.FromSeconds(this.Interval), TimeSpan.FromSeconds(this.Interval));
         }
 
-        public void Enqueue(BenchmarkSDKMethod method)
+        public void Enqueue(BenchmarkMacAddressSDKMethod method)
         {
             this.Queue.Enqueue(method);
         }
@@ -35,10 +36,10 @@ namespace CasDotnetSdk.Queues
             {
                 await Task.Run(async () =>
                 {
-                    List<BenchmarkSDKMethod> addBackToQueue = new List<BenchmarkSDKMethod>();
-                    foreach (BenchmarkSDKMethod method in this.Queue)
+                    List<BenchmarkMacAddressSDKMethod> addBackToQueue = new List<BenchmarkMacAddressSDKMethod>();
+                    foreach (BenchmarkMacAddressSDKMethod method in this.Queue)
                     {
-                        BenchmarkSDKMethod retryBnechmark = null;
+                        BenchmarkMacAddressSDKMethod retryBnechmark = null;
                         if (this.Queue.TryDequeue(out retryBnechmark))
                         {
                             BenchmarkSender newSender = new BenchmarkSender();
@@ -52,7 +53,7 @@ namespace CasDotnetSdk.Queues
                     // Check if any failed and place back into queue
                     if (addBackToQueue.Count > 0)
                     {
-                        foreach (BenchmarkSDKMethod method in addBackToQueue)
+                        foreach (BenchmarkMacAddressSDKMethod method in addBackToQueue)
                         {
                             this.Enqueue(method);
                         }
