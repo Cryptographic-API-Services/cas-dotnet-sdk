@@ -1,29 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
 		<RootNamespace>CasDotnetSdk</RootNamespace>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>cas-dotnet-sdk</Title>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.1.36</Version>
+		<Version>1.1.37</Version>
 		<Authors>Mike Mulchrone</Authors>
 		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
 		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="cas-dotnet-sdk.targets" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="..\icon.jpeg">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</Content>
+		<Content Include="cas-dotnet-sdk.targets">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <PackagePath>build</PackagePath>
+		</Content>
 		<Content Include="Contents/cas_core_lib.dll">
 			<Pack>true</Pack>
+			<PackagePath>lib\net8.0</PackagePath>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Contents/libcas_core_lib.so">
 			<Pack>true</Pack>
+			<PackagePath>lib\net8.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/cas_core_lib.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\net7.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/libcas_core_lib.so">
+			<Pack>true</Pack>
+			<PackagePath>lib\net7.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/cas_core_lib.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\net6.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/libcas_core_lib.so">
+			<Pack>true</Pack>
+			<PackagePath>lib\net6.0</PackagePath>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="README.md">
@@ -33,6 +62,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="cas-helpers" Version="1.0.10" />
 	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
 	</ItemGroup>

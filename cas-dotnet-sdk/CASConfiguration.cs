@@ -23,15 +23,15 @@ namespace CasDotnetSdk
         }
 
         private static string _ApiKey;
-
         public static string ApiKey
         {
             get { return _ApiKey; }
-            set 
+            set
             {
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
                 _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
                 SendOSInformation(value).GetAwaiter().GetResult();
+                DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
             }
         }
 
@@ -43,7 +43,6 @@ namespace CasDotnetSdk
         }
 
         private static string _Url;
-
         internal static string Url
         {
             get
@@ -61,7 +60,6 @@ namespace CasDotnetSdk
         }
 
         private static TokenCache _TokenCache;
-
         internal static TokenCache TokenCache
         {
             get { return _TokenCache; }
@@ -69,17 +67,24 @@ namespace CasDotnetSdk
         }
 
         private static BenchmarkSenderRetryQueue _BenchmarkSenderQueue;
-
         internal static BenchmarkSenderRetryQueue BenchmarkSenderQueue
         {
             get { return _BenchmarkSenderQueue; }
             set { _BenchmarkSenderQueue = value; }
         }
-        static CASConfiguration()
+
+        private static Networking _Networking;
+        internal static Networking Networking
         {
-            Url = "https://localhost:7189";
-            TokenCache = new TokenCache();
-            BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
+            get { return _Networking; }
+            set { _Networking = value; }
+        }
+
+        private static DiffieHellmanExchange _DiffieHellmanExchange;
+        internal static DiffieHellmanExchange DiffieHellmanExchange
+        {
+            get { return _DiffieHellmanExchange; }
+            set { _DiffieHellmanExchange = value; }
         }
 
         private static async Task SendOSInformation(string apiKey)
