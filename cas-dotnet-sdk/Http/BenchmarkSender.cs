@@ -1,8 +1,12 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.Symmetric;
+using CasDotnetSdk.Types;
+using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CasDotnetSdk.Http
@@ -16,11 +20,19 @@ namespace CasDotnetSdk.Http
             {
                 result = false;
             }
-            if (string.IsNullOrEmpty(CASConfiguration.TokenCache.Token))
+            else if (string.IsNullOrEmpty(CASConfiguration.TokenCache.Token))
             {
                 result = false;
             }
-            if (DateTime.UtcNow >= CASConfiguration.TokenCache.TokenExpiresIn)
+            else if (string.IsNullOrEmpty(CASConfiguration.DiffieHellmanExchange.AESKey))
+            {
+                result = false;
+            }
+            else if (string.IsNullOrEmpty(CASConfiguration.DiffieHellmanExchange.AesNonce))
+            {
+                result = false;
+            }
+            else if (DateTime.UtcNow >= CASConfiguration.TokenCache.TokenExpiresIn)
             {
                 result = false;
             }
@@ -35,14 +47,21 @@ namespace CasDotnetSdk.Http
 
                 HttpClientSingleton httpClient = HttpClientSingleton.Instance;
                 string url = CASConfiguration.Url + Constants.ApiRoutes.BenchmarkSDKMethodController + Constants.ApiRoutes.MethodBenchmark;
-                // TODO: encrypt with Diffie Hellman created AES 256 key from server. 
-                BenchmarkSDKMethod newBenchmark = new BenchmarkSDKMethod()
+                BenchmarkSDKMethod newBenchmarkSub = new BenchmarkSDKMethod()
                 {
                     MethodDescription = methodDescription,
                     MethodStart = start,
                     MethodEnd = end,
                     MethodName = methodName,
                     MethodType = type,
+                };
+                byte[] newBenchMarkBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newBenchmarkSub));
+                AESWrapper aesWrapper = new AESWrapper();
+                byte[] encryptedBenchmark = aesWrapper.Aes256EncryptBytes(CASConfiguration.DiffieHellmanExchange.AesNonce, CASConfiguration.DiffieHellmanExchange.AESKey, newBenchMarkBytes, false);
+                BenchmarkMacAddressSDKMethod newBenchmark = new BenchmarkMacAddressSDKMethod()
+                {
+                    MacAddress = CASConfiguration.Networking.MacAddress,
+                    EncryptedBenchMarkSend = encryptedBenchmark
                 };
                 httpClient.DefaultRequestHeaders.Add(Constants.HeaderNames.Authorization, CASConfiguration.TokenCache.Token);
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync(url, newBenchmark);
@@ -54,7 +73,7 @@ namespace CasDotnetSdk.Http
             }
         }
 
-        public async Task<bool> SendNewBenchmarkMethodRetry(BenchmarkSDKMethod retryBenchmark)
+        public async Task<bool> SendNewBenchmarkMethodRetry(BenchmarkMacAddressSDKMethod retryBenchmark)
         {
             HttpClientSingleton httpClient = HttpClientSingleton.Instance;
             string url = CASConfiguration.Url + Constants.ApiRoutes.BenchmarkSDKMethodController + Constants.ApiRoutes.MethodBenchmark;
