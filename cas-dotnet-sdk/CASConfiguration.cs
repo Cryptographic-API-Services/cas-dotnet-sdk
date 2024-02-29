@@ -6,13 +6,22 @@ using CASHelpers;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace CasDotnetSdk
 {
     public static class CASConfiguration
     {
+        static CASConfiguration()
+        {
+            IsDevelopment = false;
+            Url = "https://encryptionapiservices.com";
+            TokenCache = new TokenCache();
+            BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
+            Networking = new Networking();
+            DiffieHellmanExchange = new DiffieHellmanExchange();
+        }
+
         private static string _ApiKey;
 
         public static string ApiKey
@@ -26,11 +35,28 @@ namespace CasDotnetSdk
             }
         }
 
+        private static bool _IsDevelopment;
+        public static bool IsDevelopment
+        {
+            get { return _IsDevelopment; }
+            set { _IsDevelopment = value; }
+        }
+
         private static string _Url;
 
         internal static string Url
         {
-            get { return _Url; }
+            get
+            {
+                if (_IsDevelopment)
+                {
+                    return "https://localhost7189";
+                }
+                else
+                {
+                    return _Url;
+                }
+            }
             set { _Url = value; }
         }
 
