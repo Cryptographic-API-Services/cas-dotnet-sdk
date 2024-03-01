@@ -1,4 +1,4 @@
-**Note: Benchmarks are performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
+**Note: Benchmarks were performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
 
 ### Symmetric
 - [AES 256](./docs/PARALLEL.md)
