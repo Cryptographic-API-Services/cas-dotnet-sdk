@@ -22,7 +22,7 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
         {
-            if (string.IsNullOrEmpty(privateKey))
+            if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a private key to sign with RSA");
             }
@@ -56,7 +56,7 @@ namespace CasDotnetSdk.Asymmetric
 
         public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
         {
-            if (string.IsNullOrEmpty(publicKey))
+            if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to verify with RSA");
             }
@@ -88,7 +88,7 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] RsaDecryptBytes(string privateKey, byte[] dataToDecrypt)
         {
-            if (string.IsNullOrEmpty(privateKey))
+            if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a public key to decrypt with RSA");
             }
@@ -122,7 +122,7 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] RsaEncryptBytes(string publicKey, byte[] dataToEncrypt)
         {
-            if (string.IsNullOrEmpty(publicKey))
+            if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to encryp with RSA");
             }
