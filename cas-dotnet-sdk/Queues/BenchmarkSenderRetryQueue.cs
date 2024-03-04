@@ -1,6 +1,5 @@
 ﻿using CasDotnetSdk.Http;
 using CasDotnetSdk.Types;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

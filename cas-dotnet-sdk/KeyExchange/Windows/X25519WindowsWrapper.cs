@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.KeyExchange.Windows
 {
-    internal static  class X25519WindowsWrapper
+    internal static class X25519WindowsWrapper
     {
         [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern X25519SecretPublicKeyResult generate_secret_and_public_key();

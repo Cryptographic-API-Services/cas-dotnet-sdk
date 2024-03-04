@@ -5,7 +5,6 @@ using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 

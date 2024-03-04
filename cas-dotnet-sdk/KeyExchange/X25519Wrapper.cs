@@ -2,7 +2,6 @@
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
-using CasDotnetSdk.Signatures;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
@@ -105,7 +104,8 @@ namespace CasDotnetSdk.KeyExchange
                     this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
                     return res;
 
-                } catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     return new X25519SharedSecret() { };
                 }
