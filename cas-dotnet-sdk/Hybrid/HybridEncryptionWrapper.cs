@@ -3,6 +3,7 @@ using CasDotnetSdk.Http;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Symmetric;
 using CasDotnetSdk.Symmetric.Types;
+using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;
@@ -48,6 +49,10 @@ namespace CasDotnetSdk.Hybrid
 
         public byte[] DecryptAESRSAHybrid(string rsaPrivateKey, AESRSAHybridEncryptResult encryptResult)
         {
+            if (!RSAValidator.ValidateRsaPemKey(rsaPrivateKey))
+            {
+                throw new Exception("Must provide a RSA Private Key to decrypt with AES RSA Hybrid Encryption");
+            }
             DateTime start = DateTime.UtcNow;
             byte[] plaintextAesKey = this._rsaWrapper.RsaDecryptBytes(rsaPrivateKey, encryptResult.EncryptedAesKey);
             byte[] plaintext = (encryptResult.AesType == 128)

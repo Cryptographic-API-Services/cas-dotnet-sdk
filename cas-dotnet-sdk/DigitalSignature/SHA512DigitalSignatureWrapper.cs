@@ -151,7 +151,7 @@ namespace CasDotnetSdk.DigitalSignature
 
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {
-            if (string.IsNullOrEmpty(publicKey))
+            if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to verify with SHA512 RSA Digital Signature");
             }
