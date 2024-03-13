@@ -100,7 +100,8 @@ namespace CasDotnetSdk
             OperatingSystemDeterminator osd = new OperatingSystemDeterminator();
             OSInfoCacheSend osInfoSend = new OSInfoCacheSend()
             {
-                OperatingSystem = osd.OperationSystemVersionString()
+                OperatingSystem = osd.OperationSystemVersionString(),
+                ApiKey = apiKey
             };
             HttpClientSingleton httpClient = HttpClientSingleton.Instance;
             string url = CASConfiguration.Url + "/Authentication/OperatingSystemCacheStore";
