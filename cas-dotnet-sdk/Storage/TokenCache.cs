@@ -4,6 +4,7 @@ using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -31,9 +32,9 @@ namespace CasDotnetSdk.Storage
             string url = CASConfiguration.Url + Constants.ApiRoutes.Token;
             httpClient.DefaultRequestHeaders.Add(Constants.HeaderNames.ApiKey, apiKey);
             HttpResponseMessage response = await httpClient.GetAsync(url);
-            while (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                response = await httpClient.GetAsync(url);
+                return null;
             }
             JsonSerializerOptions options = new JsonSerializerOptions()
             {

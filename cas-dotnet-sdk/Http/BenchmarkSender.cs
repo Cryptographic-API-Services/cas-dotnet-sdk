@@ -3,6 +3,8 @@ using CasDotnetSdk.Types;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
+using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -65,7 +67,12 @@ namespace CasDotnetSdk.Http
                 };
                 httpClient.DefaultRequestHeaders.Add(Constants.HeaderNames.Authorization, CASConfiguration.TokenCache.Token);
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync(url, newBenchmark);
-                if (!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    CASConfiguration.ApiKey = null;
+                    CASConfiguration.TokenCache.Token = null;
+                }
+                else if (!response.IsSuccessStatusCode)
                 {
                     // Put into retry queue
                     CASConfiguration.BenchmarkSenderQueue.Enqueue(newBenchmark);

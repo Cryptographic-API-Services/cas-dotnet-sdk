@@ -32,10 +32,20 @@ namespace CasDotnetSdk
             get { return _ApiKey; }
             set
             {
-                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-                _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
-                SendOSInformation(value).GetAwaiter().GetResult();
-                DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                if (value != null)
+                {
+                    AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+                    _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
+                    if (_ApiKey != null)
+                    {
+                        SendOSInformation(value).GetAwaiter().GetResult();
+                        DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        throw new Exception("The API key that you supplied is not authorized");
+                    }
+                }
             }
         }
 
