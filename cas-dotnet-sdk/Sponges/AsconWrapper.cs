@@ -29,7 +29,7 @@ namespace CasDotnetSdk.Sponges
                 string key = Marshal.PtrToStringAnsi(keyPtr);
                 AsconLinuxWrapper.free_cstring(keyPtr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
             else
@@ -38,7 +38,7 @@ namespace CasDotnetSdk.Sponges
                 string key = Marshal.PtrToStringAnsi(keyPtr);
                 AsconWindowsWrapper.free_cstring(keyPtr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
         }
@@ -52,7 +52,7 @@ namespace CasDotnetSdk.Sponges
                 string nonce = Marshal.PtrToStringAnsi(noncePtr);
                 AsconLinuxWrapper.free_cstring(noncePtr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
             else
@@ -61,7 +61,7 @@ namespace CasDotnetSdk.Sponges
                 string nonce = Marshal.PtrToStringAnsi(noncePtr);
                 AsconWindowsWrapper.free_cstring(noncePtr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
         }
@@ -89,7 +89,7 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AsconLinuxWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -99,7 +99,7 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AsconWindowsWrapper.free_bytes(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }
@@ -127,7 +127,7 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AsconLinuxWrapper.free_bytes(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -137,7 +137,7 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AsconWindowsWrapper.free_bytes(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(AsconWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }
