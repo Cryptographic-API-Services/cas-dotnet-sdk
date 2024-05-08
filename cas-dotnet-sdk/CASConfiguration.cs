@@ -23,19 +23,37 @@ namespace CasDotnetSdk
         }
 
         private static string _ApiKey;
+
+        /// <summary>
+        /// This is the property where you set your CAS User account API key from the CAS Dashboard.
+        /// </summary>
         public static string ApiKey
         {
             get { return _ApiKey; }
             set
             {
-                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-                _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
-                SendOSInformation(value).GetAwaiter().GetResult();
-                DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                if (value != null)
+                {
+                    AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+                    _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
+                    if (_ApiKey != null)
+                    {
+                        SendOSInformation(value).GetAwaiter().GetResult();
+                        DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        throw new Exception("The API key that you supplied is not authorized");
+                    }
+                }
             }
         }
 
         private static bool _IsDevelopment;
+
+        /// <summary>
+        /// This method is mostly for development purposes of the SDk. We don't recommend changing this in a production environment.
+        /// </summary>
         public static bool IsDevelopment
         {
             get { return _IsDevelopment; }
@@ -49,7 +67,7 @@ namespace CasDotnetSdk
             {
                 if (_IsDevelopment)
                 {
-                    return "https://localhost:7189";
+                    return "https://localhost:8081";
                 }
                 else
                 {
@@ -92,7 +110,8 @@ namespace CasDotnetSdk
             OperatingSystemDeterminator osd = new OperatingSystemDeterminator();
             OSInfoCacheSend osInfoSend = new OSInfoCacheSend()
             {
-                OperatingSystem = osd.OperationSystemVersionString()
+                OperatingSystem = osd.OperationSystemVersionString(),
+                ApiKey = apiKey
             };
             HttpClientSingleton httpClient = HttpClientSingleton.Instance;
             string url = CASConfiguration.Url + "/Authentication/OperatingSystemCacheStore";

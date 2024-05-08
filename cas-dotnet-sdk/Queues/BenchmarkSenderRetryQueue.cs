@@ -22,6 +22,7 @@ namespace CasDotnetSdk.Queues
 
         public void Enqueue(BenchmarkMacAddressSDKMethod method)
         {
+            method.NumberOfTries = 0;
             this.Queue.Enqueue(method);
         }
 
@@ -54,7 +55,12 @@ namespace CasDotnetSdk.Queues
                     {
                         foreach (BenchmarkMacAddressSDKMethod method in addBackToQueue)
                         {
-                            this.Enqueue(method);
+                            method.NumberOfTries++;
+                            if (method.NumberOfTries > 2)
+                            {
+                                this.Enqueue(method);
+
+                            }
                         }
                     }
                 });
