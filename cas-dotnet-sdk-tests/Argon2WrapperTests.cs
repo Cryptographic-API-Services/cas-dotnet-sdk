@@ -33,7 +33,7 @@ namespace CasDotnetSdkTests.Tests
         {
             string password = "TestPasswordToVerify";
             string hash = this._argon2Wrapper.HashPassword(password);
-            bool isValid = this._argon2Wrapper.VerifyPassword(hash, password);
+            bool isValid = this._argon2Wrapper.Verify(hash, password);
             Assert.True(isValid);
         }
 
