@@ -90,25 +90,17 @@ namespace CasDotnetSdk.KeyExchange
             }
             else
             {
-                try
+                X25519SharedSecretResult result = X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
+                byte[] sharedSecret = new byte[result.shared_secret_length];
+                Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
+                X25519WindowsWrapper.free_bytes(result.shared_secret);
+                X25519SharedSecret res = new X25519SharedSecret()
                 {
-                    X25519SharedSecretResult result = X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
-                    byte[] sharedSecret = new byte[result.shared_secret_length];
-                    Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                    X25519WindowsWrapper.free_bytes(result.shared_secret);
-                    X25519SharedSecret res = new X25519SharedSecret()
-                    {
-                        SharedSecret = sharedSecret
-                    };
-                    DateTime end = DateTime.UtcNow;
-                    this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
-                    return res;
-
-                }
-                catch (Exception ex)
-                {
-                    return new X25519SharedSecret() { };
-                }
+                    SharedSecret = sharedSecret
+                };
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+                return res;
             }
         }
     }
