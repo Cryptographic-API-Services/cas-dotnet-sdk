@@ -67,11 +67,6 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
-        public bool VerifyPassword(string hashedPassword, string verifyPassword)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool VerifyPasswordThread(string hashedPasswrod, string password)
         {
             throw new NotImplementedException();

@@ -4,7 +4,6 @@ using CasDotnetSdk.DigitalSignature.Windows;
 using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;

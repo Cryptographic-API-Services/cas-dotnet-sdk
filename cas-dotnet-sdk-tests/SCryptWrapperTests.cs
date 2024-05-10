@@ -26,7 +26,7 @@ namespace CasDotnetSdkTests.Tests
         {
 
             string hashedPassword = this._scrypt.HashPassword(this._password);
-            bool isValid = this._scrypt.VerifyPassword(this._password, hashedPassword);
+            bool isValid = this._scrypt.Verify(this._password, hashedPassword);
             Assert.True(isValid);
         }
 

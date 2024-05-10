@@ -6,3 +6,5 @@ You can find example usage of this SDK [here](https://github.com/Cryptographic-A
 
 We recommend viewing our GitHub documentation for examples and benchmarks.
 The url can be found [here](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk).
+
+Join our Discord server for support and questions [here](https://discord.gg/7bXXCQj45q).

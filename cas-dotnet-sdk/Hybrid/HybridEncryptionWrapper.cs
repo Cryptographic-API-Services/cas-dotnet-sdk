@@ -2,7 +2,6 @@
 using CasDotnetSdk.Http;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Symmetric;
-using CasDotnetSdk.Symmetric.Types;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
@@ -32,8 +31,8 @@ namespace CasDotnetSdk.Hybrid
         {
             DateTime start = DateTime.UtcNow;
             byte[] aesEncryptResult = (initilizer.AesType == 128)
-                ? this._aesWrapper.Aes128BytesEncrypt(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt)
-                : this._aesWrapper.Aes256EncryptBytes(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt);
+                ? this._aesWrapper.Aes128Encrypt(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt)
+                : this._aesWrapper.Aes256Encrypt(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt);
             byte[] encryptedAesKey = this._rsaWrapper.RsaEncryptBytes(initilizer.RsaKeyPair.PublicKey, Convert.FromBase64String(initilizer.AesKey));
             AESRSAHybridEncryptResult result = new AESRSAHybridEncryptResult()
             {
@@ -56,8 +55,8 @@ namespace CasDotnetSdk.Hybrid
             DateTime start = DateTime.UtcNow;
             byte[] plaintextAesKey = this._rsaWrapper.RsaDecryptBytes(rsaPrivateKey, encryptResult.EncryptedAesKey);
             byte[] plaintext = (encryptResult.AesType == 128)
-                ? this._aesWrapper.Aes128BytesDecrypt(encryptResult.AesNonce, Convert.ToBase64String(plaintextAesKey), encryptResult.CipherText)
-                : this._aesWrapper.Aes256DecryptBytes(encryptResult.AesNonce, Convert.ToBase64String(plaintextAesKey), encryptResult.CipherText);
+                ? this._aesWrapper.Aes128Decrypt(encryptResult.AesNonce, Convert.ToBase64String(plaintextAesKey), encryptResult.CipherText)
+                : this._aesWrapper.Aes256Decrypt(encryptResult.AesNonce, Convert.ToBase64String(plaintextAesKey), encryptResult.CipherText);
             DateTime end = DateTime.UtcNow;
             this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return plaintext;

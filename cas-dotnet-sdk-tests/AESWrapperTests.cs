@@ -24,7 +24,7 @@ namespace CasDotnetSdkTests.Tests
             string nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
+            byte[] encrypted = this._aESWrapper.Aes128Encrypt(nonceKey, key, dataToEncrypt);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }
 
@@ -42,8 +42,8 @@ namespace CasDotnetSdkTests.Tests
             string nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.ASCII.GetBytes("Thisisthedatathatne1233123123123123123edstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes128BytesEncrypt(nonceKey, key, dataToEncrypt);
-            byte[] decrypted = this._aESWrapper.Aes128BytesDecrypt(nonceKey, key, encrypted);
+            byte[] encrypted = this._aESWrapper.Aes128Encrypt(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aESWrapper.Aes128Decrypt(nonceKey, key, encrypted);
             Assert.Equal(dataToEncrypt, decrypted);
         }
 
@@ -55,7 +55,7 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void Aes256X25519DiffieHellmanKeyAndNonce() 
+        public void Aes256X25519DiffieHellmanKeyAndNonce()
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
@@ -88,7 +88,7 @@ namespace CasDotnetSdkTests.Tests
             string nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes256Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(nonceKey, key, dataToEncrypt);
+            byte[] encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, key, dataToEncrypt);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }
 
@@ -107,8 +107,8 @@ namespace CasDotnetSdkTests.Tests
             Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
 
             byte[] toEncrypt = Encoding.UTF8.GetBytes("EncryptThisText");
-            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(aliceAesKeyAndNonce.AesNonce, aliceAesKeyAndNonce.AesKey, toEncrypt);
-            byte[] plaintext = this._aESWrapper.Aes256DecryptBytes(bobAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesKey, encrypted);
+            byte[] encrypted = this._aESWrapper.Aes256Encrypt(aliceAesKeyAndNonce.AesNonce, aliceAesKeyAndNonce.AesKey, toEncrypt);
+            byte[] plaintext = this._aESWrapper.Aes256Decrypt(bobAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesKey, encrypted);
             Assert.Equal(toEncrypt, plaintext);
         }
 
@@ -118,8 +118,8 @@ namespace CasDotnetSdkTests.Tests
             string nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes256Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes256EncryptBytes(nonceKey, key, dataToEncrypt);
-            byte[] decrypted = this._aESWrapper.Aes256DecryptBytes(nonceKey, key, encrypted);
+            byte[] encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aESWrapper.Aes256Decrypt(nonceKey, key, encrypted);
             Assert.Equal(dataToEncrypt, decrypted);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }

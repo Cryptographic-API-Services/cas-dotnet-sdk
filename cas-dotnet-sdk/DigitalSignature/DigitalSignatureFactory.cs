@@ -10,7 +10,7 @@
         public static IDigitalSignature Get(DigitalSignatureRSAType type)
         {
             IDigitalSignature signature = null;
-            switch(type)
+            switch (type)
             {
                 case DigitalSignatureRSAType.SHA512:
                     signature = new SHA512DigitalSignatureWrapper();

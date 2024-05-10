@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.Http;
-using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
@@ -153,7 +152,7 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
-        public byte[] Aes256EncryptBytes(string nonceKey, string key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256Encrypt(string nonceKey, string key, byte[] toEncrypt, bool sendBenchmark = true)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -193,7 +192,7 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
-        public byte[] Aes256DecryptBytes(string nonceKey, string key, byte[] toDecrypt)
+        public byte[] Aes256Decrypt(string nonceKey, string key, byte[] toDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -231,7 +230,7 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
-        public byte[] Aes128BytesEncrypt(string nonceKey, string key, byte[] dataToEncrypt)
+        public byte[] Aes128Encrypt(string nonceKey, string key, byte[] dataToEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
@@ -269,7 +268,7 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
-        public byte[] Aes128BytesDecrypt(string nonceKey, string key, byte[] dataToDecrypt)
+        public byte[] Aes128Decrypt(string nonceKey, string key, byte[] dataToDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
             {
