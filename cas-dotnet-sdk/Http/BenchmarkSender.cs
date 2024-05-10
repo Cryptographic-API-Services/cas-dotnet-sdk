@@ -59,7 +59,7 @@ namespace CasDotnetSdk.Http
                 };
                 byte[] newBenchMarkBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newBenchmarkSub));
                 AESWrapper aesWrapper = new AESWrapper();
-                byte[] encryptedBenchmark = aesWrapper.Aes256EncryptBytes(CASConfiguration.DiffieHellmanExchange.AesNonce, CASConfiguration.DiffieHellmanExchange.AESKey, newBenchMarkBytes, false);
+                byte[] encryptedBenchmark = aesWrapper.Aes256Encrypt(CASConfiguration.DiffieHellmanExchange.AesNonce, CASConfiguration.DiffieHellmanExchange.AESKey, newBenchMarkBytes, false);
                 BenchmarkMacAddressSDKMethod newBenchmark = new BenchmarkMacAddressSDKMethod()
                 {
                     MacAddress = CASConfiguration.Networking.MacAddress,
