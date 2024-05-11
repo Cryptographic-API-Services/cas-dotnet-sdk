@@ -88,7 +88,7 @@ namespace CasDotnetSdk.PasswordHashers
                 return hashed;
             }
         }
-        public bool VerifyPassword(string hashedPasswrod, string password)
+        public bool Verify(string hashedPasswrod, string password)
         {
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
             {

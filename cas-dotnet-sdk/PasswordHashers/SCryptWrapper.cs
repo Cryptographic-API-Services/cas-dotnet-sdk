@@ -51,7 +51,7 @@ namespace CasDotnetSdk.PasswordHashers
             throw new NotImplementedException();
         }
 
-        public bool VerifyPassword(string password, string hash)
+        public bool Verify(string password, string hash)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))
             {
