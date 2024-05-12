@@ -13,11 +13,22 @@ namespace CasDotnetSdk.PasswordHashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
+
+        /// <summary>
+        /// A wrapper class that uses the SCrypt algorithm to hash passwords.
+        /// </summary>
         public SCryptWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
+
+        /// <summary>
+        /// Hashes a password using the SCrypt algorithm.
+        /// </summary>
+        /// <param name="passToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -51,6 +62,13 @@ namespace CasDotnetSdk.PasswordHashers
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Verifies an unhashed password against a hashed password using the SCrypt algorithm.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify(string password, string hash)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))

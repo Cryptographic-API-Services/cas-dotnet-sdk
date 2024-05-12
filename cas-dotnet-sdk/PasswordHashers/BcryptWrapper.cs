@@ -13,12 +13,21 @@ namespace CasDotnetSdk.PasswordHashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
+
+        /// <summary>
+        /// A wrapper class that uses the BCrypt algorithm to hash passwords.
+        /// </summary>
         public BcryptWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Hashes a password using the BCrypt algorithm.
+        /// </summary>
+        /// <param name="passwordToHash"></param>
+        /// <returns></returns>
         public string HashPassword(string passwordToHash)
         {
 
@@ -43,11 +52,23 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
+        /// <summary>
+        /// Hashes a list of passwords using the BCrypt algorithm.
+        /// </summary>
+        /// <param name="passwordsToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public string[] HashPasswordsThread(string[] passwordsToHash)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Verifies a hashed password against an unhashed password using the BCrypt algorithm.
+        /// </summary>
+        /// <param name="hashedPassword"></param>
+        /// <param name="unhashed"></param>
+        /// <returns></returns>
         public bool Verify(string hashedPassword, string unhashed)
         {
             DateTime start = DateTime.UtcNow;
@@ -67,6 +88,13 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
+        /// <summary>
+        /// Verifies a hashed password against an unhashed password using the BCrypt algorithm on a new thread.
+        /// </summary>
+        /// <param name="hashedPasswrod"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public bool VerifyPasswordThread(string hashedPasswrod, string password)
         {
             throw new NotImplementedException();
