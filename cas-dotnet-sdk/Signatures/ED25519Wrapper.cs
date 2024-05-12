@@ -21,6 +21,10 @@ namespace CasDotnetSdk.Signatures
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Generates and public and private key pair non split in bytes for ED25519-Dalek.
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetKeyPairBytes()
         {
             DateTime start = DateTime.UtcNow;
@@ -46,6 +50,13 @@ namespace CasDotnetSdk.Signatures
             }
         }
 
+        /// <summary>
+        /// Signs data with a key pair in bytes for ED25519-Dalek.
+        /// </summary>
+        /// <param name="keyBytes"></param>
+        /// <param name="dataToSign"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Ed25519ByteSignatureResult SignBytes(byte[] keyBytes, byte[] dataToSign)
         {
             if (keyBytes == null || keyBytes.Length == 0)
@@ -94,6 +105,14 @@ namespace CasDotnetSdk.Signatures
             }
         }
 
+        /// <summary>
+        /// Verifys data with a key pair in bytes for ED25519-Dalek.
+        /// </summary>
+        /// <param name="keyPair"></param>
+        /// <param name="signature"></param>
+        /// <param name="dataToVerify"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool VerifyBytes(byte[] keyPair, byte[] signature, byte[] dataToVerify)
         {
             if (keyPair?.Length == 0)
@@ -125,6 +144,15 @@ namespace CasDotnetSdk.Signatures
                 return result;
             }
         }
+
+        /// <summary>
+        /// Verifies with a public key in bytes for ED25519-Dalek.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="signature"></param>
+        /// <param name="dataToVerify"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
 
         public bool VerifyWithPublicKeyBytes(byte[] publicKey, byte[] signature, byte[] dataToVerify)
         {
