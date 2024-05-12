@@ -15,12 +15,20 @@ namespace CasDotnetSdk.Symmetric
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
+
+        /// <summary>
+        /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
+        /// </summary>
         public AESWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Generates an AES 128 bit key.
+        /// </summary>
+        /// <returns></returns>
         public string Aes128Key()
         {
             DateTime start = DateTime.UtcNow;
@@ -43,6 +51,11 @@ namespace CasDotnetSdk.Symmetric
                 return key;
             }
         }
+
+        /// <summary>
+        /// Generates an AES 256 bit key.
+        /// </summary>
+        /// <returns></returns>
         public string Aes256Key()
         {
             DateTime start = DateTime.UtcNow;
@@ -65,6 +78,13 @@ namespace CasDotnetSdk.Symmetric
                 return key;
             }
         }
+
+        /// <summary>
+        /// Generates an AES 256 bit key and nonce based off a X25519 Diffie Hellman shared secret.
+        /// </summary>
+        /// <param name="sharedSecret"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
 
         public Aes256KeyAndNonceX25519DiffieHellman Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
@@ -109,6 +129,12 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        /// <summary>
+        /// Generates an AES 128 bit key and nonce based off a X25519 Diffie Hellman shared secret.
+        /// </summary>
+        /// <param name="sharedSecret"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Aes256KeyAndNonceX25519DiffieHellman Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
@@ -152,6 +178,15 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        /// <summary>
+        /// Encrypts with AES-256-GCM.
+        /// </summary>
+        /// <param name="nonceKey"></param>
+        /// <param name="key"></param>
+        /// <param name="toEncrypt"></param>
+        /// <param name="sendBenchmark"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Aes256Encrypt(string nonceKey, string key, byte[] toEncrypt, bool sendBenchmark = true)
         {
             if (string.IsNullOrEmpty(nonceKey))
@@ -192,6 +227,14 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        /// <summary>
+        /// Decrypts with AES-256-GCM.
+        /// </summary>
+        /// <param name="nonceKey"></param>
+        /// <param name="key"></param>
+        /// <param name="toDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Aes256Decrypt(string nonceKey, string key, byte[] toDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
@@ -230,6 +273,14 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        /// <summary>
+        /// Encrypts with AES-128-GCM.
+        /// </summary>
+        /// <param name="nonceKey"></param>
+        /// <param name="key"></param>
+        /// <param name="dataToEncrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Aes128Encrypt(string nonceKey, string key, byte[] dataToEncrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
@@ -268,6 +319,14 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
+        /// <summary>
+        /// Decrypts with AES-128-GCM.
+        /// </summary>
+        /// <param name="nonceKey"></param>
+        /// <param name="key"></param>
+        /// <param name="dataToDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Aes128Decrypt(string nonceKey, string key, byte[] dataToDecrypt)
         {
             if (string.IsNullOrEmpty(nonceKey))
@@ -306,7 +365,10 @@ namespace CasDotnetSdk.Symmetric
             }
         }
 
-
+        /// <summary>
+        /// Generates a AES Nonce usuable for AES-128-GCM and AES-256-GCM.
+        /// </summary>
+        /// <returns></returns>
         public string GenerateAESNonce()
         {
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
