@@ -92,5 +92,10 @@ namespace CasDotnetSdk.PasswordHashers
         {
             throw new NotImplementedException();
         }
+
+        public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

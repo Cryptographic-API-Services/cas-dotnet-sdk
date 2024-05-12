@@ -36,6 +36,13 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public async Task VerifyThreadpool()
+        {
+            string hashedPassword = this._cryptWrapper.HashPasswordThreadPool(this._testPassword);
+            Assert.True(this._cryptWrapper.VerifyThreadPool(hashedPassword, this._testPassword));
+        }
+
+        [Fact]
         public void FactoryTest()
         {
             IPasswordHasherBase wrapper = PasswordHasherFactory.Get(PasswordHasherType.BCrypt);

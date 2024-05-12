@@ -43,11 +43,6 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
-        public string[] HashPasswordsThread(string[] passwordsToHash)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Hashes a password using the BCrypt algorithm on a new thread.
         /// </summary>
@@ -101,9 +96,23 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
-        public bool VerifyPasswordThread(string hashedPasswrod, string password)
+        public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
         {
-            throw new NotImplementedException();
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                bool result = BcryptLinuxWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return result;
+            }
+            else
+            {
+                bool result = BcryptWindowsWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return result;
+            }
         }
     }
 }
