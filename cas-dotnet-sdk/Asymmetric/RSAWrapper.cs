@@ -14,12 +14,23 @@ namespace CasDotnetSdk.Asymmetric
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;
+
+        /// <summary>
+        /// A wrapper class for RSA key creation, encryption, decryption, signing, and verification.
+        /// </summary>
         public RSAWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Signs data with an RSA private key.
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="dataToSign"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
         {
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
@@ -54,6 +65,14 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
+        /// <summary>
+        /// Verifies data with an RSA public key.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToVerify"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
@@ -85,6 +104,14 @@ namespace CasDotnetSdk.Asymmetric
                 return result;
             }
         }
+
+        /// <summary>
+        /// Decrypts data with an RSA private key.
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="dataToDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
 
         public byte[] RsaDecryptBytes(string privateKey, byte[] dataToDecrypt)
         {
@@ -120,6 +147,14 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
+        /// <summary>
+        /// Encrypts data with an RSA public key.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToEncrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
         public byte[] RsaEncryptBytes(string publicKey, byte[] dataToEncrypt)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
@@ -154,6 +189,12 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
+        /// <summary>
+        /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
+        /// </summary>
+        /// <param name="keySize"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public RsaKeyPairResult GetKeyPair(int keySize)
         {
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)

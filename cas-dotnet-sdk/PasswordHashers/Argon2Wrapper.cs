@@ -16,12 +16,21 @@ namespace CasDotnetSdk.PasswordHashers
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;
 
+        /// <summary>
+        /// A wrapper class for the Argon2 password hashing algorithm.
+        /// </summary>
         public Argon2Wrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Hashes a list of passwords using the Argon2 algorithm.
+        /// </summary>
+        /// <param name="passwordsToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public string[] HashPasswordsThread(string[] passwordsToHash)
         {
             if (passwordsToHash == null || passwordsToHash.Length <= 0)
@@ -61,6 +70,12 @@ namespace CasDotnetSdk.PasswordHashers
             return stringArrayResult;
         }
 
+        /// <summary>
+        /// Hashes a password using the Argon2 algorithm.
+        /// </summary>
+        /// <param name="passToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -88,6 +103,14 @@ namespace CasDotnetSdk.PasswordHashers
                 return hashed;
             }
         }
+
+        /// <summary>
+        /// Verifies that a none hahsed password matches the hashed password using Argon2 algorithm.
+        /// </summary>
+        /// <param name="hashedPasswrod"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify(string hashedPasswrod, string password)
         {
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
@@ -113,6 +136,13 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
+        /// <summary>
+        /// Verifies that a none hahsed password matches the hashed password using Argon2 algorithm on a new thread.
+        /// </summary>
+        /// <param name="hashedPasswrod"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool VerifyPasswordThread(string hashedPasswrod, string password)
         {
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))

@@ -15,12 +15,22 @@ namespace CasDotnetSdk.Hashers
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
 
+        /// <summary>
+        /// A wrapper class for the HMAC hashing algorithm.
+        /// </summary>
         public HmacWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Signs a message using the HMAC algorithm.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] HmacSignBytes(byte[] key, byte[] message)
         {
             if (key == null || key.Length == 0)
@@ -54,6 +64,14 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Verifies a message using the HMAC algorithm.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="message"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool HmacVerifyBytes(byte[] key, byte[] message, byte[] signature)
         {
             if (key == null || key.Length == 0)

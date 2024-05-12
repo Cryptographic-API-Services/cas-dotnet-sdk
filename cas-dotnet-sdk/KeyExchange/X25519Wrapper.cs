@@ -15,12 +15,19 @@ namespace CasDotnetSdk.KeyExchange
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
 
+        /// <summary>
+        /// A wrapper class for working with X25519 key exchange algorithm.
+        /// </summary>
         public X25519Wrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Generates a secret key and a public key using the X25519 algorithm.
+        /// </summary>
+        /// <returns></returns>
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
             DateTime start = DateTime.UtcNow;
@@ -62,6 +69,13 @@ namespace CasDotnetSdk.KeyExchange
             }
         }
 
+        /// <summary>
+        /// Generates a shared secret using the X25519 algorithm Diffie Hellman.
+        /// </summary>
+        /// <param name="secretKey"></param>
+        /// <param name="otherUserPublicKey"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public X25519SharedSecret GenerateSharedSecret(byte[] secretKey, byte[] otherUserPublicKey)
         {
             if (secretKey == null || secretKey.Length == 0)

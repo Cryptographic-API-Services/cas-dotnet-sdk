@@ -7,11 +7,8 @@ namespace CasDotnetSdkTests.Tests
 {
     public class DigitalSignatureTests
     {
-        private readonly DigitalSignatureWrapper _digitalSignatureWrapper;
-
         public DigitalSignatureTests()
         {
-            this._digitalSignatureWrapper = new DigitalSignatureWrapper();
         }
 
         [Fact]
