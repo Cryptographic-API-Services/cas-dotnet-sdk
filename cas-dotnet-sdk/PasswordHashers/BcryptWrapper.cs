@@ -48,6 +48,40 @@ namespace CasDotnetSdk.PasswordHashers
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Hashes a password using the BCrypt algorithm on a new thread.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public string HashPasswordThreadPool(string password)
+        {
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                BcryptLinuxWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return hashed;
+            }
+            else
+            {
+                IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                BcryptWindowsWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return hashed;
+            }
+        }
+
+        /// <summary>
+        /// Verifies a hashed password against an unhashed password using the BCrypt algorithm.
+        /// </summary>
+        /// <param name="hashedPassword"></param>
+        /// <param name="unhashed"></param>
+        /// <returns></returns>
         public bool Verify(string hashedPassword, string unhashed)
         {
             DateTime start = DateTime.UtcNow;

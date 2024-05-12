@@ -136,5 +136,10 @@ namespace CasDotnetSdk.PasswordHashers
                 return result;
             }
         }
+
+        public string HashPasswordThreadPool(string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

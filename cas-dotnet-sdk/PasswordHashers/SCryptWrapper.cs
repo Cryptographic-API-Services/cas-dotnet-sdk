@@ -51,6 +51,18 @@ namespace CasDotnetSdk.PasswordHashers
             throw new NotImplementedException();
         }
 
+        public string HashPasswordThreadPool(string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Verifies an unhashed password against a hashed password using the SCrypt algorithm.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify(string password, string hash)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hash))

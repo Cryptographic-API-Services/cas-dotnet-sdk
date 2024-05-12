@@ -22,6 +22,13 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void HashPasswordThreadPool()
+        {
+            string hashed = this._cryptWrapper.HashPasswordThreadPool(this._testPassword);
+            Assert.NotEqual(hashed, this._testPassword);
+        }
+
+        [Fact]
         public async Task Verify()
         {
             string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
