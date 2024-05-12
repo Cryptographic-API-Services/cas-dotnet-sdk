@@ -14,12 +14,22 @@ namespace CasDotnetSdk.Hashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _sender;
+
+        /// <summary>
+        /// A wrapper class for the Blake2 hashing algorithm.
+        /// </summary>
         public Blake2Wrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._sender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Hashes data using the Blake2 512 algorithm.
+        /// </summary>
+        /// <param name="toHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Hash512(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
@@ -50,6 +60,13 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Verifies data using the Blake2 512 algorithm.
+        /// </summary>
+        /// <param name="hashedData"></param>
+        /// <param name="toCompare"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify512(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
@@ -77,6 +94,13 @@ namespace CasDotnetSdk.Hashers
                 return result;
             }
         }
+
+        /// <summary>
+        /// Hashes data using the Blake2 256 algorithm.
+        /// </summary>
+        /// <param name="toHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Hash256(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
@@ -107,6 +131,13 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Verifies data using the Blake2 256 algorithm.
+        /// </summary>
+        /// <param name="hashedData"></param>
+        /// <param name="toCompare"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify256(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)

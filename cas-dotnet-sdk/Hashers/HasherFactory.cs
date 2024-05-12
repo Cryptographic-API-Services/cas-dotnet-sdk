@@ -7,6 +7,11 @@
     }
     public static class HasherFactory
     {
+        /// <summary>
+        /// Gets a hasher based on the type provided.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static IHasherBase Get(IHasherType type)
         {
             IHasherBase result = null;

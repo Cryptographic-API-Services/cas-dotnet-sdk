@@ -14,12 +14,22 @@ namespace CasDotnetSdk.Hashers
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
+
+        /// <summary>
+        /// A wrapper class for the SHA3 256 and 512 hashing algorithms.
+        /// </summary>
         public SHAWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Hashes data using the SHA3 512 algorithm.
+        /// </summary>
+        /// <param name="dataToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Hash512(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -53,6 +63,12 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Hashes data using the SHA3 256 algorithm.
+        /// </summary>
+        /// <param name="dataToHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Hash256(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -86,6 +102,13 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Verifies data using the SHA3 512 algorithm.
+        /// </summary>
+        /// <param name="dataToVerify"></param>
+        /// <param name="hashedData"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify512(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
@@ -113,6 +136,13 @@ namespace CasDotnetSdk.Hashers
             }
         }
 
+        /// <summary>
+        /// Verifies data using the SHA3 256 algorithm.
+        /// </summary>
+        /// <param name="dataToVerify"></param>
+        /// <param name="hashedData"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool Verify256(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
