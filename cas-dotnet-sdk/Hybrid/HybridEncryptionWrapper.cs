@@ -20,6 +20,9 @@ namespace CasDotnetSdk.Hybrid
         private readonly AESWrapper _aesWrapper;
         private readonly RSAWrapper _rsaWrapper;
 
+        /// <summary>
+        /// A wrapper class for AES/RSA Hybrid Encryption.
+        /// </summary>
         public HybridEncryptionWrapper()
         {
             this._benchmarkSender = new BenchmarkSender();
@@ -27,6 +30,12 @@ namespace CasDotnetSdk.Hybrid
             this._rsaWrapper = new RSAWrapper();
         }
 
+        /// <summary>
+        /// Encryptes a byte array using AES and RSA Hybrid Encryption.
+        /// </summary>
+        /// <param name="dataToEncrypt"></param>
+        /// <param name="initilizer"></param>
+        /// <returns></returns>
         public AESRSAHybridEncryptResult EncryptAESRSAHybrid(byte[] dataToEncrypt, AESRSAHybridInitializer initilizer)
         {
             DateTime start = DateTime.UtcNow;
@@ -46,6 +55,13 @@ namespace CasDotnetSdk.Hybrid
             return result;
         }
 
+        /// <summary>
+        /// Decrypts a byte array using AES and RSA Hybrid Encryption.
+        /// </summary>
+        /// <param name="rsaPrivateKey"></param>
+        /// <param name="encryptResult"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] DecryptAESRSAHybrid(string rsaPrivateKey, AESRSAHybridEncryptResult encryptResult)
         {
             if (!RSAValidator.ValidateRsaPemKey(rsaPrivateKey))
