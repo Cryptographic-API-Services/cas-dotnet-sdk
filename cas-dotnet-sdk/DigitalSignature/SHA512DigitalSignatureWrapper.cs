@@ -14,12 +14,22 @@ namespace CasDotnetSdk.DigitalSignature
     {
         private readonly OSPlatform _platform;
         private readonly BenchmarkSender _benchmarkSender;
+
+        /// <summary>
+        /// A wrapper class for creating Digital Signatures using SHA512 (ED25519-Dalek and RSA)
+        /// </summary>
         public SHA512DigitalSignatureWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
             this._benchmarkSender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Creates an ED25519 Digital Signature using SHA512
+        /// </summary>
+        /// <param name="dataToSign"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public SHAED25519DalekDigitialSignatureResult CreateED25519(byte[] dataToSign)
         {
             if (dataToSign == null || dataToSign.Length == 0)
@@ -64,6 +74,13 @@ namespace CasDotnetSdk.DigitalSignature
             }
         }
 
+        /// <summary>
+        /// Creates a RSA Digital Signature using SHA512
+        /// </summary>
+        /// <param name="rsaKeySize"></param>
+        /// <param name="dataToSign"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
@@ -116,6 +133,14 @@ namespace CasDotnetSdk.DigitalSignature
             }
         }
 
+        /// <summary>
+        /// Verifies a ED25519 Digital Signature using SHA512
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToVerify"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool VerifyED25519(byte[] publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (publicKey == null || publicKey.Length == 0)
@@ -148,6 +173,14 @@ namespace CasDotnetSdk.DigitalSignature
             }
         }
 
+        /// <summary>
+        /// Verifies a RSA Digital Signature using SHA512
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToVerify"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))

@@ -7,6 +7,11 @@
     }
     public static class DigitalSignatureFactory
     {
+        /// <summary>
+        /// Get a digital signature wrapper based off the type provided.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static IDigitalSignature Get(DigitalSignatureRSAType type)
         {
             IDigitalSignature signature = null;
