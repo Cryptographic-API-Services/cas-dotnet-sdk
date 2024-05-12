@@ -20,6 +20,10 @@ namespace CasDotnetSdk.Sponges
             this._sender = new BenchmarkSender();
         }
 
+        /// <summary>
+        /// Generates a key for Ascon 128
+        /// </summary>
+        /// <returns></returns>
         public string Ascon128Key()
         {
             DateTime start = DateTime.UtcNow;
@@ -43,6 +47,10 @@ namespace CasDotnetSdk.Sponges
             }
         }
 
+        /// <summary>
+        /// Generates a nonce for Ascon 128
+        /// </summary>
+        /// <returns></returns>
         public string Ascon128Nonce()
         {
             DateTime start = DateTime.UtcNow;
@@ -66,6 +74,14 @@ namespace CasDotnetSdk.Sponges
             }
         }
 
+        /// <summary>
+        /// Encrypts with Ascond 128
+        /// </summary>
+        /// <param name="nonce"></param>
+        /// <param name="key"></param>
+        /// <param name="toEncrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Ascon128Encrypt(string nonce, string key, byte[] toEncrypt)
         {
             if (string.IsNullOrEmpty(nonce))
@@ -104,6 +120,14 @@ namespace CasDotnetSdk.Sponges
             }
         }
 
+        /// <summary>
+        /// Decrypts with Ascond 128
+        /// </summary>
+        /// <param name="nonce"></param>
+        /// <param name="key"></param>
+        /// <param name="toDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public byte[] Ascon128Decrypt(string nonce, string key, byte[] toDecrypt)
         {
             if (string.IsNullOrEmpty(nonce))
