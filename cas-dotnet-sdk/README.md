@@ -20,5 +20,13 @@ We utilize some smart people's existing work and we believe their documentation 
 We recommend viewing our GitHub documentation for examples and benchmarks.
 The url can be found [here](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk).
 
+## Supported Frameworks / Operating Systems
+We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-8 for Windows and Linux (Ubuntu) on each pull request and release to Nuget through GitHub actions.
+- [X] .NET 6
+- [X] .NET 7
+- [X] .NET 8
+- [X] Windows
+- [X] Linux  
+
 ## Disclaimer
 Many of the cryptographic crates that are utilized in our core FFI [layer](https://github.com/Crytographic-API-Services/cas-core-lib) have never had a security audit performed. Utilize this SDK at your own risk.
