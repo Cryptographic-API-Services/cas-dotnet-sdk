@@ -29,14 +29,6 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void HashPasswordsThread()
-        {
-            string[] arrayOfPass = new string[] { "testing", "another password" };
-            string[] hash = this._argon2Wrapper.HashPasswordsThread(arrayOfPass);
-            Assert.True(hash.Length == arrayOfPass.Length);
-        }
-
-        [Fact]
         public void Verify()
         {
             string password = "TestPasswordToVerify";

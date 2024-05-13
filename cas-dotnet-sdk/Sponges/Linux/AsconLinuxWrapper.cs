@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Sponges.Linux
 {
-    internal static  class AsconLinuxWrapper
+    internal static class AsconLinuxWrapper
     {
         [DllImport("Contents/libcas_core_lib.so")]
         public static extern IntPtr ascon_128_key();

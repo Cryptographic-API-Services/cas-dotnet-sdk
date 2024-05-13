@@ -6,10 +6,16 @@ Ever wanted all of your most useful cryptograpihc operations in one module and n
 CAS is here to provide a unified development experience as an abstract layer to the RustCrypto and Dalek-Cryptography suite of algorithms.
 The official Nuget page can be found [here](https://www.nuget.org/packages/cas-dotnet-sdk).
 
-## Consuming Library Documentation
 **Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
 
+## Consuming Library Documentation
 This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib).
+
+We utilize some smart people's existing work and we believe their documentation should be reviewed when possible.
+- [Spin Research](https://github.com/SpinResearch)
+- [Dalek-Cryptography](https://github.com/dalek-cryptography)
+- [Rust Crypto](https://github.com/RustCrypto)
+- [Rayon](https://github.com/rayon-rs/rayon)
 
 ## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
 
