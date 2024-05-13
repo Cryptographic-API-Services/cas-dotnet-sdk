@@ -166,5 +166,69 @@ namespace CasDotnetSdk.PasswordHashers
                 return result;
             }
         }
+
+        /// <summary>
+        /// Hashes a password using Argon2 on a seperate thread
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public string HashPasswordThreadPool(string password)
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new Exception("You must provide a password to hash using argon2");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                IntPtr hashedPtr = Argon2LinuxWrapper.argon2_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                Argon2LinuxWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+                return hashed;
+            }
+            else
+            {
+                IntPtr hashedPtr = Argon2WindowsWrapper.argon2_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                Argon2WindowsWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+                return hashed;
+            }
+        }
+
+        /// <summary>
+        /// Verifies a password using Argon2 on a seperate thread
+        /// </summary>
+        /// <param name="hashedPassword"></param>
+        /// <param name="verifyPassword"></param>
+        /// <returns></returns>
+        public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
+        {
+            if (string.IsNullOrEmpty(hashedPassword) || string.IsNullOrEmpty(verifyPassword))
+            {
+                throw new Exception("You must provide a hashed password and password to verify with argon2");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+
+                bool result = Argon2LinuxWrapper.argon2_verify_threadpool(hashedPassword, verifyPassword);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+                return result;
+            }
+            else
+            {
+                bool result = Argon2WindowsWrapper.argon2_verify_threadpool(hashedPassword, verifyPassword);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+                return result;
+            }
+        }
     }
 }

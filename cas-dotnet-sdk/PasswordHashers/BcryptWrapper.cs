@@ -53,14 +53,31 @@ namespace CasDotnetSdk.PasswordHashers
         }
 
         /// <summary>
-        /// Hashes a list of passwords using the BCrypt algorithm.
+        /// Hashes a password using the BCrypt algorithm on a new thread.
         /// </summary>
-        /// <param name="passwordsToHash"></param>
+        /// <param name="password"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public string[] HashPasswordsThread(string[] passwordsToHash)
+        public string HashPasswordThreadPool(string password)
         {
-            throw new NotImplementedException();
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                BcryptLinuxWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return hashed;
+            }
+            else
+            {
+                IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash_threadpool(password);
+                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+                BcryptWindowsWrapper.free_cstring(hashedPtr);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return hashed;
+            }
         }
 
         /// <summary>
@@ -91,13 +108,27 @@ namespace CasDotnetSdk.PasswordHashers
         /// <summary>
         /// Verifies a hashed password against an unhashed password using the BCrypt algorithm on a new thread.
         /// </summary>
-        /// <param name="hashedPasswrod"></param>
-        /// <param name="password"></param>
+        /// <param name="hashedPassword"></param>
+        /// <param name="verifyPassword"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public bool VerifyPasswordThread(string hashedPasswrod, string password)
+
+        public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
         {
-            throw new NotImplementedException();
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                bool result = BcryptLinuxWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return result;
+            }
+            else
+            {
+                bool result = BcryptWindowsWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                return result;
+            }
         }
     }
 }
