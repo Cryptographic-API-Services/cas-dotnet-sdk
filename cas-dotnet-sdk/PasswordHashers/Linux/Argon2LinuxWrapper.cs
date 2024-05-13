@@ -10,7 +10,7 @@ namespace CasDotnetSdk.PasswordHashers.Linux
         [DllImport("Contents/libcas_core_lib.so")]
         public static extern IntPtr argon2_hash(string passToHash);
 
-        [DllImport("\\Contents\\cas_core_lib.dll")]
+        [DllImport("Contents/libcas_core_lib.so")]
         public static extern IntPtr argon2_hash_threadpool(string passToHash);
 
         [DllImport("Contents/libcas_core_lib.so")]
