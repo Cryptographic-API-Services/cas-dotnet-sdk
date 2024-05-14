@@ -18,7 +18,7 @@ namespace CasDotnetSdk.Configuration
     internal class DiffieHellmanExchange
     {
         public string AESKey { get; set; }
-        public string AesNonce { get; set; }
+        public byte[] AesNonce { get; set; }
         private byte[] PublicKey { get; set; }
         private byte[] Secret { get; set; }
         private byte[] SharedSecret { get; set; }

@@ -21,7 +21,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes128BytesEncrypt()
         {
-            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            byte[] nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
             byte[] encrypted = this._aESWrapper.Aes128Encrypt(nonceKey, key, dataToEncrypt);
@@ -39,7 +39,7 @@ namespace CasDotnetSdkTests.Tests
         public void Aes128BytesDecrypt()
         {
 
-            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            byte[] nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.ASCII.GetBytes("Thisisthedatathatne1233123123123123123edstobeEncrypted#@$*(&");
             byte[] encrypted = this._aESWrapper.Aes128Encrypt(nonceKey, key, dataToEncrypt);
@@ -85,7 +85,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes256BytesEncrypt()
         {
-            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            byte[] nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes256Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
             byte[] encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, key, dataToEncrypt);
@@ -115,7 +115,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes256BytesDecrypt()
         {
-            string nonceKey = this._aESWrapper.GenerateAESNonce();
+            byte[] nonceKey = this._aESWrapper.GenerateAESNonce();
             string key = this._aESWrapper.Aes256Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
             byte[] encrypted = this._aESWrapper.Aes256Encrypt(nonceKey, key, dataToEncrypt);

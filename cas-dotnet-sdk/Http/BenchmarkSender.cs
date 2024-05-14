@@ -29,7 +29,7 @@ namespace CasDotnetSdk.Http
             {
                 result = false;
             }
-            else if (string.IsNullOrEmpty(CASConfiguration.DiffieHellmanExchange.AesNonce))
+            else if (CASConfiguration.DiffieHellmanExchange.AesNonce?.Length == 0)
             {
                 result = false;
             }
