@@ -29,6 +29,13 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void AesNonce()
+        {
+            byte[] nonceKey = this._aESWrapper.GenerateAESNonce();
+            Assert.True(nonceKey.Length == 12);
+        }
+
+        [Fact]
         public void Aes128Key()
         {
             string key = this._aESWrapper.Aes128Key();
