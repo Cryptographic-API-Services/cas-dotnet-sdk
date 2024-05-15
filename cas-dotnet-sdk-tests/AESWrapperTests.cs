@@ -110,7 +110,7 @@ namespace CasDotnetSdkTests.Tests
             Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
 
 
-            Assert.Equal(aliceAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesNonce);
+            Assert.True(aliceAesKeyAndNonce.AesNonce.SequenceEqual(bobAesKeyAndNonce.AesNonce));
             Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
 
             byte[] toEncrypt = Encoding.UTF8.GetBytes("EncryptThisText");
@@ -118,6 +118,25 @@ namespace CasDotnetSdkTests.Tests
             byte[] plaintext = this._aESWrapper.Aes256Decrypt(bobAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesKey, encrypted);
             Assert.Equal(toEncrypt, plaintext);
         }
+
+        [Fact]
+        public void Aes128X25519DiffieHellmanEncrypt()
+        {
+            X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
+            X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
+            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+
+            Assert.True(aliceAesKeyAndNonce.AesNonce.SequenceEqual(bobAesKeyAndNonce.AesNonce));
+            Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
+
+            byte[] toEncrypt = Encoding.UTF8.GetBytes("EncryptThisText");
+            byte[] encrypted = this._aESWrapper.Aes128Encrypt(aliceAesKeyAndNonce.AesNonce, aliceAesKeyAndNonce.AesKey, toEncrypt);
+            byte[] plaintext = this._aESWrapper.Aes128Decrypt(bobAesKeyAndNonce.AesNonce, bobAesKeyAndNonce.AesKey, encrypted);
+            Assert.Equal(toEncrypt, plaintext);
+        }   
 
         [Fact]
         public void Aes256BytesDecrypt()
