@@ -99,8 +99,9 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
                 AESLinuxWrapper.free_cstring(result.aes_key_ptr);
-                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
-                AESLinuxWrapper.free_cstring(result.aes_nonce_ptr);
+                byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
+                Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
+                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -116,8 +117,9 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
                 AESWindowsWrapper.free_cstring(result.aes_key_ptr);
-                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
-                AESWindowsWrapper.free_cstring(result.aes_nonce_ptr);
+                byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
+                Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
+                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -148,8 +150,9 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
                 AESLinuxWrapper.free_cstring(result.aes_key_ptr);
-                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
-                AESLinuxWrapper.free_cstring(result.aes_nonce_ptr);
+                byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
+                Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
+                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -165,8 +168,9 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 string aesKey = Marshal.PtrToStringAnsi(result.aes_key_ptr);
                 AESWindowsWrapper.free_cstring(result.aes_key_ptr);
-                string aesNonce = Marshal.PtrToStringAnsi(result.aes_nonce_ptr);
-                AESWindowsWrapper.free_cstring(result.aes_nonce_ptr);
+                byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
+                Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
+                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -187,9 +191,9 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sendBenchmark"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256Encrypt(string nonceKey, string key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256Encrypt(byte[] nonceKey, string key, byte[] toEncrypt, bool sendBenchmark = true)
         {
-            if (string.IsNullOrEmpty(nonceKey))
+            if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to encrypt with AES 256");
             }
@@ -205,7 +209,7 @@ namespace CasDotnetSdk.Symmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, key, toEncrypt, toEncrypt.Length);
+                AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
@@ -216,7 +220,7 @@ namespace CasDotnetSdk.Symmetric
             }
             else
             {
-                AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, key, toEncrypt, toEncrypt.Length);
+                AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
@@ -235,9 +239,9 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="toDecrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256Decrypt(string nonceKey, string key, byte[] toDecrypt)
+        public byte[] Aes256Decrypt(byte[] nonceKey, string key, byte[] toDecrypt)
         {
-            if (string.IsNullOrEmpty(nonceKey))
+            if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to decrypt with AES 256");
             }
@@ -253,7 +257,7 @@ namespace CasDotnetSdk.Symmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, key, toDecrypt, toDecrypt.Length);
+                AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.plaintext);
@@ -263,7 +267,7 @@ namespace CasDotnetSdk.Symmetric
             }
             else
             {
-                AesBytesDecrypt encryptResult = AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, key, toDecrypt, toDecrypt.Length);
+                AesBytesDecrypt encryptResult = AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.plaintext);
@@ -281,9 +285,9 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="dataToEncrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes128Encrypt(string nonceKey, string key, byte[] dataToEncrypt)
+        public byte[] Aes128Encrypt(byte[] nonceKey, string key, byte[] dataToEncrypt)
         {
-            if (string.IsNullOrEmpty(nonceKey))
+            if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce key to encrypt with AES 128");
             }
@@ -299,7 +303,7 @@ namespace CasDotnetSdk.Symmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, key, dataToEncrypt, dataToEncrypt.Length);
+                AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
@@ -309,7 +313,7 @@ namespace CasDotnetSdk.Symmetric
             }
             else
             {
-                AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, key, dataToEncrypt, dataToEncrypt.Length);
+                AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
@@ -327,9 +331,9 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="dataToDecrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes128Decrypt(string nonceKey, string key, byte[] dataToDecrypt)
+        public byte[] Aes128Decrypt(byte[] nonceKey, string key, byte[] dataToDecrypt)
         {
-            if (string.IsNullOrEmpty(nonceKey))
+            if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce key to decrypt with AES 128");
             }
@@ -345,7 +349,7 @@ namespace CasDotnetSdk.Symmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, key, dataToDecrypt, dataToDecrypt.Length);
+                AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AESLinuxWrapper.free_bytes(decryptResult.plaintext);
@@ -355,7 +359,7 @@ namespace CasDotnetSdk.Symmetric
             }
             else
             {
-                AesBytesDecrypt decryptResult = AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, key, dataToDecrypt, dataToDecrypt.Length);
+                AesBytesDecrypt decryptResult = AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 AESWindowsWrapper.free_bytes(decryptResult.plaintext);
@@ -369,12 +373,29 @@ namespace CasDotnetSdk.Symmetric
         /// Generates a AES Nonce usuable for AES-128-GCM and AES-256-GCM.
         /// </summary>
         /// <returns></returns>
-        public string GenerateAESNonce()
+        public byte[] GenerateAESNonce()
         {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] nonceBytes = new byte[12];
-            rng.GetBytes(nonceBytes);
-            return BitConverter.ToString(nonceBytes).Substring(0, 12);
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                AesNonceResult nonceResult = AESLinuxWrapper.aes_nonce();
+                byte[] result = new byte[nonceResult.length];
+                Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
+                AESLinuxWrapper.free_bytes(nonceResult.nonce);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return result;
+            }
+            else
+            {
+                AesNonceResult nonceResult = AESWindowsWrapper.aes_nonce();
+                byte[] result = new byte[nonceResult.length];
+                Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
+                AESWindowsWrapper.free_bytes(nonceResult.nonce);
+                DateTime end = DateTime.UtcNow;
+                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(AESWrapper));
+                return result;
+            }
         }
     }
 }
