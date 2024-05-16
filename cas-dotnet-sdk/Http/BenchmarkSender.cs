@@ -25,11 +25,11 @@ namespace CasDotnetSdk.Http
             {
                 result = false;
             }
-            else if (string.IsNullOrEmpty(CASConfiguration.DiffieHellmanExchange.AESKey))
+            else if (CASConfiguration.DiffieHellmanExchange?.AESKey?.Length == 0)
             {
                 result = false;
             }
-            else if (CASConfiguration.DiffieHellmanExchange.AesNonce?.Length == 0)
+            else if (CASConfiguration.DiffieHellmanExchange?.AesNonce?.Length == 0)
             {
                 result = false;
             }
