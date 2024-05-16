@@ -8,7 +8,7 @@ namespace CasDotnetSdk.Hybrid.Types
     public class AESRSAHybridInitializer
     {
         public int AesType { get; set; }
-        public string AesKey { get; set; }
+        public byte[] AesKey { get; set; }
         public byte[] AesNonce { get; set; }
         public RsaKeyPairResult RsaKeyPair { get; set; }
         public AESRSAHybridInitializer(int aesType, int rsaSize)
