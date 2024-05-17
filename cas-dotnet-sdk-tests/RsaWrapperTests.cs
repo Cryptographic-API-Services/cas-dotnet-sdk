@@ -40,6 +40,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void RsaEncryptBytesThreadpool()
+        {
+            byte[] dataToEncrypted = Encoding.UTF8.GetBytes("Testing Stuff TO Encrypt");
+            byte[] encryped = this._RSAWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypted);
+            Assert.NotEqual(dataToEncrypted, encryped);
+        }
+
+        [Fact]
         public void RsaDecryptBytes()
         {
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("EncryptingStuffIsFun");

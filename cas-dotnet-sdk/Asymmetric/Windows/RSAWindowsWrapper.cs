@@ -16,6 +16,9 @@ namespace CasDotnetSdk.Asymmetric.Windows
         public static extern RsaEncryptBytesResult rsa_encrypt_bytes(string publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern RsaEncryptBytesResult rsa_encrypt_bytes_threadpool(string publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern RsaDecryptBytesResult rsa_decrypt_bytes(string privateKey, byte[] dataToDecrypt, int dataToDecryptLenght);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
