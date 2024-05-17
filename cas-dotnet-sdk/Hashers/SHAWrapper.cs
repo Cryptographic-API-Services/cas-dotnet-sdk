@@ -169,5 +169,25 @@ namespace CasDotnetSdk.Hashers
                 return result;
             }
         }
+
+        public byte[] Hash512Threadpool(byte[] dataToHash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Verify512Threadpool(byte[] dataToVerify, byte[] hashedData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] Hash256Threadpool(byte[] dataToHash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Verify256Threadpool(byte[] dataToVerify, byte[] hashedData)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
