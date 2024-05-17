@@ -148,6 +148,48 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
+        /// Decrypts data with an RSA private key on the threadpool.
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="dataToDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        public byte[] RsaDecryptBytesThreadpool(string privateKey, byte[] dataToDecrypt)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(privateKey))
+            {
+                throw new Exception("You must provide a public key to decrypt with RSA");
+            }
+            if (dataToDecrypt == null || dataToDecrypt.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to decrypt with RSA");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaDecryptBytesResult decryptResult = RSALinuxWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSALinuxWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSAWindowsWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Encrypts data with an RSA public key.
         /// </summary>
         /// <param name="publicKey"></param>
@@ -190,7 +232,7 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
-        /// Encrypts data with an RSA public key.
+        /// Encrypts data with an RSA public key on the threadpool.
         /// </summary>
         /// <param name="publicKey"></param>
         /// <param name="dataToEncrypt"></param>

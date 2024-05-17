@@ -22,6 +22,9 @@ namespace CasDotnetSdk.Asymmetric.Windows
         public static extern RsaDecryptBytesResult rsa_decrypt_bytes(string privateKey, byte[] dataToDecrypt, int dataToDecryptLenght);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern RsaDecryptBytesResult rsa_decrypt_bytes_threadpool(string privateKey, byte[] dataToDecrypt, int dataToDecryptLenght);
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern RsaSignBytesResults rsa_sign_with_key_bytes(string privateKey, byte[] dataToSign, int dataToSignLength);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
