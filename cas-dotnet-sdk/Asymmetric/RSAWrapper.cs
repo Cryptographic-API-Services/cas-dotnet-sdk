@@ -232,5 +232,49 @@ namespace CasDotnetSdk.Asymmetric
                 return result;
             }
         }
+
+        /// <summary>
+        /// Generates an RSA key based on the key size provided. (1024, 2048, 4096) on the thread pool.
+        /// </summary>
+        /// <param name="keySize"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public RsaKeyPairResult GetKeyPairThreadPool(int keySize)
+        {
+            if (keySize != 1024 && keySize != 2048 && keySize != 4096)
+            {
+                throw new Exception("Please pass in a valid key size.");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair_threadpool(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSALinuxWrapper.free_cstring(keyPairStruct.pub_key);
+                RSALinuxWrapper.free_cstring(keyPairStruct.priv_key);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair_threadpool(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSAWindowsWrapper.free_cstring(keyPairStruct.pub_key);
+                RSAWindowsWrapper.free_cstring(keyPairStruct.priv_key);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
     }
 }

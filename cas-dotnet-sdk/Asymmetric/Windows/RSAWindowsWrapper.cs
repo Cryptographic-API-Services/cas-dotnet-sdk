@@ -10,6 +10,9 @@ namespace CasDotnetSdk.Asymmetric.Windows
         public static extern RsaKeyPairStruct get_key_pair(int key_size);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern RsaKeyPairStruct get_key_pair_threadpool(int key_size);
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern RsaEncryptBytesResult rsa_encrypt_bytes(string publicKey, byte[] dataToEncrypt, int dataToEncryptLenght);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]

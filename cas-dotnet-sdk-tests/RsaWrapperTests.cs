@@ -24,6 +24,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void CreateKeyPairThreadpool()
+        {
+            RsaKeyPairResult keyPair = this._RSAWrapper.GetKeyPair(1024);
+            Assert.NotNull(keyPair.PublicKey);
+            Assert.NotNull(keyPair.PrivateKey);
+        }
+
+        [Fact]
         public void RsaEncryptBytes()
         {
             byte[] dataToEncrypted = Encoding.UTF8.GetBytes("Testing Stuff TO Encrypt");
