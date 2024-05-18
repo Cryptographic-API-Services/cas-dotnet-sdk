@@ -121,11 +121,11 @@ namespace CasDotnetSdk.Signatures
             }
             if (signature?.Length == 0)
             {
-                throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
+                throw new Exception("You must provide allocated signature data to Verify Bytes with ED25519-Dalek");
             }
             if (dataToVerify?.Length == 0)
             {
-                throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
+                throw new Exception("You must provide allocated data to Verify with ED25519-Dalek");
             }
 
             DateTime start = DateTime.UtcNow;
