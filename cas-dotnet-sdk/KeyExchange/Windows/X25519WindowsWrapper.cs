@@ -13,6 +13,12 @@ namespace CasDotnetSdk.KeyExchange.Windows
         public static extern X25519SharedSecretResult diffie_hellman(byte[] secretKey, int secretKeyLength, byte[] otherUserPublicKey, int otherUserPublickKeyLength);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern X25519SecretPublicKeyResult generate_secret_and_public_key_threadpool();
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern X25519SharedSecretResult diffie_hellman_threadpool(byte[] secretKey, int secretKeyLength, byte[] otherUserPublicKey, int otherUserPublickKeyLength);
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern void free_cstring(IntPtr stringToFree);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
