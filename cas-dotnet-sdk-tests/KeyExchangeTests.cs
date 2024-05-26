@@ -23,5 +23,16 @@ namespace CasDotnetSdkTests.Tests
             bool result = shareSecret1.SharedSecret.SequenceEqual(shareSecret2.SharedSecret);
             Assert.True(result);
         }
+
+        [Fact]
+        public void DiffieHallmanExchangePassThreadpool()
+        {
+            X25519SecretPublicKey keyPair1 = this._wrapper.GenerateSecretAndPublicKeyThreadpool();
+            X25519SecretPublicKey keyPair2 = this._wrapper.GenerateSecretAndPublicKeyThreadpool();
+            X25519SharedSecret shareSecret1 = this._wrapper.GenerateSharedSecretThreadpool(keyPair1.SecretKey, keyPair2.PublicKey);
+            X25519SharedSecret shareSecret2 = this._wrapper.GenerateSharedSecretThreadpool(keyPair2.SecretKey, keyPair1.PublicKey);
+            bool result = shareSecret1.SharedSecret.SequenceEqual(shareSecret2.SharedSecret);
+            Assert.True(result);
+        }
     }
 }

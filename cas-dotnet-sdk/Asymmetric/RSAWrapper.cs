@@ -66,6 +66,48 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
+        /// Signs data with an RSA private key on the threadpool.
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="dataToSign"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public byte[] RsaSignWithKeyBytesThreadpool(string privateKey, byte[] dataToSign)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(privateKey))
+            {
+                throw new Exception("You must provide a private key to sign with RSA");
+            }
+            if (dataToSign == null || dataToSign.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to sign with RSA");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaSignBytesResults signResult = RSALinuxWrapper.rsa_sign_with_key_bytes_threadpool(privateKey, dataToSign, dataToSign.Length);
+                byte[] result = new byte[signResult.length];
+                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+                RSALinuxWrapper.free_bytes(signResult.signature_raw_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaSignBytesResults signResult = RSAWindowsWrapper.rsa_sign_with_key_bytes_threadpool(privateKey, dataToSign, dataToSign.Length);
+                byte[] result = new byte[signResult.length];
+                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+                RSAWindowsWrapper.free_bytes(signResult.signature_raw_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+
+        /// <summary>
         /// Verifies data with an RSA public key.
         /// </summary>
         /// <param name="publicKey"></param>
@@ -105,6 +147,46 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
+        /// Verifies data with an RSA public key on the threadpool.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToVerify"></param>
+        /// <param name="signature"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool RsaVerifyBytesThreadpool(string publicKey, byte[] dataToVerify, byte[] signature)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(publicKey))
+            {
+                throw new Exception("You must provide a public key to verify with RSA");
+            }
+            if (dataToVerify == null || dataToVerify.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to verify with RSA");
+            }
+            if (signature == null || signature.Length == 0)
+            {
+                throw new Exception("You must provide an allocated signature to verify with RSA");
+            }
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+
+                bool result = RSALinuxWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                bool result = RSAWindowsWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+
         /// <summary>
         /// Decrypts data with an RSA private key.
         /// </summary>
@@ -138,6 +220,48 @@ namespace CasDotnetSdk.Asymmetric
             else
             {
                 RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSAWindowsWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Decrypts data with an RSA private key on the threadpool.
+        /// </summary>
+        /// <param name="privateKey"></param>
+        /// <param name="dataToDecrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        public byte[] RsaDecryptBytesThreadpool(string privateKey, byte[] dataToDecrypt)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(privateKey))
+            {
+                throw new Exception("You must provide a public key to decrypt with RSA");
+            }
+            if (dataToDecrypt == null || dataToDecrypt.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to decrypt with RSA");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaDecryptBytesResult decryptResult = RSALinuxWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                byte[] result = new byte[decryptResult.length];
+                Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
+                RSALinuxWrapper.free_bytes(decryptResult.decrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
                 RSAWindowsWrapper.free_bytes(decryptResult.decrypted_result_ptr);
@@ -190,6 +314,48 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
+        /// Encrypts data with an RSA public key on the threadpool.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="dataToEncrypt"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        public byte[] RsaEncryptBytesThreadpool(string publicKey, byte[] dataToEncrypt)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(publicKey))
+            {
+                throw new Exception("You must provide a public key to encryp with RSA");
+            }
+            if (dataToEncrypt == null || dataToEncrypt.Length == 0)
+            {
+                throw new Exception("You must provide allocated data to encrypt with RSA");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaEncryptBytesResult encryptResult = RSALinuxWrapper.rsa_encrypt_bytes_threadpool(publicKey, dataToEncrypt, dataToEncrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.encrypted_result_ptr, result, 0, encryptResult.length);
+                RSALinuxWrapper.free_bytes(encryptResult.encrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaEncryptBytesResult encryptResult = RSAWindowsWrapper.rsa_encrypt_bytes_threadpool(publicKey, dataToEncrypt, dataToEncrypt.Length);
+                byte[] result = new byte[encryptResult.length];
+                Marshal.Copy(encryptResult.encrypted_result_ptr, result, 0, encryptResult.length);
+                RSAWindowsWrapper.free_bytes(encryptResult.encrypted_result_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
         /// </summary>
         /// <param name="keySize"></param>
@@ -220,6 +386,50 @@ namespace CasDotnetSdk.Asymmetric
             else
             {
                 RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSAWindowsWrapper.free_cstring(keyPairStruct.pub_key);
+                RSAWindowsWrapper.free_cstring(keyPairStruct.priv_key);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Generates an RSA key based on the key size provided. (1024, 2048, 4096) on the thread pool.
+        /// </summary>
+        /// <param name="keySize"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public RsaKeyPairResult GetKeyPairThreadPool(int keySize)
+        {
+            if (keySize != 1024 && keySize != 2048 && keySize != 4096)
+            {
+                throw new Exception("Please pass in a valid key size.");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair_threadpool(keySize);
+                RsaKeyPairResult result = new RsaKeyPairResult()
+                {
+                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                };
+                RSALinuxWrapper.free_cstring(keyPairStruct.pub_key);
+                RSALinuxWrapper.free_cstring(keyPairStruct.priv_key);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+                return result;
+            }
+            else
+            {
+                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair_threadpool(keySize);
                 RsaKeyPairResult result = new RsaKeyPairResult()
                 {
                     PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
