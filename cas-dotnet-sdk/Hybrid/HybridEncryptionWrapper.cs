@@ -56,6 +56,31 @@ namespace CasDotnetSdk.Hybrid
         }
 
         /// <summary>
+        /// Encryptes a byte array using AES and RSA Hybrid Encryption.
+        /// </summary>
+        /// <param name="dataToEncrypt"></param>
+        /// <param name="initilizer"></param>
+        /// <returns></returns>
+        public AESRSAHybridEncryptResult EncryptAESRSAHybridThreadpool(byte[] dataToEncrypt, AESRSAHybridInitializer initilizer)
+        {
+            DateTime start = DateTime.UtcNow;
+            byte[] aesEncryptResult = (initilizer.AesType == 128)
+                ? this._aesWrapper.Aes128EncryptThreadpool(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt)
+                : this._aesWrapper.Aes256EncryptThreadpool(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt);
+            byte[] encryptedAesKey = this._rsaWrapper.RsaEncryptBytesThreadpool(initilizer.RsaKeyPair.PublicKey, initilizer.AesKey);
+            AESRSAHybridEncryptResult result = new AESRSAHybridEncryptResult()
+            {
+                CipherText = aesEncryptResult,
+                EncryptedAesKey = encryptedAesKey,
+                AesType = initilizer.AesType,
+                AesNonce = initilizer.AesNonce,
+            };
+            DateTime end = DateTime.UtcNow;
+            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            return result;
+        }
+
+        /// <summary>
         /// Decrypts a byte array using AES and RSA Hybrid Encryption.
         /// </summary>
         /// <param name="rsaPrivateKey"></param>
@@ -73,6 +98,29 @@ namespace CasDotnetSdk.Hybrid
             byte[] plaintext = (encryptResult.AesType == 128)
                 ? this._aesWrapper.Aes128Decrypt(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText)
                 : this._aesWrapper.Aes256Decrypt(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText);
+            DateTime end = DateTime.UtcNow;
+            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            return plaintext;
+        }
+
+        /// <summary>
+        /// Decrypts a byte array using AES and RSA Hybrid Encryption.
+        /// </summary>
+        /// <param name="rsaPrivateKey"></param>
+        /// <param name="encryptResult"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public byte[] DecryptAESRSAHybridThreadpool(string rsaPrivateKey, AESRSAHybridEncryptResult encryptResult)
+        {
+            if (!RSAValidator.ValidateRsaPemKey(rsaPrivateKey))
+            {
+                throw new Exception("Must provide a RSA Private Key to decrypt with AES RSA Hybrid Encryption");
+            }
+            DateTime start = DateTime.UtcNow;
+            byte[] plaintextAesKey = this._rsaWrapper.RsaDecryptBytesThreadpool(rsaPrivateKey, encryptResult.EncryptedAesKey);
+            byte[] plaintext = (encryptResult.AesType == 128)
+                ? this._aesWrapper.Aes128DecryptThreadpool(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText)
+                : this._aesWrapper.Aes256DecryptThreadpool(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText);
             DateTime end = DateTime.UtcNow;
             this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return plaintext;
