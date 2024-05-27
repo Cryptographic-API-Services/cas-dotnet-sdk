@@ -9,7 +9,7 @@ The official Nuget page can be found [here](https://www.nuget.org/packages/cas-d
 **Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
 
 ## Consuming Library Documentation
-This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic operations sequentially, on threads, and the thread pool [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib).
+This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic operations sequentially and the thread pool [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib).
 
 We utilize some smart people's existing work and we believe their documentation should be reviewed when possible.
 - [Spin Research](https://github.com/SpinResearch)
@@ -18,8 +18,6 @@ We utilize some smart people's existing work and we believe their documentation 
 - [Rayon](https://github.com/rayon-rs/rayon)
 
 ## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
-
-## [Parallel Examples / Benchmarks](./docs/PARALLEL.md)
 
 ## Supported Frameworks / Operating Systems
 We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-8 for Windows and Linux (Ubuntu) on each pull request and release to Nuget through GitHub actions.

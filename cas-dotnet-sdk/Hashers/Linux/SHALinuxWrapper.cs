@@ -33,11 +33,5 @@ namespace CasDotnetSdk.Hashers.Linux
         [DllImport("Contents/libcas_core_lib.so")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool sha256_bytes_verify_threadpool(byte[] dataToHash, int dataLength, byte[] hashToVerify, int hashToVerifyLength);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

@@ -61,11 +61,5 @@ namespace CasDotnetSdk.DigitalSignature.Windows
         [DllImport("\\Contents\\cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool sha256_ed25519_digital_signature_verify_threadpool(byte[] publicKey, int publicKeyLength, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

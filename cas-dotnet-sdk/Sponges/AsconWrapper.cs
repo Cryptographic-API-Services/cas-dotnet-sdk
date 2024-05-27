@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Http;
 using CasDotnetSdk.Sponges.Linux;
 using CasDotnetSdk.Sponges.Types;
 using CasDotnetSdk.Sponges.Windows;
@@ -32,7 +33,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128KeyStruct keyPtr = AsconLinuxWrapper.ascon_128_key();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AsconLinuxWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
@@ -42,7 +43,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128KeyStruct keyPtr = AsconWindowsWrapper.ascon_128_key();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AsconWindowsWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
@@ -61,7 +62,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128KeyStruct keyPtr = AsconLinuxWrapper.ascon_128_key_threadpool();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AsconLinuxWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
@@ -71,7 +72,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128KeyStruct keyPtr = AsconWindowsWrapper.ascon_128_key_threadpool();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AsconWindowsWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
@@ -90,7 +91,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128NonceStruct noncePtr = AsconLinuxWrapper.ascon_128_nonce();
                 byte[] nonce = new byte[noncePtr.length];
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                AsconLinuxWrapper.free_bytes(noncePtr.nonce);
+                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
@@ -100,7 +101,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128NonceStruct noncePtr = AsconWindowsWrapper.ascon_128_nonce();
                 byte[] nonce = new byte[noncePtr.length];
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                AsconWindowsWrapper.free_bytes(noncePtr.nonce);
+                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
@@ -119,7 +120,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128NonceStruct noncePtr = AsconLinuxWrapper.ascon_128_nonce_threadpool();
                 byte[] nonce = new byte[noncePtr.length];
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                AsconLinuxWrapper.free_bytes(noncePtr.nonce);
+                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
@@ -129,7 +130,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128NonceStruct noncePtr = AsconWindowsWrapper.ascon_128_nonce_threadpool();
                 byte[] nonce = new byte[noncePtr.length];
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                AsconWindowsWrapper.free_bytes(noncePtr.nonce);
+                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
@@ -165,7 +166,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128EncryptResultStruct encryptResult = AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AsconLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -175,7 +176,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128EncryptResultStruct encryptResult = AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AsconWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -211,7 +212,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128EncryptResultStruct encryptResult = AsconLinuxWrapper.ascon_128_encrypt_threadpool(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AsconLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -221,7 +222,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128EncryptResultStruct encryptResult = AsconWindowsWrapper.ascon_128_encrypt_threadpool(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AsconWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -257,7 +258,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128DecryptResultStruct decryptResult = AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AsconLinuxWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -267,7 +268,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128DecryptResultStruct decryptResult = AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AsconWindowsWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -303,7 +304,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128DecryptResultStruct decryptResult = AsconLinuxWrapper.ascon_128_decrypt_threadpool(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AsconLinuxWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
@@ -313,7 +314,7 @@ namespace CasDotnetSdk.Sponges
                 Ascon128DecryptResultStruct decryptResult = AsconWindowsWrapper.ascon_128_decrypt_threadpool(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AsconWindowsWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;

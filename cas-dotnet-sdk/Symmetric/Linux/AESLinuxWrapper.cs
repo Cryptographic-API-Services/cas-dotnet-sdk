@@ -59,11 +59,5 @@ namespace CasDotnetSdk.Symmetric.Linux
 
         [DllImport("Contents/libcas_core_lib.so")]
         public static extern Aes256KeyAndNonceX25519DiffieHellmanStruct aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(byte[] sharedSecret, int sharedSecretLength);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

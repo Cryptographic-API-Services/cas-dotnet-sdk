@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.DigitalSignature.Linux;
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -45,8 +46,8 @@ namespace CasDotnetSdk.DigitalSignature
                 byte[] signature = new byte[structResult.signature_length];
                 Marshal.Copy(structResult.public_key, publicKey, 0, publicKey.Length);
                 Marshal.Copy(structResult.signature_raw_ptr, signature, 0, signature.Length);
-                DigitalSignatureLinuxWrapper.free_bytes(structResult.public_key);
-                DigitalSignatureLinuxWrapper.free_bytes(structResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(structResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(structResult.signature_raw_ptr);
                 SHAED25519DalekDigitialSignatureResult result = new SHAED25519DalekDigitialSignatureResult()
                 {
                     PublicKey = publicKey,
@@ -63,8 +64,8 @@ namespace CasDotnetSdk.DigitalSignature
                 byte[] signature = new byte[structResult.signature_length];
                 Marshal.Copy(structResult.public_key, publicKey, 0, publicKey.Length);
                 Marshal.Copy(structResult.signature_raw_ptr, signature, 0, signature.Length);
-                DigitalSignatureWindowsWrapper.free_bytes(structResult.public_key);
-                DigitalSignatureWindowsWrapper.free_bytes(structResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(structResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(structResult.signature_raw_ptr);
                 SHAED25519DalekDigitialSignatureResult result = new SHAED25519DalekDigitialSignatureResult()
                 {
                     PublicKey = publicKey,
@@ -97,8 +98,8 @@ namespace CasDotnetSdk.DigitalSignature
                 byte[] signature = new byte[structResult.signature_length];
                 Marshal.Copy(structResult.public_key, publicKey, 0, publicKey.Length);
                 Marshal.Copy(structResult.signature_raw_ptr, signature, 0, signature.Length);
-                DigitalSignatureLinuxWrapper.free_bytes(structResult.public_key);
-                DigitalSignatureLinuxWrapper.free_bytes(structResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(structResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(structResult.signature_raw_ptr);
                 SHAED25519DalekDigitialSignatureResult result = new SHAED25519DalekDigitialSignatureResult()
                 {
                     PublicKey = publicKey,
@@ -115,8 +116,8 @@ namespace CasDotnetSdk.DigitalSignature
                 byte[] signature = new byte[structResult.signature_length];
                 Marshal.Copy(structResult.public_key, publicKey, 0, publicKey.Length);
                 Marshal.Copy(structResult.signature_raw_ptr, signature, 0, signature.Length);
-                DigitalSignatureWindowsWrapper.free_bytes(structResult.public_key);
-                DigitalSignatureWindowsWrapper.free_bytes(structResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(structResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(structResult.signature_raw_ptr);
                 SHAED25519DalekDigitialSignatureResult result = new SHAED25519DalekDigitialSignatureResult()
                 {
                     PublicKey = publicKey,
@@ -160,9 +161,9 @@ namespace CasDotnetSdk.DigitalSignature
                     PrivateKey = privateKey,
                     PublicKey = publicKey
                 };
-                DigitalSignatureLinuxWrapper.free_bytes(result.signature);
-                DigitalSignatureLinuxWrapper.free_cstring(result.public_key);
-                DigitalSignatureLinuxWrapper.free_cstring(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }
@@ -180,9 +181,9 @@ namespace CasDotnetSdk.DigitalSignature
                     PrivateKey = privateKey,
                     PublicKey = publicKey
                 };
-                DigitalSignatureWindowsWrapper.free_bytes(result.signature);
-                DigitalSignatureWindowsWrapper.free_cstring(result.public_key);
-                DigitalSignatureWindowsWrapper.free_cstring(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }
@@ -220,9 +221,9 @@ namespace CasDotnetSdk.DigitalSignature
                     PrivateKey = privateKey,
                     PublicKey = publicKey
                 };
-                DigitalSignatureLinuxWrapper.free_bytes(result.signature);
-                DigitalSignatureLinuxWrapper.free_cstring(result.public_key);
-                DigitalSignatureLinuxWrapper.free_cstring(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }
@@ -240,9 +241,9 @@ namespace CasDotnetSdk.DigitalSignature
                     PrivateKey = privateKey,
                     PublicKey = publicKey
                 };
-                DigitalSignatureWindowsWrapper.free_bytes(result.signature);
-                DigitalSignatureWindowsWrapper.free_cstring(result.public_key);
-                DigitalSignatureWindowsWrapper.free_cstring(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }

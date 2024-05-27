@@ -38,11 +38,5 @@ namespace CasDotnetSdk.Asymmetric.Windows
         [DllImport("\\Contents\\cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool rsa_verify_bytes_threadpool(string publicKey, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }
