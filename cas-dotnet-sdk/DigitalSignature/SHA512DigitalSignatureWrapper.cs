@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.DigitalSignature.Linux;
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -45,8 +46,8 @@ namespace CasDotnetSdk.DigitalSignature
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];
                 Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.public_key);
-                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHAED25519DalekDigitialSignatureResult()
@@ -62,8 +63,8 @@ namespace CasDotnetSdk.DigitalSignature
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];
                 Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.public_key);
-                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHAED25519DalekDigitialSignatureResult()
@@ -95,8 +96,8 @@ namespace CasDotnetSdk.DigitalSignature
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];
                 Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.public_key);
-                DigitalSignatureLinuxWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHAED25519DalekDigitialSignatureResult()
@@ -112,8 +113,8 @@ namespace CasDotnetSdk.DigitalSignature
                 Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
                 byte[] signature = new byte[signatureResult.signature_length];
                 Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.public_key);
-                DigitalSignatureWindowsWrapper.free_bytes(signatureResult.signature_raw_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
+                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHAED25519DalekDigitialSignatureResult()
@@ -150,9 +151,9 @@ namespace CasDotnetSdk.DigitalSignature
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, result.length);
-                DigitalSignatureLinuxWrapper.free_cstring(result.public_key);
-                DigitalSignatureLinuxWrapper.free_cstring(result.private_key);
-                DigitalSignatureLinuxWrapper.free_bytes(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()
@@ -169,9 +170,9 @@ namespace CasDotnetSdk.DigitalSignature
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, result.length);
-                DigitalSignatureWindowsWrapper.free_cstring(result.public_key);
-                DigitalSignatureWindowsWrapper.free_cstring(result.private_key);
-                DigitalSignatureWindowsWrapper.free_bytes(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()
@@ -209,9 +210,9 @@ namespace CasDotnetSdk.DigitalSignature
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, result.length);
-                DigitalSignatureLinuxWrapper.free_cstring(result.public_key);
-                DigitalSignatureLinuxWrapper.free_cstring(result.private_key);
-                DigitalSignatureLinuxWrapper.free_bytes(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()
@@ -228,9 +229,9 @@ namespace CasDotnetSdk.DigitalSignature
                 string privateKey = Marshal.PtrToStringAnsi(result.private_key);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, result.length);
-                DigitalSignatureWindowsWrapper.free_cstring(result.public_key);
-                DigitalSignatureWindowsWrapper.free_cstring(result.private_key);
-                DigitalSignatureWindowsWrapper.free_bytes(result.signature);
+                FreeMemoryHelper.FreeCStringMemory(result.public_key);
+                FreeMemoryHelper.FreeCStringMemory(result.private_key);
+                FreeMemoryHelper.FreeBytesMemory(result.signature);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
                 return new SHARSADigitalSignatureResult()

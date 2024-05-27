@@ -30,11 +30,5 @@ namespace CasDotnetSdk.Hashers.Linux
 
         [DllImport("Contents/libcas_core_lib.so")]
         public static extern bool blake2_512_bytes_verify_threadpool(byte[] hashedData, int hashedDatLength, byte[] toCompare, int toCompareLength);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }
