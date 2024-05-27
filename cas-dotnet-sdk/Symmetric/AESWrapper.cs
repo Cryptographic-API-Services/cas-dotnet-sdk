@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Http;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
@@ -36,7 +37,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESLinuxWrapper.aes_128_key();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESLinuxWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -46,7 +47,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESWindowsWrapper.aes_128_key();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESWindowsWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -65,7 +66,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESLinuxWrapper.aes_128_key_threadpool();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESLinuxWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -75,7 +76,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESWindowsWrapper.aes_128_key_threadpool();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESWindowsWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -94,7 +95,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESLinuxWrapper.aes_256_key();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESLinuxWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -104,7 +105,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyPtr = AESWindowsWrapper.aes_256_key();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AESWindowsWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -123,7 +124,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyResult = AESLinuxWrapper.aes_256_key_threadpool();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
-                AESLinuxWrapper.free_bytes(keyResult.key);
+                FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -133,7 +134,7 @@ namespace CasDotnetSdk.Symmetric
                 AesKeyResult keyPtr = AESWindowsWrapper.aes_256_key_threadpool();
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                AESWindowsWrapper.free_bytes(keyPtr.key);
+                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
@@ -160,10 +161,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -179,10 +180,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -214,10 +215,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -233,10 +234,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -267,10 +268,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESLinuxWrapper.free_cstring(result.aes_key_ptr);
+                FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -286,10 +287,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESWindowsWrapper.free_cstring(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -320,10 +321,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESLinuxWrapper.free_cstring(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESLinuxWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -339,10 +340,10 @@ namespace CasDotnetSdk.Symmetric
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESWindowsWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
                 byte[] aesKey = new byte[result.aes_key_ptr_length];
                 Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
-                AESWindowsWrapper.free_cstring(result.aes_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
                 byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
                 Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-                AESWindowsWrapper.free_bytes(result.aes_nonce_ptr);
+                FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
                 Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
                 {
                     AesKey = aesKey,
@@ -384,7 +385,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 if (sendBenchmark)
                     this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
@@ -395,7 +396,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 if (sendBenchmark)
                     this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
@@ -433,7 +434,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 if (sendBenchmark)
                     this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
@@ -444,7 +445,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_256_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 if (sendBenchmark)
                     this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
@@ -481,7 +482,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -491,7 +492,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt encryptResult = AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -527,7 +528,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -537,7 +538,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt encryptResult = AESWindowsWrapper.aes_256_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -573,7 +574,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -583,7 +584,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -619,7 +620,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESLinuxWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -629,7 +630,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesEncrypt encryptResult = AESWindowsWrapper.aes_128_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                AESWindowsWrapper.free_bytes(encryptResult.ciphertext);
+                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -665,7 +666,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AESLinuxWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -675,7 +676,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt decryptResult = AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AESWindowsWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -711,7 +712,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AESLinuxWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -721,7 +722,7 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt decryptResult = AESWindowsWrapper.aes_128_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                AESWindowsWrapper.free_bytes(decryptResult.plaintext);
+                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -740,7 +741,7 @@ namespace CasDotnetSdk.Symmetric
                 AesNonceResult nonceResult = AESLinuxWrapper.aes_nonce();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
-                AESLinuxWrapper.free_bytes(nonceResult.nonce);
+                FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -750,7 +751,7 @@ namespace CasDotnetSdk.Symmetric
                 AesNonceResult nonceResult = AESWindowsWrapper.aes_nonce();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
-                AESWindowsWrapper.free_bytes(nonceResult.nonce);
+                FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -769,7 +770,7 @@ namespace CasDotnetSdk.Symmetric
                 AesNonceResult nonceResult = AESLinuxWrapper.aes_nonce_threadpool();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
-                AESLinuxWrapper.free_bytes(nonceResult.nonce);
+                FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
@@ -779,7 +780,7 @@ namespace CasDotnetSdk.Symmetric
                 AesNonceResult nonceResult = AESWindowsWrapper.aes_nonce_threadpool();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
-                AESWindowsWrapper.free_bytes(nonceResult.nonce);
+                FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;

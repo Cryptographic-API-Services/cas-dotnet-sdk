@@ -29,11 +29,5 @@ namespace CasDotnetSdk.Sponges.Linux
 
         [DllImport("Contents/libcas_core_lib.so")]
         public static extern Ascon128DecryptResultStruct ascon_128_decrypt_threadpool(byte[] nonce, int nonceLength, byte[] key, int keyLength, byte[] toDecrypt, int toDecryptLength);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

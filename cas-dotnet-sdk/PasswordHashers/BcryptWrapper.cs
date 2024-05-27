@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Http;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;
@@ -36,7 +37,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash(passwordToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                BcryptLinuxWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
@@ -45,7 +46,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                BcryptWindowsWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
@@ -64,7 +65,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                BcryptLinuxWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
@@ -73,7 +74,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                BcryptWindowsWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;

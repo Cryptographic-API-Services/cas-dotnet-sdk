@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Http;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using CASHelpers;
@@ -40,7 +41,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = Argon2LinuxWrapper.argon2_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                Argon2LinuxWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
                 return hashed;
@@ -49,7 +50,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = Argon2WindowsWrapper.argon2_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                Argon2WindowsWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
                 return hashed;
@@ -105,7 +106,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = Argon2LinuxWrapper.argon2_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                Argon2LinuxWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
                 return hashed;
@@ -114,7 +115,7 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 IntPtr hashedPtr = Argon2WindowsWrapper.argon2_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                Argon2WindowsWrapper.free_cstring(hashedPtr);
+                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
                 return hashed;

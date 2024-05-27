@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -43,7 +44,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashResult = Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length);
                 byte[] result = new byte[hashResult.length];
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                Blake2LinuxWrapper.free_bytes(hashResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -53,7 +54,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashResult = Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
                 byte[] result = new byte[hashResult.length];
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                Blake2WindowsWrapper.free_bytes(hashResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -79,7 +80,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashResult = Blake2LinuxWrapper.blake2_512_bytes_threadpool(toHash, toHash.Length);
                 byte[] result = new byte[hashResult.length];
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                Blake2LinuxWrapper.free_bytes(hashResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -89,7 +90,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashResult = Blake2WindowsWrapper.blake2_512_bytes_threadpool(toHash, toHash.Length);
                 byte[] result = new byte[hashResult.length];
                 Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                Blake2WindowsWrapper.free_bytes(hashResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -185,7 +186,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashedResult = Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length);
                 byte[] result = new byte[hashedResult.length];
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                Blake2LinuxWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -195,7 +196,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashedResult = Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
                 byte[] result = new byte[hashedResult.length];
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                Blake2WindowsWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -221,7 +222,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashedResult = Blake2LinuxWrapper.blake2_256_bytes_threadpool(toHash, toHash.Length);
                 byte[] result = new byte[hashedResult.length];
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                Blake2LinuxWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
@@ -231,7 +232,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2HashByteResult hashedResult = Blake2WindowsWrapper.blake2_256_bytes_threadpool(toHash, toHash.Length);
                 byte[] result = new byte[hashedResult.length];
                 Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                Blake2WindowsWrapper.free_bytes(hashedResult.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
                 return result;
