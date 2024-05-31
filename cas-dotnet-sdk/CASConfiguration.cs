@@ -40,6 +40,7 @@ namespace CasDotnetSdk
                     {
                         SendOSInformation(value).GetAwaiter().GetResult();
                         DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                        _IsThreadProductEnabled = new IsThreadingProductEnabled();
                     }
                     else
                     {
@@ -103,6 +104,20 @@ namespace CasDotnetSdk
         {
             get { return _DiffieHellmanExchange; }
             set { _DiffieHellmanExchange = value; }
+        }
+
+        private static IsThreadingProductEnabled _IsThreadProductEnabled;
+        internal static IsThreadingProductEnabled IsThreadProductEnabled
+        {
+            get { return _IsThreadProductEnabled; }
+            set { _IsThreadProductEnabled = value; }
+        }
+
+        private static bool _IsThreadingEnabled = false;
+        internal static bool IsThreadingEnabled
+        {
+            get { return _IsThreadingEnabled; }
+            set { _IsThreadingEnabled = value; }
         }
 
         private static async Task SendOSInformation(string apiKey)
