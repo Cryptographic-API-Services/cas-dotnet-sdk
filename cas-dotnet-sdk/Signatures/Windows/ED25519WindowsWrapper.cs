@@ -34,11 +34,5 @@ namespace CasDotnetSdk.Signatures.Windows
         [DllImport("\\Contents\\cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool verify_with_public_key_bytes_threadpool(byte[] publicKey, int publicKeyLength, byte[] signature, int signatureLength, byte[] dataToVerify, int dataToVerifyLength);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
@@ -47,7 +48,7 @@ namespace CasDotnetSdk.Hashers
                 HmacSignByteResult signed = HmacLinuxWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
-                HmacLinuxWrapper.free_bytes(signed.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
                 return result;
@@ -57,7 +58,7 @@ namespace CasDotnetSdk.Hashers
                 HmacSignByteResult signed = HmacWindowsWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
-                HmacWindowsWrapper.free_bytes(signed.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
                 return result;
@@ -87,7 +88,7 @@ namespace CasDotnetSdk.Hashers
                 HmacSignByteResult signed = HmacLinuxWrapper.hmac_sign_bytes_threadpool(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
-                HmacLinuxWrapper.free_bytes(signed.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
                 return result;
@@ -97,7 +98,7 @@ namespace CasDotnetSdk.Hashers
                 HmacSignByteResult signed = HmacWindowsWrapper.hmac_sign_bytes_threadpool(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
-                HmacWindowsWrapper.free_bytes(signed.result_bytes_ptr);
+                FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
                 DateTime end = DateTime.UtcNow;
                 this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
                 return result;

@@ -33,11 +33,5 @@ namespace CasDotnetSdk.Hashers.Windows
         [DllImport("\\Contents\\cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool sha256_bytes_verify_threadpool(byte[] dataToHash, int dataLength, byte[] hashToVerify, int hashToVerifyLength);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Http;
+﻿using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Http;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
@@ -38,8 +39,8 @@ namespace CasDotnetSdk.KeyExchange
                 Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
                 byte[] publicKeyResult = new byte[result.public_key_length];
                 Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                X25519LinuxWrapper.free_bytes(result.public_key);
-                X25519LinuxWrapper.free_bytes(result.secret_key);
+                FreeMemoryHelper.FreeBytesMemory(result.public_key);
+                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
                 X25519SecretPublicKey res = new X25519SecretPublicKey()
                 {
                     PublicKey = publicKeyResult,
@@ -56,8 +57,8 @@ namespace CasDotnetSdk.KeyExchange
                 Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
                 byte[] publicKeyResult = new byte[result.public_key_length];
                 Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                X25519WindowsWrapper.free_bytes(result.public_key);
-                X25519WindowsWrapper.free_bytes(result.secret_key);
+                FreeMemoryHelper.FreeBytesMemory(result.public_key);
+                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
                 X25519SecretPublicKey res = new X25519SecretPublicKey()
                 {
                     PublicKey = publicKeyResult,
@@ -83,8 +84,8 @@ namespace CasDotnetSdk.KeyExchange
                 Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
                 byte[] publicKeyResult = new byte[result.public_key_length];
                 Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                X25519LinuxWrapper.free_bytes(result.public_key);
-                X25519LinuxWrapper.free_bytes(result.secret_key);
+                FreeMemoryHelper.FreeBytesMemory(result.public_key);
+                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
                 X25519SecretPublicKey res = new X25519SecretPublicKey()
                 {
                     PublicKey = publicKeyResult,
@@ -101,8 +102,8 @@ namespace CasDotnetSdk.KeyExchange
                 Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
                 byte[] publicKeyResult = new byte[result.public_key_length];
                 Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                X25519WindowsWrapper.free_bytes(result.public_key);
-                X25519WindowsWrapper.free_bytes(result.secret_key);
+                FreeMemoryHelper.FreeBytesMemory(result.public_key);
+                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
                 X25519SecretPublicKey res = new X25519SecretPublicKey()
                 {
                     PublicKey = publicKeyResult,
@@ -138,7 +139,7 @@ namespace CasDotnetSdk.KeyExchange
                 X25519SharedSecretResult result = X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
                 byte[] sharedSecret = new byte[result.shared_secret_length];
                 Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                X25519LinuxWrapper.free_bytes(result.shared_secret);
+                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
                 X25519SharedSecret res = new X25519SharedSecret()
                 {
                     SharedSecret = sharedSecret
@@ -152,7 +153,7 @@ namespace CasDotnetSdk.KeyExchange
                 X25519SharedSecretResult result = X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
                 byte[] sharedSecret = new byte[result.shared_secret_length];
                 Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                X25519WindowsWrapper.free_bytes(result.shared_secret);
+                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
                 X25519SharedSecret res = new X25519SharedSecret()
                 {
                     SharedSecret = sharedSecret
@@ -187,7 +188,7 @@ namespace CasDotnetSdk.KeyExchange
                 X25519SharedSecretResult result = X25519LinuxWrapper.diffie_hellman_threadpool(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
                 byte[] sharedSecret = new byte[result.shared_secret_length];
                 Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                X25519LinuxWrapper.free_bytes(result.shared_secret);
+                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
                 X25519SharedSecret res = new X25519SharedSecret()
                 {
                     SharedSecret = sharedSecret
@@ -201,7 +202,7 @@ namespace CasDotnetSdk.KeyExchange
                 X25519SharedSecretResult result = X25519WindowsWrapper.diffie_hellman_threadpool(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
                 byte[] sharedSecret = new byte[result.shared_secret_length];
                 Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                X25519WindowsWrapper.free_bytes(result.shared_secret);
+                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
                 X25519SharedSecret res = new X25519SharedSecret()
                 {
                     SharedSecret = sharedSecret

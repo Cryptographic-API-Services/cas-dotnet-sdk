@@ -19,11 +19,5 @@ namespace CasDotnetSdk.Hashers.Linux
         [DllImport("Contents/libcas_core_lib.so")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool hmac_verify_bytes_threadpool(byte[] key, int keyLength, byte[] message, int messageLength, byte[] signature, int signatureLength);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_cstring(IntPtr stringToFree);
-
-        [DllImport("Contents/libcas_core_lib.so")]
-        public static extern void free_bytes(IntPtr bytesToFree);
     }
 }

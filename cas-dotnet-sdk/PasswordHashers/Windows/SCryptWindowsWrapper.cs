@@ -18,8 +18,5 @@ namespace CasDotnetSdk.PasswordHashers.Windows
         [DllImport("\\Contents\\cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool scrypt_verify_threadpool(string password, string hash);
-
-        [DllImport("\\Contents\\cas_core_lib.dll")]
-        public static extern void free_cstring(IntPtr stringToFree);
     }
 }
