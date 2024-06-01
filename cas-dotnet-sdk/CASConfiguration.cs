@@ -38,9 +38,11 @@ namespace CasDotnetSdk
                     _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
                     if (_ApiKey != null)
                     {
-                        SendOSInformation(value).GetAwaiter().GetResult();
-                        DiffieHellmanExchange.CreateSharedSecretWithServer().GetAwaiter().GetResult();
+                        Task osSendTask = SendOSInformation(value);
+                        Task dhTask = DiffieHellmanExchange.CreateSharedSecretWithServer();
                         _IsThreadProductEnabled = new IsThreadingProductEnabled();
+                        Task isThreadingEnabledTask = _IsThreadProductEnabled.ValidateThreadingProductSubscription();
+                        Task.WhenAll(osSendTask, dhTask, isThreadingEnabledTask).GetAwaiter().GetResult();
                     }
                     else
                     {

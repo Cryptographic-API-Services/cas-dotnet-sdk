@@ -2,6 +2,7 @@
 using System;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CasDotnetSdk.Queues
 {
@@ -12,12 +13,20 @@ namespace CasDotnetSdk.Queues
 
         public IsThreadingProductEnabled()
         {
-            this.ValidateThreadingProductSubscription(null);
             this.Interval = 1;
-            this.Timer = new Timer(ValidateThreadingProductSubscription, null, TimeSpan.FromHours(this.Interval), TimeSpan.FromHours(this.Interval));
+            this.Timer = new Timer(ValidateThreadingProductSubscriptionCallback, null, TimeSpan.FromHours(this.Interval), TimeSpan.FromHours(this.Interval));
+        }
+        private async void ValidateThreadingProductSubscriptionCallback(object state)
+        {
+            await SendRequestToApi();
         }
 
-        private async void ValidateThreadingProductSubscription(object state)
+        public async Task ValidateThreadingProductSubscription()
+        {
+            await SendRequestToApi();
+        }
+
+        private async Task SendRequestToApi()
         {
             HttpClientSingleton httpClient = HttpClientSingleton.Instance;
             string url = CASConfiguration.Url + "/Payments/ValidateProductSignature";
