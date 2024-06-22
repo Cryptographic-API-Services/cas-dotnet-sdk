@@ -76,6 +76,11 @@ namespace CasDotnetSdk.KeyExchange
         /// <returns></returns>
         public X25519SecretPublicKey GenerateSecretAndPublicKeyThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -173,6 +178,11 @@ namespace CasDotnetSdk.KeyExchange
         /// <exception cref="Exception"></exception>
         public X25519SharedSecret GenerateSharedSecretThreadpool(byte[] secretKey, byte[] otherUserPublicKey)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (secretKey == null || secretKey.Length == 0)
             {
                 throw new Exception("You must provide an allocated data array");

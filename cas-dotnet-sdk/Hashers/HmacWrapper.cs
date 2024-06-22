@@ -74,6 +74,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public byte[] HmacSignBytesThreadpool(byte[] key, byte[] message)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (key == null || key.Length == 0)
             {
                 throw new Exception("You must provide a key to sign with HMAC");
@@ -155,6 +160,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public bool HmacVerifyBytesThreadpool(byte[] key, byte[] message, byte[] signature)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (key == null || key.Length == 0)
             {
                 throw new Exception("You must provide a key to verify with HMAC");
