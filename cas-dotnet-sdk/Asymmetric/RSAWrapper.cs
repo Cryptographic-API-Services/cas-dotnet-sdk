@@ -75,6 +75,11 @@ namespace CasDotnetSdk.Asymmetric
         /// <exception cref="Exception"></exception>
         public byte[] RsaSignWithKeyBytesThreadpool(string privateKey, byte[] dataToSign)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a private key to sign with RSA");
@@ -157,6 +162,11 @@ namespace CasDotnetSdk.Asymmetric
         /// <exception cref="Exception"></exception>
         public bool RsaVerifyBytesThreadpool(string publicKey, byte[] dataToVerify, byte[] signature)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to verify with RSA");
@@ -240,6 +250,11 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] RsaDecryptBytesThreadpool(string privateKey, byte[] dataToDecrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a public key to decrypt with RSA");
@@ -324,6 +339,11 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] RsaEncryptBytesThreadpool(string publicKey, byte[] dataToEncrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to encryp with RSA");
@@ -408,6 +428,11 @@ namespace CasDotnetSdk.Asymmetric
         /// <exception cref="Exception"></exception>
         public RsaKeyPairResult GetKeyPairThreadPool(int keySize)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
             {
                 throw new Exception("Please pass in a valid key size.");
