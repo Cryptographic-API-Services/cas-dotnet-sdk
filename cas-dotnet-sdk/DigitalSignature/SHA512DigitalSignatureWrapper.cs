@@ -83,6 +83,11 @@ namespace CasDotnetSdk.DigitalSignature
         /// <exception cref="Exception"></exception>
         public SHAED25519DalekDigitialSignatureResult CreateED25519Threadpool(byte[] dataToSign)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (dataToSign == null || dataToSign.Length == 0)
             {
                 throw new Exception("You must provide an allocated data array to create a digital signature");
@@ -193,6 +198,11 @@ namespace CasDotnetSdk.DigitalSignature
         /// <exception cref="Exception"></exception>
         public SHARSADigitalSignatureResult CreateRsaThreadpool(int rsaKeySize, byte[] dataToSign)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
             {
                 throw new Exception("Not a valid RSA key size");
@@ -293,6 +303,11 @@ namespace CasDotnetSdk.DigitalSignature
         /// <exception cref="Exception"></exception>
         public bool VerifyED25519Threadpool(byte[] publicKey, byte[] dataToVerify, byte[] signature)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (publicKey == null || publicKey.Length == 0)
             {
                 throw new Exception("You must provide a allocated array for the public to verify a digital signature");
@@ -373,6 +388,11 @@ namespace CasDotnetSdk.DigitalSignature
         /// <exception cref="Exception"></exception>
         public bool VerifyRsaThreadpool(string publicKey, byte[] dataToVerify, byte[] signature)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to verify with SHA512 RSA Digital Signature");

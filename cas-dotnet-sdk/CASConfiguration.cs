@@ -4,6 +4,7 @@ using CasDotnetSdk.Queues;
 using CasDotnetSdk.Storage;
 using CASHelpers;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -115,13 +116,46 @@ namespace CasDotnetSdk
             set { _IsThreadProductEnabled = value; }
         }
 
-        private static bool _IsThreadingEnabled = false;
+        private static bool _IsThreadingEnabled = IsThreadingEnabledChecker().GetAwaiter().GetResult();
         internal static bool IsThreadingEnabled
         {
             get { return _IsThreadingEnabled; }
             set { _IsThreadingEnabled = value; }
         }
 
+        private static async Task<bool> IsThreadingEnabledChecker()
+        {
+            bool result = true;
+            if (!await IsRunningInTestMode())
+            {
+                result = false;
+            }
+            return result;
+        }
+
+
+        /// <summary>
+        /// Used to determine if the project is being run from xunit so specific things wont fail 
+        /// due to running the SDK in test mode.
+        /// </summary>
+        /// <returns></returns>
+        private static async Task<bool> IsRunningInTestMode()
+        {
+            var stackTrace = new StackTrace();
+            foreach (var frame in stackTrace.GetFrames())
+            {
+                var method = frame.GetMethod();
+                if (method != null && method.DeclaringType != null)
+                {
+                    var assembly = method.DeclaringType.Assembly;
+                    if (assembly.FullName.StartsWith("xunit"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         private static async Task SendOSInformation(string apiKey)
         {
             OperatingSystemDeterminator osd = new OperatingSystemDeterminator();

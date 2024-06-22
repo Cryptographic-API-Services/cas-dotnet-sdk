@@ -57,6 +57,11 @@ namespace CasDotnetSdk.Signatures
         /// <returns></returns>
         public byte[] GetKeyPairBytesThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -144,6 +149,11 @@ namespace CasDotnetSdk.Signatures
         /// <exception cref="Exception"></exception>
         public Ed25519ByteSignatureResult SignBytesThreadpool(byte[] keyBytes, byte[] dataToSign)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (keyBytes == null || keyBytes.Length == 0)
             {
                 throw new Exception("You must provide an array allocated with key data to Sign with ED25519-Dalek");
@@ -240,6 +250,11 @@ namespace CasDotnetSdk.Signatures
         /// <exception cref="Exception"></exception>
         public bool VerifyBytesThreadpool(byte[] keyPair, byte[] signature, byte[] dataToVerify)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (keyPair?.Length == 0)
             {
                 throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
@@ -321,6 +336,11 @@ namespace CasDotnetSdk.Signatures
 
         public bool VerifyWithPublicKeyBytesThreadpool(byte[] publicKey, byte[] signature, byte[] dataToVerify)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (publicKey?.Length == 0)
             {
                 throw new Exception("You must provide allocated data for the public key to verify with ED25519-Dalek");

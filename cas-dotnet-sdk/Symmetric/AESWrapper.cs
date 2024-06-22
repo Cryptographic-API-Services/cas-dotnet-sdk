@@ -60,6 +60,11 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] Aes128KeyThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -118,6 +123,11 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] Aes256KeyThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -204,6 +214,11 @@ namespace CasDotnetSdk.Symmetric
 
         public Aes256KeyAndNonceX25519DiffieHellman Aes256KeyNonceX25519DiffieHellmanThreadpool(byte[] sharedSecret)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (sharedSecret == null || sharedSecret.Length == 0)
             {
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
@@ -310,6 +325,11 @@ namespace CasDotnetSdk.Symmetric
         /// <exception cref="Exception"></exception>
         public Aes256KeyAndNonceX25519DiffieHellman Aes128KeyNonceX25519DiffieHellmanThreadpool(byte[] sharedSecret)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (sharedSecret == null || sharedSecret.Length == 0)
             {
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
@@ -415,6 +435,11 @@ namespace CasDotnetSdk.Symmetric
         /// <exception cref="Exception"></exception>
         public byte[] Aes256EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] toEncrypt, bool sendBenchmark = true)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to encrypt with AES 256");
@@ -509,6 +534,11 @@ namespace CasDotnetSdk.Symmetric
         /// <exception cref="Exception"></exception>
         public byte[] Aes256DecryptThreadpool(byte[] nonceKey, byte[] key, byte[] toDecrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to decrypt with AES 256");
@@ -601,6 +631,11 @@ namespace CasDotnetSdk.Symmetric
         /// <exception cref="Exception"></exception>
         public byte[] Aes128EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce key to encrypt with AES 128");
@@ -693,6 +728,11 @@ namespace CasDotnetSdk.Symmetric
         /// <exception cref="Exception"></exception>
         public byte[] Aes128DecryptThreadpool(byte[] nonceKey, byte[] key, byte[] dataToDecrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonceKey?.Length == 0)
             {
                 throw new Exception("You must provide a nonce key to decrypt with AES 128");
@@ -764,6 +804,11 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] GenerateAESNonceThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
