@@ -70,7 +70,7 @@ namespace CasDotnetSdk
             {
                 if (_IsDevelopment)
                 {
-                    return "https://localhost:8081";
+                    return "http://localhost:8080";
                 }
                 else
                 {
