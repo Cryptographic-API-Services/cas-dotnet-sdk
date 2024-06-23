@@ -72,7 +72,7 @@ namespace CasDotnetSdk.Hybrid
             byte[] aesEncryptResult = (initilizer.AesType == 128)
                 ? this._aesWrapper.Aes128EncryptThreadpool(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt)
                 : this._aesWrapper.Aes256EncryptThreadpool(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt);
-            byte[] encryptedAesKey = this._rsaWrapper.RsaEncryptBytesThreadpool(initilizer.RsaKeyPair.PublicKey, initilizer.AesKey);
+            byte[] encryptedAesKey = this._rsaThreadpoolWrapper.RsaEncryptBytesThreadpool(initilizer.RsaKeyPair.PublicKey, initilizer.AesKey);
             AESRSAHybridEncryptResult result = new AESRSAHybridEncryptResult()
             {
                 CipherText = aesEncryptResult,

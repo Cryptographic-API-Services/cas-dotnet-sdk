@@ -8,10 +8,12 @@ namespace CasDotnetSdkTests.Tests
     public class RSAWrapperTests
     {
         private readonly RSAWrapper _RSAWrapper;
+        private readonly RSAThreadPoolWrapper _rsaThreadpoolWrapper;
         private readonly RsaKeyPairResult _encryptDecryptKeyPair;
         public RSAWrapperTests()
         {
             this._RSAWrapper = new RSAWrapper();
+            this._rsaThreadpoolWrapper = new RSAThreadPoolWrapper();
             this._encryptDecryptKeyPair = this._RSAWrapper.GetKeyPair(4096);
         }
 
@@ -43,7 +45,7 @@ namespace CasDotnetSdkTests.Tests
         public void RsaEncryptBytesThreadpool()
         {
             byte[] dataToEncrypted = Encoding.UTF8.GetBytes("Testing Stuff TO Encrypt");
-            byte[] encryped = this._RSAWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypted);
+            byte[] encryped = this._rsaThreadpoolWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypted);
             Assert.NotEqual(dataToEncrypted, encryped);
         }
 
@@ -51,8 +53,8 @@ namespace CasDotnetSdkTests.Tests
         public void RsaDecryptBytesThreadpool()
         {
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("EncryptingStuffIsFun");
-            byte[] encrypted = this._RSAWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypt);
-            byte[] decrypted = this._RSAWrapper.RsaDecryptBytesThreadpool(this._encryptDecryptKeyPair.PrivateKey, encrypted);
+            byte[] encrypted = this._rsaThreadpoolWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypt);
+            byte[] decrypted = this._rsaThreadpoolWrapper.RsaDecryptBytesThreadpool(this._encryptDecryptKeyPair.PrivateKey, encrypted);
             Assert.Equal(dataToEncrypt, decrypted);
         }
 
@@ -79,7 +81,7 @@ namespace CasDotnetSdkTests.Tests
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
             RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(2048);
-            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
+            byte[] signature = this._rsaThreadpoolWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
             Assert.NotEqual(dataToSign, signature);
         }
 
@@ -98,8 +100,8 @@ namespace CasDotnetSdkTests.Tests
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
             RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(1024);
-            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
-            bool isValid = this._RSAWrapper.RsaVerifyBytesThreadpool(keys.PublicKey, dataToSign, signature);
+            byte[] signature = this._rsaThreadpoolWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
+            bool isValid = this._rsaThreadpoolWrapper.RsaVerifyBytesThreadpool(keys.PublicKey, dataToSign, signature);
             Assert.True(isValid);
         }
     }

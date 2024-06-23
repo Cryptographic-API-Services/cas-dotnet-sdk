@@ -2,31 +2,40 @@
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Models;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
+using CASHelpers;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using CasDotnetSdk.Http;
+using CasDotnetSdk.Models;
 
 namespace CasDotnetSdk.Asymmetric
 {
-    public class RSAWrapper : BaseWrapper
+    public class RSAThreadPoolWrapper : BaseWrapper
     {
-        /// <summary>
-        /// A wrapper class for RSA key creation, encryption, decryption, signing, and verification.
-        /// </summary>
-        public RSAWrapper() {}
+        public RSAThreadPoolWrapper()
+        {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+        }
 
         /// <summary>
-        /// Signs data with an RSA private key.
+        /// Signs data with an RSA private key on the threadpool.
         /// </summary>
         /// <param name="privateKey"></param>
         /// <param name="dataToSign"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
+        public byte[] RsaSignWithKeyBytesThreadpool(string privateKey, byte[] dataToSign)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a private key to sign with RSA");
@@ -39,7 +48,7 @@ namespace CasDotnetSdk.Asymmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                RsaSignBytesResults signResult = RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
+                RsaSignBytesResults signResult = RSALinuxWrapper.rsa_sign_with_key_bytes_threadpool(privateKey, dataToSign, dataToSign.Length);
                 byte[] result = new byte[signResult.length];
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
@@ -49,7 +58,7 @@ namespace CasDotnetSdk.Asymmetric
             }
             else
             {
-                RsaSignBytesResults signResult = RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
+                RsaSignBytesResults signResult = RSAWindowsWrapper.rsa_sign_with_key_bytes_threadpool(privateKey, dataToSign, dataToSign.Length);
                 byte[] result = new byte[signResult.length];
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
@@ -59,16 +68,20 @@ namespace CasDotnetSdk.Asymmetric
             }
         }
 
-        /// <summary>
-        /// Verifies data with an RSA public key.
+        /// Verifies data with an RSA public key on the threadpool.
         /// </summary>
         /// <param name="publicKey"></param>
         /// <param name="dataToVerify"></param>
         /// <param name="signature"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
+        public bool RsaVerifyBytesThreadpool(string publicKey, byte[] dataToVerify, byte[] signature)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to verify with RSA");
@@ -85,14 +98,14 @@ namespace CasDotnetSdk.Asymmetric
             if (this._platform == OSPlatform.Linux)
             {
 
-                bool result = RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                bool result = RSALinuxWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
             {
-                bool result = RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+                bool result = RSAWindowsWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
@@ -100,15 +113,20 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
-        /// Decrypts data with an RSA private key.
+        /// Decrypts data with an RSA private key on the threadpool.
         /// </summary>
         /// <param name="privateKey"></param>
         /// <param name="dataToDecrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
 
-        public byte[] RsaDecryptBytes(string privateKey, byte[] dataToDecrypt)
+        public byte[] RsaDecryptBytesThreadpool(string privateKey, byte[] dataToDecrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
                 throw new Exception("You must provide a public key to decrypt with RSA");
@@ -121,7 +139,7 @@ namespace CasDotnetSdk.Asymmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                RsaDecryptBytesResult decryptResult = RSALinuxWrapper.rsa_decrypt_bytes(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                RsaDecryptBytesResult decryptResult = RSALinuxWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.decrypted_result_ptr);
@@ -131,7 +149,7 @@ namespace CasDotnetSdk.Asymmetric
             }
             else
             {
-                RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes(privateKey, dataToDecrypt, dataToDecrypt.Length);
+                RsaDecryptBytesResult decryptResult = RSAWindowsWrapper.rsa_decrypt_bytes_threadpool(privateKey, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.decrypted_result_ptr, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.decrypted_result_ptr);
@@ -142,15 +160,20 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
-        /// Encrypts data with an RSA public key.
+        /// Encrypts data with an RSA public key on the threadpool.
         /// </summary>
         /// <param name="publicKey"></param>
         /// <param name="dataToEncrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
 
-        public byte[] RsaEncryptBytes(string publicKey, byte[] dataToEncrypt)
+        public byte[] RsaEncryptBytesThreadpool(string publicKey, byte[] dataToEncrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
                 throw new Exception("You must provide a public key to encryp with RSA");
@@ -163,7 +186,7 @@ namespace CasDotnetSdk.Asymmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                RsaEncryptBytesResult encryptResult = RSALinuxWrapper.rsa_encrypt_bytes(publicKey, dataToEncrypt, dataToEncrypt.Length);
+                RsaEncryptBytesResult encryptResult = RSALinuxWrapper.rsa_encrypt_bytes_threadpool(publicKey, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.encrypted_result_ptr, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.encrypted_result_ptr);
@@ -173,7 +196,7 @@ namespace CasDotnetSdk.Asymmetric
             }
             else
             {
-                RsaEncryptBytesResult encryptResult = RSAWindowsWrapper.rsa_encrypt_bytes(publicKey, dataToEncrypt, dataToEncrypt.Length);
+                RsaEncryptBytesResult encryptResult = RSAWindowsWrapper.rsa_encrypt_bytes_threadpool(publicKey, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.encrypted_result_ptr, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.encrypted_result_ptr);
@@ -184,13 +207,18 @@ namespace CasDotnetSdk.Asymmetric
         }
 
         /// <summary>
-        /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
+        /// Generates an RSA key based on the key size provided. (1024, 2048, 4096) on the thread pool.
         /// </summary>
         /// <param name="keySize"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public RsaKeyPairResult GetKeyPair(int keySize)
+        public RsaKeyPairResult GetKeyPairThreadPool(int keySize)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
             {
                 throw new Exception("Please pass in a valid key size.");
@@ -199,7 +227,7 @@ namespace CasDotnetSdk.Asymmetric
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
-                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair(keySize);
+                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair_threadpool(keySize);
                 RsaKeyPairResult result = new RsaKeyPairResult()
                 {
                     PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
@@ -213,7 +241,7 @@ namespace CasDotnetSdk.Asymmetric
             }
             else
             {
-                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
+                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair_threadpool(keySize);
                 RsaKeyPairResult result = new RsaKeyPairResult()
                 {
                     PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
