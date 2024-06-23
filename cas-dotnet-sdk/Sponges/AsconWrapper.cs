@@ -56,6 +56,11 @@ namespace CasDotnetSdk.Sponges
         /// <returns></returns>
         public byte[] Ascon128KeyThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -114,6 +119,11 @@ namespace CasDotnetSdk.Sponges
         /// <returns></returns>
         public byte[] Ascon128NonceThreadpool()
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -193,6 +203,11 @@ namespace CasDotnetSdk.Sponges
         /// <exception cref="Exception"></exception>
         public byte[] Ascon128EncryptThreadpool(byte[] nonce, byte[] key, byte[] toEncrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonce?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to encrypt with Ascon 128");
@@ -285,6 +300,11 @@ namespace CasDotnetSdk.Sponges
         /// <exception cref="Exception"></exception>
         public byte[] Ascon128DecryptThreadpool(byte[] nonce, byte[] key, byte[] toDecrypt)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (nonce?.Length == 0)
             {
                 throw new Exception("You must provide a nonce to decrypt with Ascon 128");

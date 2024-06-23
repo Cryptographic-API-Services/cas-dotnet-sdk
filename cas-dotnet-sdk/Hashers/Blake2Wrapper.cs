@@ -69,6 +69,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public byte[] Hash512Threadpool(byte[] toHash)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (toHash == null || toHash.Length == 0)
             {
                 throw new Exception("You must provide datat to hash with Blake 2 512");
@@ -141,6 +146,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public bool Verify512Threadpool(byte[] hashedData, byte[] toCompare)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (hashedData == null || hashedData.Length == 0)
             {
                 throw new Exception("You must provide previously hashed data to verify with Blake 2 512");
@@ -211,6 +221,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public byte[] Hash256Threadpool(byte[] toHash)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (toHash == null || toHash.Length == 0)
             {
                 throw new Exception("You must provide an array of allocated data to hash with Blake2 256");
@@ -283,6 +298,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public bool Verify256Threadpool(byte[] hashedData, byte[] toCompare)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (hashedData == null || hashedData.Length == 0)
             {
                 throw new Exception("You must provide allocated data for the previously hashed data to compare with Blake 2 256");
