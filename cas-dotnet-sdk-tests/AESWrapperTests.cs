@@ -10,11 +10,13 @@ namespace CasDotnetSdkTests.Tests
     public class AESWrapperTests
     {
         private readonly AESWrapper _aESWrapper;
+        private readonly AESThreadpoolWrapper _aesThreadpoolWrapper;
         private readonly X25519Wrapper _x25519Wrapper;
 
         public AESWrapperTests()
         {
             this._aESWrapper = new AESWrapper();
+            this._aesThreadpoolWrapper = new AESThreadpoolWrapper();
             this._x25519Wrapper = new X25519Wrapper();
         }
 
@@ -31,10 +33,10 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes128BytesEncryptThreadpool()
         {
-            byte[] nonceKey = this._aESWrapper.GenerateAESNonceThreadpool();
+            byte[] nonceKey = this._aesThreadpoolWrapper.GenerateAESNonceThreadpool();
             byte[] key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes128EncryptThreadpool(nonceKey, key, dataToEncrypt);
+            byte[] encrypted = this._aesThreadpoolWrapper.Aes128EncryptThreadpool(nonceKey, key, dataToEncrypt);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }
 
@@ -48,7 +50,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void AesNonceThreadpool()
         {
-            byte[] nonceKey = this._aESWrapper.GenerateAESNonceThreadpool();
+            byte[] nonceKey = this._aesThreadpoolWrapper.GenerateAESNonceThreadpool();
             Assert.True(nonceKey.Length == 12);
         }
 
@@ -62,7 +64,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes128KeyThreadpool()
         {
-            byte[] key = this._aESWrapper.Aes128KeyThreadpool();
+            byte[] key = this._aesThreadpoolWrapper.Aes128KeyThreadpool();
             Assert.NotEmpty(key);
         }
 
@@ -82,11 +84,11 @@ namespace CasDotnetSdkTests.Tests
         public void Aes128BytesDecryptThreadpool()
         {
 
-            byte[] nonceKey = this._aESWrapper.GenerateAESNonceThreadpool();
+            byte[] nonceKey = this._aesThreadpoolWrapper.GenerateAESNonceThreadpool();
             byte[] key = this._aESWrapper.Aes128Key();
             byte[] dataToEncrypt = Encoding.ASCII.GetBytes("Thisisthedatathatne1233123123123123123edstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes128EncryptThreadpool(nonceKey, key, dataToEncrypt);
-            byte[] decrypted = this._aESWrapper.Aes128DecryptThreadpool(nonceKey, key, encrypted);
+            byte[] encrypted = this._aesThreadpoolWrapper.Aes128EncryptThreadpool(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aesThreadpoolWrapper.Aes128DecryptThreadpool(nonceKey, key, encrypted);
             Assert.Equal(dataToEncrypt, decrypted);
         }
 
@@ -100,7 +102,7 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes256KeyThreadpool()
         {
-            byte[] key = this._aESWrapper.Aes256KeyThreadpool();
+            byte[] key = this._aesThreadpoolWrapper.Aes256KeyThreadpool();
             Assert.NotEmpty(key);
         }
 
@@ -125,8 +127,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey(); // TODO: switch to threadpool implementation
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellmanThreadpool(aliceSharedSecet.SharedSecret);
-            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes256KeyNonceX25519DiffieHellmanThreadpool(bobSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aesThreadpoolWrapper.Aes256KeyNonceX25519DiffieHellmanThreadpool(aliceSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aesThreadpoolWrapper.Aes256KeyNonceX25519DiffieHellmanThreadpool(bobSharedSecet.SharedSecret);
 
             Assert.True(aliceAesKeyAndNonce.AesNonce.SequenceEqual(bobAesKeyAndNonce.AesNonce));
             Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
@@ -153,8 +155,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey(); // TODO: switch to threadpool implementation
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aESWrapper.Aes128KeyNonceX25519DiffieHellmanThreadpool(aliceSharedSecet.SharedSecret);
-            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aESWrapper.Aes128KeyNonceX25519DiffieHellmanThreadpool(bobSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman aliceAesKeyAndNonce = this._aesThreadpoolWrapper.Aes128KeyNonceX25519DiffieHellmanThreadpool(aliceSharedSecet.SharedSecret);
+            Aes256KeyAndNonceX25519DiffieHellman bobAesKeyAndNonce = this._aesThreadpoolWrapper.Aes128KeyNonceX25519DiffieHellmanThreadpool(bobSharedSecet.SharedSecret);
 
             Assert.True(aliceAesKeyAndNonce.AesNonce.SequenceEqual(bobAesKeyAndNonce.AesNonce));
             Assert.Equal(aliceAesKeyAndNonce.AesKey, bobAesKeyAndNonce.AesKey);
@@ -173,10 +175,10 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes256BytesEncryptThreadpool()
         {
-            byte[] nonceKey = this._aESWrapper.GenerateAESNonceThreadpool();
-            byte[] key = this._aESWrapper.Aes256KeyThreadpool();
+            byte[] nonceKey = this._aesThreadpoolWrapper.GenerateAESNonceThreadpool();
+            byte[] key = this._aesThreadpoolWrapper.Aes256KeyThreadpool();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes256EncryptThreadpool(nonceKey, key, dataToEncrypt);
+            byte[] encrypted = this._aesThreadpoolWrapper.Aes256EncryptThreadpool(nonceKey, key, dataToEncrypt);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }
 
@@ -195,11 +197,11 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void Aes256BytesDecryptThreadpool()
         {
-            byte[] nonceKey = this._aESWrapper.GenerateAESNonceThreadpool();
-            byte[] key = this._aESWrapper.Aes256KeyThreadpool();
+            byte[] nonceKey = this._aesThreadpoolWrapper.GenerateAESNonceThreadpool();
+            byte[] key = this._aesThreadpoolWrapper.Aes256KeyThreadpool();
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("ThisisthedatathatneedstobeEncrypted#@$*(&");
-            byte[] encrypted = this._aESWrapper.Aes256EncryptThreadpool(nonceKey, key, dataToEncrypt);
-            byte[] decrypted = this._aESWrapper.Aes256DecryptThreadpool(nonceKey, key, encrypted);
+            byte[] encrypted = this._aesThreadpoolWrapper.Aes256EncryptThreadpool(nonceKey, key, dataToEncrypt);
+            byte[] decrypted = this._aesThreadpoolWrapper.Aes256DecryptThreadpool(nonceKey, key, encrypted);
             Assert.Equal(dataToEncrypt, decrypted);
             Assert.NotEqual(dataToEncrypt, encrypted);
         }
