@@ -8,9 +8,11 @@ namespace CasDotnetSdkTests.Tests
     public class HybridEncryptionTests
     {
         private readonly HybridEncryptionWrapper _hybridEncryptionWrapper;
+        private readonly HybridEncryptionThreadpoolWrapper _hybridEncryptionThreadpoolWrapper;
         public HybridEncryptionTests()
         {
             this._hybridEncryptionWrapper = new HybridEncryptionWrapper();
+            this._hybridEncryptionThreadpoolWrapper = new HybridEncryptionThreadpoolWrapper();
         }
 
         [Fact]
@@ -30,7 +32,7 @@ namespace CasDotnetSdkTests.Tests
         {
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("Encrypting this stuff is fun along with the textbooks");
             AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(128, 2048);
-            AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
+            AESRSAHybridEncryptResult result = this._hybridEncryptionThreadpoolWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
             Assert.NotEmpty(result.EncryptedAesKey);
             Assert.NotNull(result.AesType);
             Assert.NotEmpty(result.AesNonce);
@@ -43,8 +45,8 @@ namespace CasDotnetSdkTests.Tests
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("What is that? A New Router that I see?");
             // Initializer creates our AES key, AES Nonce, and RSA Key Pair for us.
             AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(256, 4096);
-            AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
-            byte[] plaintext = this._hybridEncryptionWrapper.DecryptAESRSAHybridThreadpool(initializer.RsaKeyPair.PrivateKey, result);
+            AESRSAHybridEncryptResult result = this._hybridEncryptionThreadpoolWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
+            byte[] plaintext = this._hybridEncryptionThreadpoolWrapper.DecryptAESRSAHybridThreadpool(initializer.RsaKeyPair.PrivateKey, result);
             Assert.Equal(dataToEncrypt, plaintext);
         }
 
@@ -54,8 +56,8 @@ namespace CasDotnetSdkTests.Tests
             byte[] dataToEncrypt = Encoding.UTF8.GetBytes("What is that? A New Router that I see?");
             // Initializer creates our AES key, AES Nonce, and RSA Key Pair for us.
             AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(256, 4096);
-            AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
-            byte[] plaintext = this._hybridEncryptionWrapper.DecryptAESRSAHybridThreadpool(initializer.RsaKeyPair.PrivateKey, result);
+            AESRSAHybridEncryptResult result = this._hybridEncryptionThreadpoolWrapper.EncryptAESRSAHybridThreadpool(dataToEncrypt, initializer);
+            byte[] plaintext = this._hybridEncryptionThreadpoolWrapper.DecryptAESRSAHybridThreadpool(initializer.RsaKeyPair.PrivateKey, result);
             Assert.Equal(dataToEncrypt, plaintext);
         }
     }
