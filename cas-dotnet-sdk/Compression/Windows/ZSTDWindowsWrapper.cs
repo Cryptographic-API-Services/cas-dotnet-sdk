@@ -1,14 +1,14 @@
 ﻿using CasDotnetSdk.Compression.Types;
 using System.Runtime.InteropServices;
 
-namespace CasDotnetSdk.Compression.Linux
+namespace CasDotnetSdk.Compression.Windows
 {
-    internal static class ZSTDLinuxWrapper
+    internal static class ZSTDWindowsWrapper
     {
-        [DllImport("Contents/libcas_core_lib.so")]
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern ZSTDResult decompress(byte[] dataToDecompress, int dataToDecompressLength);
 
-        [DllImport("Contents/libcas_core_lib.so")]
+        [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern ZSTDResult compress(byte[] dataToCompress, int dataToCompressLength, int level);
     }
 }
