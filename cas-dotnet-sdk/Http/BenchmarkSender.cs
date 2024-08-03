@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CasDotnetSdk.Http
 {
-    internal class BenchmarkSender
+    public class BenchmarkSender
     {
         private bool CanSend()
         {

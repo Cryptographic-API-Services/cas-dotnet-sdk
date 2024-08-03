@@ -1,8 +1,6 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;
@@ -10,18 +8,14 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public class Argon2Wrapper : IPasswordHasherBase
+    public class Argon2Wrapper : BaseWrapper, IPasswordHasherBase
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
 
         /// <summary>
         /// A wrapper class for the Argon2 password hashing algorithm.
         /// </summary>
         public Argon2Wrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
         }
         /// <summary>
         /// Hashes a password using the Argon2 algorithm.
