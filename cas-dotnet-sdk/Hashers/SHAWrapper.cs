@@ -72,6 +72,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public byte[] Hash512Threadpool(byte[] dataToHash)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (dataToHash == null)
             {
                 throw new Exception("You must provide a byte array of data to hash");
@@ -150,6 +155,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public byte[] Hash256Threadpool(byte[] dataToHash)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (dataToHash == null)
             {
                 throw new Exception("You must provide a byte array of data to hash");
@@ -224,6 +234,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public bool Verify512Threadpool(byte[] dataToVerify, byte[] hashedData)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
@@ -292,6 +307,11 @@ namespace CasDotnetSdk.Hashers
         /// <exception cref="Exception"></exception>
         public bool Verify256Threadpool(byte[] dataToVerify, byte[] hashedData)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");

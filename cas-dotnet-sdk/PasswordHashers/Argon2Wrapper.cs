@@ -96,6 +96,11 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         public string HashPasswordThreadPool(string password)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (string.IsNullOrEmpty(password))
             {
                 throw new Exception("You must provide a password to hash using argon2");
@@ -130,6 +135,11 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (string.IsNullOrEmpty(hashedPassword) || string.IsNullOrEmpty(verifyPassword))
             {
                 throw new Exception("You must provide a hashed password and password to verify with argon2");

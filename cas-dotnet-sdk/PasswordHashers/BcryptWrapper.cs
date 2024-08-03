@@ -60,6 +60,11 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         public string HashPasswordThreadPool(string password)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {
@@ -115,6 +120,11 @@ namespace CasDotnetSdk.PasswordHashers
 
         public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             if (this._platform == OSPlatform.Linux)
             {

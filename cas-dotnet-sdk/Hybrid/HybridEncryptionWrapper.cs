@@ -63,6 +63,11 @@ namespace CasDotnetSdk.Hybrid
         /// <returns></returns>
         public AESRSAHybridEncryptResult EncryptAESRSAHybridThreadpool(byte[] dataToEncrypt, AESRSAHybridInitializer initilizer)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             DateTime start = DateTime.UtcNow;
             byte[] aesEncryptResult = (initilizer.AesType == 128)
                 ? this._aesWrapper.Aes128EncryptThreadpool(initilizer.AesNonce, initilizer.AesKey, dataToEncrypt)
@@ -112,6 +117,11 @@ namespace CasDotnetSdk.Hybrid
         /// <exception cref="Exception"></exception>
         public byte[] DecryptAESRSAHybridThreadpool(string rsaPrivateKey, AESRSAHybridEncryptResult encryptResult)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have the product subscription to work with the thread pool featues");
+            }
+
             if (!RSAValidator.ValidateRsaPemKey(rsaPrivateKey))
             {
                 throw new Exception("Must provide a RSA Private Key to decrypt with AES RSA Hybrid Encryption");
