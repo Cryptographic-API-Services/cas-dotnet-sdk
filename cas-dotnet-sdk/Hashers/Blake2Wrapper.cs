@@ -11,18 +11,15 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
-    public class Blake2Wrapper : IHasherBase
+    public class Blake2Wrapper : BaseWrapper, IHasherBase
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
 
         /// <summary>
         /// A wrapper class for the Blake2 hashing algorithm.
         /// </summary>
         public Blake2Wrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
+            
         }
 
         /// <summary>

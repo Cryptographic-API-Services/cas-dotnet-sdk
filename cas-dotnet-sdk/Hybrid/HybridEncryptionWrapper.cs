@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Http;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Symmetric;
@@ -14,9 +15,8 @@ namespace CasDotnetSdk.Hybrid
     /// The user is expected to generate an RSA key pair and AES Key and Nonce before hand if they want to utilize using the same key for multiple data sets
     /// Eventually we may want to move this logic directly into cas-core-lib.
     /// </summary>
-    public class HybridEncryptionWrapper
+    public class HybridEncryptionWrapper : BaseWrapper
     {
-        private readonly BenchmarkSender _benchmarkSender;
         private readonly AESWrapper _aesWrapper;
         private readonly RSAWrapper _rsaWrapper;
 
@@ -25,7 +25,6 @@ namespace CasDotnetSdk.Hybrid
         /// </summary>
         public HybridEncryptionWrapper()
         {
-            this._benchmarkSender = new BenchmarkSender();
             this._aesWrapper = new AESWrapper();
             this._rsaWrapper = new RSAWrapper();
         }
@@ -51,7 +50,7 @@ namespace CasDotnetSdk.Hybrid
                 AesNonce = initilizer.AesNonce,
             };
             DateTime end = DateTime.UtcNow;
-            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return result;
         }
 
@@ -81,7 +80,7 @@ namespace CasDotnetSdk.Hybrid
                 AesNonce = initilizer.AesNonce,
             };
             DateTime end = DateTime.UtcNow;
-            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return result;
         }
 
@@ -104,7 +103,7 @@ namespace CasDotnetSdk.Hybrid
                 ? this._aesWrapper.Aes128Decrypt(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText)
                 : this._aesWrapper.Aes256Decrypt(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText);
             DateTime end = DateTime.UtcNow;
-            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return plaintext;
         }
 
@@ -132,7 +131,7 @@ namespace CasDotnetSdk.Hybrid
                 ? this._aesWrapper.Aes128DecryptThreadpool(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText)
                 : this._aesWrapper.Aes256DecryptThreadpool(encryptResult.AesNonce, plaintextAesKey, encryptResult.CipherText);
             DateTime end = DateTime.UtcNow;
-            this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HybridEncryptionWrapper));
             return plaintext;
         }
     }
