@@ -62,7 +62,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="cas-helpers" Version="1.0.16" />
+	  <PackageReference Include="cas-helpers" Version="1.0.19" />
 	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
 	</ItemGroup>
