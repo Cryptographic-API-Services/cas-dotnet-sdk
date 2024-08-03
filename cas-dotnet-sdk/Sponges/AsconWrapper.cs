@@ -11,14 +11,10 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Sponges
 {
-    public class AsconWrapper
+    public class AsconWrapper : BaseWrapper
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
         public AsconWrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
         }
 
         /// <summary>

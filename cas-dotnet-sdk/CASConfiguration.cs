@@ -88,11 +88,11 @@ namespace CasDotnetSdk
             set { _TokenCache = value; }
         }
 
-        private static BenchmarkSenderRetryQueue _BenchmarkSenderQueue;
+        private static BenchmarkSenderRetryQueue _senderQueue;
         internal static BenchmarkSenderRetryQueue BenchmarkSenderQueue
         {
-            get { return _BenchmarkSenderQueue; }
-            set { _BenchmarkSenderQueue = value; }
+            get { return _senderQueue; }
+            set { _senderQueue = value; }
         }
 
         private static Networking _Networking;

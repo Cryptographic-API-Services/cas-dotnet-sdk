@@ -10,18 +10,15 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public class BcryptWrapper : IPasswordHasherBase
+    public class BcryptWrapper : BaseWrapper, IPasswordHasherBase
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _benchmarkSender;
 
         /// <summary>
         /// A wrapper class that uses the BCrypt algorithm to hash passwords.
         /// </summary>
         public BcryptWrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._benchmarkSender = new BenchmarkSender();
+
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
             else
@@ -48,7 +45,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
         }
@@ -72,7 +69,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
             else
@@ -81,7 +78,7 @@ namespace CasDotnetSdk.PasswordHashers
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return hashed;
             }
         }
@@ -99,14 +96,14 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 bool result = BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
             else
             {
                 bool result = BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
         }
@@ -130,14 +127,14 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 bool result = BcryptLinuxWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
             else
             {
                 bool result = BcryptWindowsWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
                 DateTime end = DateTime.UtcNow;
-                this._benchmarkSender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
             }
         }

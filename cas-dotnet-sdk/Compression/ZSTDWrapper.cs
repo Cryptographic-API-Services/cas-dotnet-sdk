@@ -2,8 +2,6 @@
 using CasDotnetSdk.Compression.Types;
 using CasDotnetSdk.Compression.Windows;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;
@@ -11,15 +9,11 @@ using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Compression
 {
-    public class ZSTDWrapper
+    public class ZSTDWrapper : BaseWrapper
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
-
         public ZSTDWrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
+            
         }
 
         /// <summary>
