@@ -31,5 +31,24 @@ namespace CasDotnetSdkTests
             Assert.True(!decompress.SequenceEqual(compress));
             Assert.True(Encoding.UTF8.GetString(decompress).Equals("ThisIsSomeDataThatShouldn'tBeCompressedBecauseItIsSoTiny."));
         }
+
+        [Fact]
+        public void CompressThreadpool()
+        {
+            byte[] dataToCompress = Encoding.UTF8.GetBytes("ThisIsSomeDataThatShouldn'tBeCompressedBecauseItIsSoTiny.");
+            byte[] compress = zstd.CompressThreadpool(dataToCompress, 3);
+            Assert.True(!dataToCompress.SequenceEqual(compress));
+        }
+
+        [Fact]
+        public void DecompressThreadpool()
+        {
+            byte[] dataToCompress = Encoding.UTF8.GetBytes("ThisIsSomeDataThatShouldn'tBeCompressedBecauseItIsSoTiny.");
+            byte[] compress = zstd.Compress(dataToCompress, 3);
+            byte[] decompress = zstd.Decompress(compress);
+            Assert.True(!dataToCompress.SequenceEqual(compress));
+            Assert.True(!decompress.SequenceEqual(compress));
+            Assert.True(Encoding.UTF8.GetString(decompress).Equals("ThisIsSomeDataThatShouldn'tBeCompressedBecauseItIsSoTiny."));
+        }
     }
 }
