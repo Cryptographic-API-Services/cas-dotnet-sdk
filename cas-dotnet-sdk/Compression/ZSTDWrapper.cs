@@ -68,6 +68,11 @@ namespace CasDotnetSdk.Compression
         /// <returns></returns>
         public byte[] CompressThreadpool(byte[] data, int level)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have a subscription to use the ZSTD Threadpool featues.");
+            }
+
             if (data == null || data.Length == 0)
             {
                 throw new Exception("Must pass an allocated data array to ZSTD Compression");
@@ -144,6 +149,11 @@ namespace CasDotnetSdk.Compression
         /// <returns></returns>
         public byte[] DecompressThreadpool(byte[] data)
         {
+            if (!CASConfiguration.IsThreadingEnabled)
+            {
+                throw new Exception("You do not have a subscription to use the ZSTD Threadpool featues.");
+            }
+
             if (data == null || data.Length == 0)
             {
                 throw new Exception("Must pass in an allocated array of data to decompress");
