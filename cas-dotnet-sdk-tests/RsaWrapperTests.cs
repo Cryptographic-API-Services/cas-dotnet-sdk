@@ -32,40 +32,6 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void RsaEncryptBytes()
-        {
-            byte[] dataToEncrypted = Encoding.UTF8.GetBytes("Testing Stuff TO Encrypt");
-            byte[] encryped = this._RSAWrapper.RsaEncryptBytes(this._encryptDecryptKeyPair.PublicKey, dataToEncrypted);
-            Assert.NotEqual(dataToEncrypted, encryped);
-        }
-
-        [Fact]
-        public void RsaEncryptBytesThreadpool()
-        {
-            byte[] dataToEncrypted = Encoding.UTF8.GetBytes("Testing Stuff TO Encrypt");
-            byte[] encryped = this._RSAWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypted);
-            Assert.NotEqual(dataToEncrypted, encryped);
-        }
-
-        [Fact]
-        public void RsaDecryptBytesThreadpool()
-        {
-            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("EncryptingStuffIsFun");
-            byte[] encrypted = this._RSAWrapper.RsaEncryptBytesThreadpool(this._encryptDecryptKeyPair.PublicKey, dataToEncrypt);
-            byte[] decrypted = this._RSAWrapper.RsaDecryptBytesThreadpool(this._encryptDecryptKeyPair.PrivateKey, encrypted);
-            Assert.Equal(dataToEncrypt, decrypted);
-        }
-
-        [Fact]
-        public void RsaDecryptBytes()
-        {
-            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("EncryptingStuffIsFun");
-            byte[] encrypted = this._RSAWrapper.RsaEncryptBytes(this._encryptDecryptKeyPair.PublicKey, dataToEncrypt);
-            byte[] decrypted = this._RSAWrapper.RsaDecryptBytes(this._encryptDecryptKeyPair.PrivateKey, encrypted);
-            Assert.Equal(dataToEncrypt, decrypted);
-        }
-
-        [Fact]
         public async Task RsaSignBytes()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
