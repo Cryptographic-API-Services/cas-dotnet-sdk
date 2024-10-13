@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Hybrid;
 using CasDotnetSdk.Hybrid.Types;
+using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests
@@ -23,6 +24,20 @@ namespace CasDotnetSdkTests
             Assert.NotEmpty(result.PublicKey);
             Assert.NotEmpty(result.PrivateKey);
             Assert.NotEmpty(result.InfoStr);
+        }
+
+        [Fact] 
+        public void Encrypt()
+        {
+            HpkeKeyPairResult keyPair = this._wrapper.GenerateKeyPair();
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("EncryptThisDataString");
+            HpkeEncryptResult result = this._wrapper.Encrypt(dataToEncrypt, keyPair.PublicKey, keyPair.InfoStr);
+            Assert.NotNull(result.EncappedKey);
+            Assert.NotNull(result.Ciphertext);
+            Assert.NotNull(result.Tag);
+            Assert.NotEmpty(result.EncappedKey);
+            Assert.NotEmpty(result.Ciphertext);
+            Assert.NotEmpty(result.Tag);
         }
     }
 }
