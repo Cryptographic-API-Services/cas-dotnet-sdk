@@ -132,5 +132,55 @@ namespace CasDotnetSdk.Hybrid
                 return result;
             }
         }
+
+        public byte[] Decrypt(byte[] cipherText,  byte[] privateKey, byte[] encappedKey,  byte[] tag,  byte[] infoStr)
+        {
+            if (cipherText == null || cipherText.Length == 0)
+            {
+                throw new Exception("Must provide ciphertext to decrypt with HPKE");
+            }
+
+            if (privateKey == null || privateKey.Length == 0)
+            {
+                throw new Exception("Must a private key to decrypt with HPKE");
+            }
+
+            if (encappedKey == null || encappedKey.Length == 0)
+            {
+                throw new Exception("Must provide an encapped key to decrypt with HPKE");
+            }
+
+            if (tag == null || tag.Length == 0)
+            {
+                throw new Exception("Must provide a tag to decrypt with HPKE");
+            }
+
+            if (infoStr == null || infoStr.Length == 0)
+            {
+                throw new Exception("Must a info str to decrypt with HPKE");
+            }
+
+            DateTime start = DateTime.UtcNow;
+            if (this._platform == OSPlatform.Linux)
+            {
+                HpkeDecryptResultStruct decrypt = HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
+                byte[] result = new byte[decrypt.plaintext_ptr_length];
+                Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
+                FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+                return result;
+            }
+            else
+            {
+                HpkeDecryptResultStruct decrypt = HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
+                byte[] result = new byte[decrypt.plaintext_ptr_length];
+                Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
+                FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
+                DateTime end = DateTime.UtcNow;
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+                return result;
+            }
+        }
     }
 }

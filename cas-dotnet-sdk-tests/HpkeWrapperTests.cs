@@ -39,5 +39,16 @@ namespace CasDotnetSdkTests
             Assert.NotEmpty(result.Ciphertext);
             Assert.NotEmpty(result.Tag);
         }
+
+        [Fact]
+        public void Decrypt()
+        {
+            HpkeKeyPairResult keyPair = this._wrapper.GenerateKeyPair();
+            string dataToEncrypt = "EncryptThisDataString";
+            byte[] plaintext = Encoding.UTF8.GetBytes(dataToEncrypt);
+            HpkeEncryptResult result = this._wrapper.Encrypt(plaintext, keyPair.PublicKey, keyPair.InfoStr);
+            byte[] decrypted = this._wrapper.Decrypt(result.Ciphertext, keyPair.PrivateKey, result.EncappedKey, result.Tag, keyPair.InfoStr);
+            Assert.Equal(dataToEncrypt, Encoding.UTF8.GetString(decrypted));
+        }
     }
 }
