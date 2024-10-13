@@ -1,10 +1,5 @@
 ﻿using CasDotnetSdk.Hybrid;
 using CasDotnetSdk.Hybrid.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace CasDotnetSdkTests
@@ -24,8 +19,10 @@ namespace CasDotnetSdkTests
             HpkeKeyPairResult result = this._wrapper.GenerateKeyPair();
             Assert.NotNull(result.PublicKey);
             Assert.NotNull(result.PrivateKey);
+            Assert.NotEmpty(result.InfoStr);
             Assert.NotEmpty(result.PublicKey);
             Assert.NotEmpty(result.PrivateKey);
+            Assert.NotEmpty(result.InfoStr);
         }
     }
 }

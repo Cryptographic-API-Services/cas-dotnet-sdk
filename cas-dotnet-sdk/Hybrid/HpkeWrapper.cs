@@ -24,14 +24,18 @@ namespace CasDotnetSdk.Hybrid
                 HpkeKeyPairResultStruct keyPair = HpkeLinuxWrapper.hpke_generate_keypair();
                 byte[] privateKeyResult = new byte[keyPair.private_key_ptr_length];
                 byte[] publicKeyResult = new byte[keyPair.public_key_ptr_length];
+                byte[] infoStrResult = new byte[keyPair.info_str_ptr_length];
                 Marshal.Copy(keyPair.private_key_ptr, privateKeyResult, 0, keyPair.private_key_ptr_length);
                 Marshal.Copy(keyPair.public_key_ptr, publicKeyResult, 0, keyPair.public_key_ptr_length);
+                Marshal.Copy(keyPair.info_str_ptr, infoStrResult, 0, keyPair.info_str_ptr_length);
                 FreeMemoryHelper.FreeBytesMemory(keyPair.public_key_ptr);
                 FreeMemoryHelper.FreeBytesMemory(keyPair.private_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(keyPair.info_str_ptr);
                 HpkeKeyPairResult result = new HpkeKeyPairResult()
                 {
                     PrivateKey = privateKeyResult,
-                    PublicKey = publicKeyResult
+                    PublicKey = publicKeyResult,
+                    InfoStr = infoStrResult
                 };
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
@@ -42,14 +46,18 @@ namespace CasDotnetSdk.Hybrid
                 HpkeKeyPairResultStruct keyPair = HpkeWindowsWrapper.hpke_generate_keypair();
                 byte[] privateKeyResult = new byte[keyPair.private_key_ptr_length];
                 byte[] publicKeyResult = new byte[keyPair.public_key_ptr_length];
+                byte[] infoStrResult = new byte[keyPair.info_str_ptr_length];
                 Marshal.Copy(keyPair.private_key_ptr, privateKeyResult, 0, keyPair.private_key_ptr_length);
                 Marshal.Copy(keyPair.public_key_ptr, publicKeyResult, 0, keyPair.public_key_ptr_length);
+                Marshal.Copy(keyPair.info_str_ptr, infoStrResult, 0, keyPair.info_str_ptr_length);
                 FreeMemoryHelper.FreeBytesMemory(keyPair.public_key_ptr);
                 FreeMemoryHelper.FreeBytesMemory(keyPair.private_key_ptr);
+                FreeMemoryHelper.FreeBytesMemory(keyPair.info_str_ptr);
                 HpkeKeyPairResult result = new HpkeKeyPairResult()
                 {
                     PrivateKey = privateKeyResult,
-                    PublicKey = publicKeyResult
+                    PublicKey = publicKeyResult,
+                    InfoStr = infoStrResult
                 };
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));

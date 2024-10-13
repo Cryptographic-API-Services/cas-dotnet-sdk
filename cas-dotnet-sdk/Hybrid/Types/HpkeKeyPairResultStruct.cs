@@ -8,5 +8,7 @@ namespace CasDotnetSdk.Hybrid.Types
         public int private_key_ptr_length;
         public IntPtr public_key_ptr;
         public int public_key_ptr_length;
+        public IntPtr info_str_ptr;
+        public int info_str_ptr_length;
     }
 }
