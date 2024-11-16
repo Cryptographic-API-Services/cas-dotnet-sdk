@@ -24,6 +24,7 @@ We aim to provide cross-compatibility wherever possible. Test cases are run on .
 - [X] .NET 6
 - [X] .NET 7
 - [X] .NET 8
+- [X] .NET 9
 - [X] Windows
 - [X] Linux  
 
