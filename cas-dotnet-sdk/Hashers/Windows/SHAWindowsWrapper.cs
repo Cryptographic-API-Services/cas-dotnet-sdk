@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.Hashers.Types;
-using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers.Windows

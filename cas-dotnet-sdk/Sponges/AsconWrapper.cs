@@ -1,12 +1,8 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.Sponges.Linux;
 using CasDotnetSdk.Sponges.Types;
 using CasDotnetSdk.Sponges.Windows;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Sponges
@@ -31,7 +27,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
             else
@@ -41,7 +36,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
         }
@@ -65,7 +59,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
             else
@@ -75,7 +68,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return key;
             }
         }
@@ -94,7 +86,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
                 FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
             else
@@ -104,7 +95,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
                 FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
         }
@@ -128,7 +118,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
                 FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
             else
@@ -138,7 +127,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
                 FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return nonce;
             }
         }
@@ -174,7 +162,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -184,7 +171,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }
@@ -225,7 +211,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -235,7 +220,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }
@@ -271,7 +255,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -281,7 +264,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }
@@ -322,7 +304,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
             else
@@ -332,7 +313,6 @@ namespace CasDotnetSdk.Sponges
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
                 return result;
             }
         }

@@ -4,9 +4,7 @@ using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
 using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Symmetric
@@ -39,7 +37,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
             else
@@ -49,7 +46,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
         }
@@ -73,7 +69,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
             else
@@ -83,7 +78,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
         }
@@ -102,7 +96,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
             else
@@ -112,7 +105,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
         }
@@ -136,7 +128,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
             else
@@ -146,7 +137,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return key;
             }
         }
@@ -181,7 +171,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
             else
@@ -200,7 +189,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
         }
@@ -240,7 +228,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
             else
@@ -259,7 +246,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
         }
@@ -293,7 +279,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
             else
@@ -312,7 +297,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
         }
@@ -351,7 +335,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
             else
@@ -370,7 +353,6 @@ namespace CasDotnetSdk.Symmetric
                     AesNonce = aesNonce
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return keyAndNonce;
             }
         }
@@ -384,7 +366,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sendBenchmark"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
             if (nonceKey?.Length == 0)
             {
@@ -407,8 +389,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -418,8 +398,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -433,7 +411,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sendBenchmark"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
             if (!CASConfiguration.IsThreadingEnabled)
             {
@@ -461,8 +439,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -472,8 +448,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -509,7 +483,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -519,7 +492,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -560,7 +532,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -570,7 +541,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -606,7 +576,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -616,7 +585,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -657,7 +625,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -667,7 +634,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -703,7 +669,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -713,7 +678,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -754,7 +718,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -764,7 +727,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -783,7 +745,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -793,7 +754,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -817,7 +777,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -827,7 +786,6 @@ namespace CasDotnetSdk.Symmetric
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }

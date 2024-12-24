@@ -1,12 +1,8 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.KeyExchange
@@ -42,7 +38,6 @@ namespace CasDotnetSdk.KeyExchange
                     SecretKey = secretKeyResult
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
                 return res;
             }
             else
@@ -60,7 +55,6 @@ namespace CasDotnetSdk.KeyExchange
                     SecretKey = secretKeyResult
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
                 return res;
             }
         }
@@ -92,7 +86,6 @@ namespace CasDotnetSdk.KeyExchange
                     SecretKey = secretKeyResult
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
                 return res;
             }
             else
@@ -110,7 +103,6 @@ namespace CasDotnetSdk.KeyExchange
                     SecretKey = secretKeyResult
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
                 return res;
             }
         }
@@ -145,7 +137,6 @@ namespace CasDotnetSdk.KeyExchange
                     SharedSecret = sharedSecret
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
                 return res;
             }
             else
@@ -159,7 +150,6 @@ namespace CasDotnetSdk.KeyExchange
                     SharedSecret = sharedSecret
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
                 return res;
             }
         }
@@ -199,7 +189,6 @@ namespace CasDotnetSdk.KeyExchange
                     SharedSecret = sharedSecret
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
                 return res;
             }
             else
@@ -213,7 +202,6 @@ namespace CasDotnetSdk.KeyExchange
                     SharedSecret = sharedSecret
                 };
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
                 return res;
             }
         }

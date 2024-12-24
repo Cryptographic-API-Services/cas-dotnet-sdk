@@ -3,9 +3,7 @@ using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
 using CasDotnetSdk.Helpers;
 using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Asymmetric
@@ -17,7 +15,7 @@ namespace CasDotnetSdk.Asymmetric
         /// </summary>
         public RSAWrapper()
         {
-            
+
         }
 
         /// <summary>
@@ -46,7 +44,6 @@ namespace CasDotnetSdk.Asymmetric
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
@@ -56,7 +53,6 @@ namespace CasDotnetSdk.Asymmetric
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
@@ -92,7 +88,6 @@ namespace CasDotnetSdk.Asymmetric
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
@@ -102,7 +97,6 @@ namespace CasDotnetSdk.Asymmetric
                 Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
                 FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
@@ -136,14 +130,12 @@ namespace CasDotnetSdk.Asymmetric
 
                 bool result = RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
             {
                 bool result = RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
@@ -180,14 +172,12 @@ namespace CasDotnetSdk.Asymmetric
 
                 bool result = RSALinuxWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
             {
                 bool result = RSAWindowsWrapper.rsa_verify_bytes_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
@@ -217,7 +207,6 @@ namespace CasDotnetSdk.Asymmetric
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
@@ -231,7 +220,6 @@ namespace CasDotnetSdk.Asymmetric
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
@@ -266,7 +254,6 @@ namespace CasDotnetSdk.Asymmetric
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
             else
@@ -280,7 +267,6 @@ namespace CasDotnetSdk.Asymmetric
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
                 FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
                 DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
                 return result;
             }
         }
