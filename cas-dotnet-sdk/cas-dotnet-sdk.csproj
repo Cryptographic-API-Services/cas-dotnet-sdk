@@ -6,7 +6,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>cas-dotnet-sdk</Title>
 		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.2.1</Version>
+		<Version>1.2.2</Version>
 		<Authors>Mike Mulchrone</Authors>
 		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
 		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -24,6 +24,16 @@
 		<Content Include="cas-dotnet-sdk.targets">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		  <PackagePath>build</PackagePath>
+		</Content>
+		<Content Include="Contents/cas_core_lib.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\net9.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Contents/libcas_core_lib.so">
+			<Pack>true</Pack>
+			<PackagePath>lib\net9.0</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Contents/cas_core_lib.dll">
 			<Pack>true</Pack>
