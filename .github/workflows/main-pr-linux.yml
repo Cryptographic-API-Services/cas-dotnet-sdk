@@ -22,7 +22,6 @@ jobs:
       with:
           dotnet-version: ${{ matrix.dotnet-version }}
     - name: Get current .NET version
-        id: dotnet_version
         run: |
           # Capture the current .NET SDK version
           DOTNET_VERSION=$(dotnet --version)
