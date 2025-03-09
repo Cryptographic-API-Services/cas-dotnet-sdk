@@ -23,10 +23,9 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
     - name: Get current .NET version
       run: |
-        # Capture the current .NET SDK version
-        DOTNET_VERSION=$(dotnet --version)
+        $DOTNET_VERSION = & dotnet --version
         echo "Current .NET SDK version is: $DOTNET_VERSION"
-        echo "DOTNET_VERSION=$DOTNET_VERSION" >> $GITHUB_ENV  # Store in environment variable for later use
+        echo "DOTNET_VERSION=$DOTNET_VERSION" >> $env:GITHUB_ENV  # Set environment variable for next steps
     - name: Restore dependencies
       run: dotnet restore -f net${{ env.DOTNET_VERSION }}
     - name: Build
