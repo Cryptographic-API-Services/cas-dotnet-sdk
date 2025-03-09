@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     strategy:
       matrix:
         dotnet-version: [9.0, 8.0, 7.0, 6.0]
@@ -20,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: ${{ matrix.dotnet-version }}
     - name: Get current .NET version
       run: |
         # Capture the current .NET SDK version

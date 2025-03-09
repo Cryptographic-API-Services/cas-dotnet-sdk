@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    
     strategy:
       matrix:
         dotnet-version: [9.0, 8.0, 7.0, 6.0]
@@ -20,14 +19,12 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: ${{ matrix.dotnet-version }}
     - name: Get current .NET version
       run: |
         $DOTNET_VERSION = & dotnet --version
         echo "Current .NET SDK version is: $DOTNET_VERSION"
         echo "DOTNET_VERSION=$DOTNET_VERSION" >> $env:GITHUB_ENV  # Set environment variable for next steps
-    - name: Restore dependencies
-      run: dotnet restore -f net${{ env.DOTNET_VERSION }}
     - name: Build
       run: dotnet build -f net${{ env.DOTNET_VERSION }} --no-restore
     - name: Test
