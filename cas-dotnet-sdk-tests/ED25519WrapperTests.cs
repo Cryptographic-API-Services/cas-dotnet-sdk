@@ -69,7 +69,7 @@ namespace CasDotnetSdkTests.Tests
             byte[] keyPair = this._wrapper.GetKeyPairBytesThreadpool();
             byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsGarbageDataThatShouldBeIncreased");
             Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytesThreadpool(keyPair, dataToSign);
-            bool isValid = this._wrapper.VerifyBytes(keyPair, signatureResult.Signature, dataToSign);
+            bool isValid = this._wrapper.VerifyBytesThreadpool(keyPair, signatureResult.Signature, dataToSign);
             Assert.True(isValid);
         }
 

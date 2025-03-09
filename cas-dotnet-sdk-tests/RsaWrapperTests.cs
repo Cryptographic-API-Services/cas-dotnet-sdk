@@ -44,7 +44,7 @@ namespace CasDotnetSdkTests.Tests
         public async Task RsaSignBytesThreadpool()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
-            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(2048);
+            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPairThreadPool(2048);
             byte[] signature = this._RSAWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
             Assert.NotEqual(dataToSign, signature);
         }
@@ -63,7 +63,7 @@ namespace CasDotnetSdkTests.Tests
         public async Task RsaVerifyBytesThreadpool()
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
-            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(1024);
+            RsaKeyPairResult keys = this._RSAWrapper.GetKeyPairThreadPool(1024);
             byte[] signature = this._RSAWrapper.RsaSignWithKeyBytesThreadpool(keys.PrivateKey, dataToSign);
             bool isValid = this._RSAWrapper.RsaVerifyBytesThreadpool(keys.PublicKey, dataToSign, signature);
             Assert.True(isValid);
