@@ -1,4 +1,6 @@
 ﻿using CasDotnetSdk.PasswordHashers;
+using CasDotnetSdk.Symmetric;
+using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -6,10 +8,12 @@ namespace CasDotnetSdkTests.Tests
     public class Argon2WrapperTests
     {
         private Argon2Wrapper _argon2Wrapper;
+        private AESWrapper _aesWrapper;
 
         public Argon2WrapperTests()
         {
             this._argon2Wrapper = new Argon2Wrapper();
+            this._aesWrapper = new AESWrapper();
         }
 
         [Fact]
@@ -55,6 +59,34 @@ namespace CasDotnetSdkTests.Tests
             Assert.NotNull(wrapper);
             Assert.NotEqual(badPassword, hahed);
             Assert.Equal(typeof(Argon2Wrapper), wrapper.GetType());
+        }
+
+        [Fact]
+        public void DeriveAES128Key()
+        {
+            string password = "kdfsAreFun";
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("LetsEncryptThisWord");
+            byte[] key = this._argon2Wrapper.DeriveAES128Key(password);
+            byte[] aesNonce = this._aesWrapper.GenerateAESNonce();
+            byte[] encrypted = this._aesWrapper.Aes128Encrypt(aesNonce, key, dataToEncrypt);
+            byte[] decrypted = this._aesWrapper.Aes128Decrypt(aesNonce, key, encrypted);
+            Assert.NotNull(decrypted);
+            Assert.NotNull(encrypted);
+            Assert.True(decrypted.SequenceEqual(dataToEncrypt));
+        }
+
+        [Fact]
+        public void DeriveAES256Key()
+        {
+            string password = "kdfsAreFun";
+            byte[] dataToEncrypt = Encoding.UTF8.GetBytes("LetsEncrypt345343455ThisWor456d");
+            byte[] key = this._argon2Wrapper.DeriveAES256Key(password);
+            byte[] aesNonce = this._aesWrapper.GenerateAESNonce();
+            byte[] encrypted = this._aesWrapper.Aes256Encrypt(aesNonce, key, dataToEncrypt);
+            byte[] decrypted = this._aesWrapper.Aes256Decrypt(aesNonce, key, encrypted);
+            Assert.NotNull(decrypted);
+            Assert.NotNull(encrypted);
+            Assert.True(decrypted.SequenceEqual(dataToEncrypt));
         }
     }
 }

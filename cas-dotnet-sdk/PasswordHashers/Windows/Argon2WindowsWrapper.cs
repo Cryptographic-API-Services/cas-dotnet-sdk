@@ -1,10 +1,16 @@
-﻿using System;
+﻿using CasDotnetSdk.PasswordHashers.Types;
+using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers.Windows
 {
     internal static class Argon2WindowsWrapper
     {
+        [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern Argon2KDFResult argon2_derive_aes_128_key(string password);
+
+        [DllImport("\\Contents\\cas_core_lib.dll")]
+        public static extern Argon2KDFResult argon2_derive_aes_256_key(string password);
 
         [DllImport("\\Contents\\cas_core_lib.dll")]
         public static extern IntPtr argon2_hash(string passToHash);
