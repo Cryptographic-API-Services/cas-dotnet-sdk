@@ -2,6 +2,8 @@
 
 [![image](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/7bXXCQj45q)
 
+This .NET Nuget package is a cryptographic wrapper library for developers that are seeking the memory safety of Rust for their crypto implementations.
+
 Ever wanted all of your most useful cryptographic operations in one module and not have to surf documentation for various packages? 
 CAS is here to provide a unified development experience as an abstract layer to the RustCrypto and Dalek-Cryptography suite of algorithms.
 The official Nuget page can be found [here](https://www.nuget.org/packages/cas-dotnet-sdk).
