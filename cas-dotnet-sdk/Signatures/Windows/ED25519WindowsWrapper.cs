@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Signatures.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Signatures.Types;
 
 namespace CasDotnetSdk.Signatures.Windows
 {

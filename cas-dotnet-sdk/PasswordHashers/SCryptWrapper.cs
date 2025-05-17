@@ -1,12 +1,8 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
 {
@@ -32,14 +28,14 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 IntPtr hashedPtr = SCryptLinuxWrapper.scrypt_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return hashed;
             }
             else
@@ -47,8 +43,8 @@ namespace CasDotnetSdk.PasswordHashers
                 IntPtr hashedPtr = SCryptWindowsWrapper.scrypt_hash(passToHash);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return hashed;
             }
         }
@@ -70,14 +66,14 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 IntPtr hashedPtr = SCryptLinuxWrapper.scrypt_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return hashed;
             }
             else
@@ -85,8 +81,8 @@ namespace CasDotnetSdk.PasswordHashers
                 IntPtr hashedPtr = SCryptWindowsWrapper.scrypt_hash_threadpool(password);
                 string hashed = Marshal.PtrToStringAnsi(hashedPtr);
                 FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return hashed;
             }
         }
@@ -105,20 +101,20 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password and a hash to verify");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SCryptLinuxWrapper.scrypt_verify(hashedPassword, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return result;
             }
             else
             {
 
                 bool result = SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return result;
             }
         }
@@ -141,19 +137,19 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password and a hash to verify");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SCryptLinuxWrapper.scrypt_verify_threadpool(verifyPassword, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = SCryptWindowsWrapper.scrypt_verify_threadpool(verifyPassword, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+
+
                 return result;
             }
         }

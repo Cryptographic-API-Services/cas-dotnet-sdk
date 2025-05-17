@@ -1,8 +1,8 @@
-﻿using CasDotnetSdk.KeyExchange;
+﻿using System.Text;
+using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
 using CasDotnetSdk.Symmetric.Types;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests

@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.Hybrid.Types;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Hybrid.Types;
 
 namespace CasDotnetSdk.Hybrid.Windows
 {

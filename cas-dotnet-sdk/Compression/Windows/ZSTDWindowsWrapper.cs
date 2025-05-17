@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.Compression.Types;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Compression.Types;
 
 namespace CasDotnetSdk.Compression.Windows
 {

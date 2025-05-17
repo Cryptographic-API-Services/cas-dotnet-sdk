@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.PasswordHashers;
+﻿using System.Text;
+using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Symmetric;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests

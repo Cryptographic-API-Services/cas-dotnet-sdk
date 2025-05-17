@@ -1,13 +1,13 @@
-﻿using CasDotnetSdk.KeyExchange;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading.Tasks;
+using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
 using CasDotnetSdk.Symmetric.Types;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace CasDotnetSdk.Configuration
 {

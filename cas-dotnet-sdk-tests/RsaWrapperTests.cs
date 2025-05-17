@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Asymmetric;
+﻿using System.Text;
+using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.Asymmetric.Types;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests

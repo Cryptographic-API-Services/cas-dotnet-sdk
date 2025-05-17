@@ -1,13 +1,9 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.KeyExchange
 {
@@ -26,7 +22,7 @@ namespace CasDotnetSdk.KeyExchange
         /// <returns></returns>
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 X25519SecretPublicKeyResult result = X25519LinuxWrapper.generate_secret_and_public_key();
@@ -41,8 +37,8 @@ namespace CasDotnetSdk.KeyExchange
                     PublicKey = publicKeyResult,
                     SecretKey = secretKeyResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
+
+
                 return res;
             }
             else
@@ -59,8 +55,8 @@ namespace CasDotnetSdk.KeyExchange
                     PublicKey = publicKeyResult,
                     SecretKey = secretKeyResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
+
+
                 return res;
             }
         }
@@ -76,7 +72,7 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You do not have the product subscription to work with the thread pool featues");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 X25519SecretPublicKeyResult result = X25519LinuxWrapper.generate_secret_and_public_key_threadpool();
@@ -91,8 +87,8 @@ namespace CasDotnetSdk.KeyExchange
                     PublicKey = publicKeyResult,
                     SecretKey = secretKeyResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
+
+
                 return res;
             }
             else
@@ -109,8 +105,8 @@ namespace CasDotnetSdk.KeyExchange
                     PublicKey = publicKeyResult,
                     SecretKey = secretKeyResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
+
+
                 return res;
             }
         }
@@ -133,7 +129,7 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You must provide an allocated data array");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 X25519SharedSecretResult result = X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
@@ -144,8 +140,8 @@ namespace CasDotnetSdk.KeyExchange
                 {
                     SharedSecret = sharedSecret
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+
+
                 return res;
             }
             else
@@ -158,8 +154,8 @@ namespace CasDotnetSdk.KeyExchange
                 {
                     SharedSecret = sharedSecret
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+
+
                 return res;
             }
         }
@@ -187,7 +183,7 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You must provide an allocated data array");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 X25519SharedSecretResult result = X25519LinuxWrapper.diffie_hellman_threadpool(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
@@ -198,8 +194,8 @@ namespace CasDotnetSdk.KeyExchange
                 {
                     SharedSecret = sharedSecret
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+
+
                 return res;
             }
             else
@@ -212,8 +208,8 @@ namespace CasDotnetSdk.KeyExchange
                 {
                     SharedSecret = sharedSecret
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+
+
                 return res;
             }
         }

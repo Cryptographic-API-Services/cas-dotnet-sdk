@@ -1,13 +1,13 @@
-﻿using CasDotnetSdk.Configuration;
-using CasDotnetSdk.Models;
-using CasDotnetSdk.Queues;
-using CasDotnetSdk.Storage;
-using CASHelpers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CasDotnetSdk.Configuration;
+using CasDotnetSdk.Models;
+using CasDotnetSdk.Queues;
+using CasDotnetSdk.Storage;
+using CASHelpers;
 
 namespace CasDotnetSdk
 {
@@ -18,7 +18,6 @@ namespace CasDotnetSdk
             IsDevelopment = false;
             Url = "https://encryptionapiservices.com";
             TokenCache = new TokenCache();
-            BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
             Networking = new Networking();
             DiffieHellmanExchange = new DiffieHellmanExchange();
         }
@@ -86,13 +85,6 @@ namespace CasDotnetSdk
         {
             get { return _TokenCache; }
             set { _TokenCache = value; }
-        }
-
-        private static BenchmarkSenderRetryQueue _senderQueue;
-        internal static BenchmarkSenderRetryQueue BenchmarkSenderQueue
-        {
-            get { return _senderQueue; }
-            set { _senderQueue = value; }
         }
 
         private static Networking _Networking;

@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.Compression;
-using System.Text;
+﻿using System.Text;
+using CasDotnetSdk.Compression;
 using Xunit;
 
 namespace CasDotnetSdkTests

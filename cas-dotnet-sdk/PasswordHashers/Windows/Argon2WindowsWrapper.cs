@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.PasswordHashers.Types;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using CasDotnetSdk.PasswordHashers.Types;
 
 namespace CasDotnetSdk.PasswordHashers.Windows
 {

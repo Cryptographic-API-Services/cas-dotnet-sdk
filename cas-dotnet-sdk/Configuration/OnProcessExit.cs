@@ -1,6 +1,6 @@
-﻿using CASHelpers;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
+using CASHelpers;
 
 namespace CasDotnetSdk.Configuration
 {

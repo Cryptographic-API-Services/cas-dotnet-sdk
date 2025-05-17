@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Asymmetric.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Asymmetric.Types;
 
 namespace CasDotnetSdk.Asymmetric.Windows
 {

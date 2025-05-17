@@ -1,16 +1,14 @@
-﻿using CasDotnetSdk.DigitalSignature.Linux;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.DigitalSignature.Linux;
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 using CasDotnetSdk.Helpers;
 using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.DigitalSignature
 {
-    public class SHA256DigitalSignatureWrapper :  BaseWrapper, IDigitalSignature
+    public class SHA256DigitalSignatureWrapper : BaseWrapper, IDigitalSignature
     {
         /// <summary>
         /// A wrapper class for the SHA256 Digital Signature (ED25519-Dalek and RSA).
@@ -32,7 +30,7 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide an allocated array of data to sign to create a SHA256 Ed25519 Digital Signature");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAED25519DalekStructDigitalSignatureResult structResult = DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature(dataToSign, dataToSign.Length);
@@ -47,8 +45,8 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
@@ -65,8 +63,8 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }
@@ -89,7 +87,7 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide an allocated array of data to sign to create a SHA256 Ed25519 Digital Signature");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAED25519DalekStructDigitalSignatureResult structResult = DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature_threadpool(dataToSign, dataToSign.Length);
@@ -104,8 +102,8 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
@@ -122,8 +120,8 @@ namespace CasDotnetSdk.DigitalSignature
                     PublicKey = publicKey,
                     Signature = signature
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }
@@ -145,10 +143,10 @@ namespace CasDotnetSdk.DigitalSignature
             {
                 throw new Exception("Must provide an allocated data set to sign");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
-                DateTime end = DateTime.UtcNow;
+
                 SHARSAStructDigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_256_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, signature.Length);
@@ -163,12 +161,12 @@ namespace CasDotnetSdk.DigitalSignature
                 FreeMemoryHelper.FreeBytesMemory(result.signature);
                 FreeMemoryHelper.FreeCStringMemory(result.public_key);
                 FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
                 return resultToReturn;
             }
             else
             {
-                DateTime end = DateTime.UtcNow;
+
                 SHARSAStructDigitialSignatureResult result = DigitalSignatureWindowsWrapper.sha_256_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, signature.Length);
@@ -183,7 +181,6 @@ namespace CasDotnetSdk.DigitalSignature
                 FreeMemoryHelper.FreeBytesMemory(result.signature);
                 FreeMemoryHelper.FreeCStringMemory(result.public_key);
                 FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
                 return resultToReturn;
             }
         }
@@ -210,10 +207,10 @@ namespace CasDotnetSdk.DigitalSignature
             {
                 throw new Exception("Must provide an allocated data set to sign");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
-                DateTime end = DateTime.UtcNow;
+
                 SHARSAStructDigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_256_rsa_digital_signature_threadpool(rsaKeySize, dataToSign, dataToSign.Length);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, signature.Length);
@@ -228,12 +225,12 @@ namespace CasDotnetSdk.DigitalSignature
                 FreeMemoryHelper.FreeBytesMemory(result.signature);
                 FreeMemoryHelper.FreeCStringMemory(result.public_key);
                 FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
                 return resultToReturn;
             }
             else
             {
-                DateTime end = DateTime.UtcNow;
+
                 SHARSAStructDigitialSignatureResult result = DigitalSignatureWindowsWrapper.sha_256_rsa_digital_signature_threadpool(rsaKeySize, dataToSign, dataToSign.Length);
                 byte[] signature = new byte[result.length];
                 Marshal.Copy(result.signature, signature, 0, signature.Length);
@@ -248,7 +245,7 @@ namespace CasDotnetSdk.DigitalSignature
                 FreeMemoryHelper.FreeBytesMemory(result.signature);
                 FreeMemoryHelper.FreeCStringMemory(result.public_key);
                 FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
                 return resultToReturn;
             }
         }
@@ -276,19 +273,19 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide an allocated signature ");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = DigitalSignatureWindowsWrapper.sha256_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }
@@ -321,19 +318,19 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide an allocated signature ");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature_verify_threadpool(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = DigitalSignatureWindowsWrapper.sha256_ed25519_digital_signature_verify_threadpool(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }
@@ -362,19 +359,19 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide a allocated signature to verify");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = DigitalSignatureLinuxWrapper.sha_256_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = DigitalSignatureWindowsWrapper.sha_256_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }
@@ -408,19 +405,19 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("You must provide a allocated signature to verify");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = DigitalSignatureLinuxWrapper.sha_256_rsa_digital_signature_verify_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = DigitalSignatureWindowsWrapper.sha_256_rsa_digital_signature_verify_threadpool(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
+
                 return result;
             }
         }

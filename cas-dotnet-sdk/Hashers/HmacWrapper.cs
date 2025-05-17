@@ -1,17 +1,15 @@
-﻿using CasDotnetSdk.Hashers.Linux;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
     public class HmacWrapper : BaseWrapper
     {
-        
+
 
         /// <summary>
         /// A wrapper class for the HMAC hashing algorithm.
@@ -38,15 +36,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a message to sign with HMAC");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 HmacSignByteResult signed = HmacLinuxWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
                 FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
             else
@@ -55,8 +53,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
                 FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
         }
@@ -83,15 +81,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a message to sign with HMAC");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 HmacSignByteResult signed = HmacLinuxWrapper.hmac_sign_bytes_threadpool(key, key.Length, message, message.Length);
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
                 FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
             else
@@ -100,8 +98,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[signed.length];
                 Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
                 FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
         }
@@ -125,7 +123,7 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide a message to verify with HMAC");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (signature == null || signature.Length == 0)
             {
                 throw new Exception("You must provide a signature to verify with HMAC");
@@ -133,15 +131,15 @@ namespace CasDotnetSdk.Hashers
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = HmacLinuxWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = HmacWindowsWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
         }
@@ -170,7 +168,7 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide a message to verify with HMAC");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (signature == null || signature.Length == 0)
             {
                 throw new Exception("You must provide a signature to verify with HMAC");
@@ -178,15 +176,15 @@ namespace CasDotnetSdk.Hashers
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = HmacLinuxWrapper.hmac_verify_bytes_threadpool(key, key.Length, message, message.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = HmacWindowsWrapper.hmac_verify_bytes_threadpool(key, key.Length, message, message.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
+
                 return result;
             }
         }

@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Signatures;
+﻿using System.Text;
+using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Signatures.Types;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests

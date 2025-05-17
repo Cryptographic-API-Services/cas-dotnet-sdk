@@ -1,20 +1,16 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
 using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Symmetric
 {
     public class AESWrapper : BaseWrapper
     {
         private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
 
         /// <summary>
         /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
@@ -22,7 +18,6 @@ namespace CasDotnetSdk.Symmetric
         public AESWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
         }
 
         /// <summary>
@@ -31,15 +26,15 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] Aes128Key()
         {
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesKeyResult keyResult = AESLinuxWrapper.aes_128_key();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
             else
@@ -48,8 +43,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
         }
@@ -65,15 +60,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You do not have the product subscription to work with the thread pool featues");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesKeyResult keyResult = AESLinuxWrapper.aes_128_key_threadpool();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
             else
@@ -82,8 +77,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
         }
@@ -94,15 +89,15 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] Aes256Key()
         {
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesKeyResult keyResult = AESLinuxWrapper.aes_256_key();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
             else
@@ -111,8 +106,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
         }
@@ -128,15 +123,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You do not have the product subscription to work with the thread pool featues");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesKeyResult keyResult = AESLinuxWrapper.aes_256_key_threadpool();
                 byte[] key = new byte[keyResult.length];
                 Marshal.Copy(keyResult.key, key, 0, keyResult.length);
                 FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
             else
@@ -145,8 +140,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] key = new byte[keyPtr.length];
                 Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return key;
             }
         }
@@ -165,7 +160,7 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
@@ -180,8 +175,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
             else
@@ -199,8 +194,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
         }
@@ -224,7 +219,7 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
@@ -239,8 +234,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
             else
@@ -258,8 +253,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
         }
@@ -277,7 +272,7 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
@@ -292,8 +287,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
             else
@@ -311,8 +306,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
         }
@@ -335,7 +330,7 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 Aes256KeyAndNonceX25519DiffieHellmanStruct result = AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret_threadpool(sharedSecret, sharedSecret.Length);
@@ -350,8 +345,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
             else
@@ -369,8 +364,8 @@ namespace CasDotnetSdk.Symmetric
                     AesKey = aesKey,
                     AesNonce = aesNonce
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return keyAndNonce;
             }
         }
@@ -399,16 +394,13 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 256");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -417,9 +409,6 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -433,7 +422,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sendBenchmark"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256EncryptThreadpool(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
             if (!CASConfiguration.IsThreadingEnabled)
             {
@@ -453,16 +442,13 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 256");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_256_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
             else
@@ -471,9 +457,6 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                if (sendBenchmark)
-                    this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
                 return result;
             }
         }
@@ -501,15 +484,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to decrypt with AES 256");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -518,8 +501,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -552,15 +535,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to decrypt with AES 256");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesDecrypt encryptResult = AESLinuxWrapper.aes_256_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -569,8 +552,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -598,15 +581,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -615,8 +598,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -649,15 +632,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesEncrypt encryptResult = AESLinuxWrapper.aes_128_encrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -666,8 +649,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[encryptResult.length];
                 Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -695,15 +678,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to decrypt with AES 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -712,8 +695,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -746,15 +729,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to decrypt with AES 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesBytesDecrypt decryptResult = AESLinuxWrapper.aes_128_decrypt_bytes_with_key_threadpool(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -763,8 +746,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[decryptResult.length];
                 Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -775,15 +758,15 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         public byte[] GenerateAESNonce()
         {
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesNonceResult nonceResult = AESLinuxWrapper.aes_nonce();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -792,8 +775,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
@@ -809,15 +792,15 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You do not have the product subscription to work with the thread pool featues");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 AesNonceResult nonceResult = AESLinuxWrapper.aes_nonce_threadpool();
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
             else
@@ -826,8 +809,8 @@ namespace CasDotnetSdk.Symmetric
                 byte[] result = new byte[nonceResult.length];
                 Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
                 FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
+
                 return result;
             }
         }
