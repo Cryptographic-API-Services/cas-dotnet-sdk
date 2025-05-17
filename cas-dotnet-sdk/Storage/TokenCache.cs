@@ -1,7 +1,5 @@
 ﻿
 
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.UserAuthentication;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -9,6 +7,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CASHelpers;
+using CASHelpers.Types.HttpResponses.UserAuthentication;
 
 namespace CasDotnetSdk.Storage
 {

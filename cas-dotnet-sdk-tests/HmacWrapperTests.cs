@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.Hashers;
-using System.Text;
+﻿using System.Text;
+using CasDotnetSdk.Hashers;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests

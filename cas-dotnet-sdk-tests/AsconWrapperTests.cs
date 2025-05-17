@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Signatures.Types;
+﻿using System.Text;
 using CasDotnetSdk.Sponges;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests

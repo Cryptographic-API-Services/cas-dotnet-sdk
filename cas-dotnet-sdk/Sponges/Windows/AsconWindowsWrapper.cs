@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Sponges.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Sponges.Types;
 
 namespace CasDotnetSdk.Sponges.Windows
 {

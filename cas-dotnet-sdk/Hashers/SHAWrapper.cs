@@ -1,11 +1,9 @@
-﻿using CasDotnetSdk.Hashers.Linux;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
@@ -35,15 +33,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAHashByteResult hashedPtr = SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length);
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
@@ -52,8 +50,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -79,15 +77,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAHashByteResult hashedPtr = SHALinuxWrapper.sha512_bytes_threadpool(dataToHash, dataToHash.Length);
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
@@ -96,8 +94,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -118,15 +116,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAHashByteResult hashedPtr = SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length);
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
@@ -135,8 +133,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -162,15 +160,15 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 SHAHashByteResult hashedPtr = SHALinuxWrapper.sha256_bytes_threadpool(dataToHash, dataToHash.Length);
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
@@ -179,8 +177,8 @@ namespace CasDotnetSdk.Hashers
                 byte[] result = new byte[hashedPtr.length];
                 Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
                 FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -202,19 +200,19 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SHALinuxWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = SHAWindowsWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -241,19 +239,19 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SHALinuxWrapper.sha512_bytes_verify_threadpool(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = SHAWindowsWrapper.sha512_bytes_verify_threadpool(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -275,19 +273,19 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SHALinuxWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = SHAWindowsWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }
@@ -314,19 +312,19 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 bool result = SHALinuxWrapper.sha256_bytes_verify_threadpool(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
             else
             {
                 bool result = SHAWindowsWrapper.sha256_bytes_verify_threadpool(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
+
                 return result;
             }
         }

@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Symmetric.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Symmetric.Types;
 
 namespace CasDotnetSdk.Symmetric.Linux
 {

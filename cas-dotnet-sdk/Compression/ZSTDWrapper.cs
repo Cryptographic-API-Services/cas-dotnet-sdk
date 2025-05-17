@@ -1,11 +1,9 @@
-﻿using CasDotnetSdk.Compression.Linux;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Compression.Linux;
 using CasDotnetSdk.Compression.Types;
 using CasDotnetSdk.Compression.Windows;
 using CasDotnetSdk.Helpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Compression
 {
@@ -13,7 +11,7 @@ namespace CasDotnetSdk.Compression
     {
         public ZSTDWrapper()
         {
-            
+
         }
 
         /// <summary>
@@ -35,15 +33,15 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Please pass in a valid level for ZSTD Compression");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 ZSTDResult compressResult = ZSTDLinuxWrapper.compress(data, data.Length, level);
                 byte[] result = new byte[compressResult.length];
                 Marshal.Copy(compressResult.data, result, 0, compressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
             else
@@ -52,8 +50,8 @@ namespace CasDotnetSdk.Compression
                 byte[] result = new byte[compressResult.length];
                 Marshal.Copy(compressResult.data, result, 0, compressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
         }
@@ -82,15 +80,15 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Please pass in a valid level for ZSTD Compression");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 ZSTDResult compressResult = ZSTDLinuxWrapper.compress_threadpool(data, data.Length, level);
                 byte[] result = new byte[compressResult.length];
                 Marshal.Copy(compressResult.data, result, 0, compressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
             else
@@ -99,8 +97,8 @@ namespace CasDotnetSdk.Compression
                 byte[] result = new byte[compressResult.length];
                 Marshal.Copy(compressResult.data, result, 0, compressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
         }
@@ -118,15 +116,15 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Must pass in an allocated array of data to decompress");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 ZSTDResult decompressResult = ZSTDLinuxWrapper.decompress(data, data.Length);
                 byte[] result = new byte[decompressResult.length];
                 Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
             else
@@ -135,8 +133,8 @@ namespace CasDotnetSdk.Compression
                 byte[] result = new byte[decompressResult.length];
                 Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
         }
@@ -159,15 +157,15 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Must pass in an allocated array of data to decompress");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 ZSTDResult decompressResult = ZSTDLinuxWrapper.decompress_threadpool(data, data.Length);
                 byte[] result = new byte[decompressResult.length];
                 Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
             else
@@ -176,8 +174,8 @@ namespace CasDotnetSdk.Compression
                 byte[] result = new byte[decompressResult.length];
                 Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
                 FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Compression, nameof(ZSTDWrapper));
+
+
                 return result;
             }
         }

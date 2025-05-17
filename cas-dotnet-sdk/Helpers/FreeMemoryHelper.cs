@@ -1,8 +1,8 @@
-﻿using CasDotnetSdk.Helpers.Linux;
+﻿using System;
+using System.Runtime.InteropServices;
+using CasDotnetSdk.Helpers.Linux;
 using CasDotnetSdk.Helpers.Windows;
 using CASHelpers;
-using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Helpers
 {
@@ -23,7 +23,7 @@ namespace CasDotnetSdk.Helpers
             {
                 FreeMemoryHelperWindowsWrapper.free_cstring(memoryToFree);
             }
-        }   
+        }
 
         public static void FreeBytesMemory(IntPtr memoryToFree)
         {

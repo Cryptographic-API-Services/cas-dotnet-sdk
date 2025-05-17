@@ -1,11 +1,9 @@
-﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Hybrid.Types;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System.Reflection;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
-using CasDotnetSdk.Hybrid.Windows;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Hybrid.Linux;
+using CasDotnetSdk.Hybrid.Types;
+using CasDotnetSdk.Hybrid.Windows;
 
 namespace CasDotnetSdk.Hybrid
 {
@@ -22,7 +20,7 @@ namespace CasDotnetSdk.Hybrid
         /// <returns></returns>
         public HpkeKeyPairResult GenerateKeyPair()
         {
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 HpkeKeyPairResultStruct keyPair = HpkeLinuxWrapper.hpke_generate_keypair();
@@ -41,8 +39,8 @@ namespace CasDotnetSdk.Hybrid
                     PublicKey = publicKeyResult,
                     InfoStr = infoStrResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
             else
@@ -63,8 +61,8 @@ namespace CasDotnetSdk.Hybrid
                     PublicKey = publicKeyResult,
                     InfoStr = infoStrResult
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
         }
@@ -86,7 +84,7 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to encrypt with HPKE");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 HpkeEncryptResultStruct encrypt = HpkeLinuxWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length);
@@ -105,8 +103,8 @@ namespace CasDotnetSdk.Hybrid
                     Tag = tagResult,
                     EncappedKey = encappedKeyResult,
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
             else
@@ -127,13 +125,13 @@ namespace CasDotnetSdk.Hybrid
                     Tag = tagResult,
                     EncappedKey = encappedKeyResult,
                 };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
         }
 
-        public byte[] Decrypt(byte[] cipherText,  byte[] privateKey, byte[] encappedKey,  byte[] tag,  byte[] infoStr)
+        public byte[] Decrypt(byte[] cipherText, byte[] privateKey, byte[] encappedKey, byte[] tag, byte[] infoStr)
         {
             if (cipherText == null || cipherText.Length == 0)
             {
@@ -160,15 +158,15 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to decrypt with HPKE");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             if (this._platform == OSPlatform.Linux)
             {
                 HpkeDecryptResultStruct decrypt = HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
                 byte[] result = new byte[decrypt.plaintext_ptr_length];
                 Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
                 FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
             else
@@ -177,8 +175,8 @@ namespace CasDotnetSdk.Hybrid
                 byte[] result = new byte[decrypt.plaintext_ptr_length];
                 Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
                 FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
+
                 return result;
             }
         }

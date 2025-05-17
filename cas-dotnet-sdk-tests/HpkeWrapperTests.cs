@@ -1,6 +1,6 @@
-﻿using CasDotnetSdk.Hybrid;
+﻿using System.Text;
+using CasDotnetSdk.Hybrid;
 using CasDotnetSdk.Hybrid.Types;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests
@@ -26,7 +26,7 @@ namespace CasDotnetSdkTests
             Assert.NotEmpty(result.InfoStr);
         }
 
-        [Fact] 
+        [Fact]
         public void Encrypt()
         {
             HpkeKeyPairResult keyPair = this._wrapper.GenerateKeyPair();

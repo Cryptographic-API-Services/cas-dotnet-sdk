@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.Hashers.Types;
 
 namespace CasDotnetSdk.Hashers.Linux
 {

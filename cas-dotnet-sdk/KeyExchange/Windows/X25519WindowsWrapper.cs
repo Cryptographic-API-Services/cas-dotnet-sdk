@@ -1,6 +1,5 @@
-﻿using CasDotnetSdk.KeyExchange.Types;
-using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CasDotnetSdk.KeyExchange.Types;
 
 namespace CasDotnetSdk.KeyExchange.Windows
 {
