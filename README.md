@@ -22,7 +22,7 @@ We utilize some smart people's existing work and we believe their documentation 
 ## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
 
 ## Supported Frameworks / Operating Systems
-We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-8 for Windows and Linux (Ubuntu) on each pull request and release to Nuget through GitHub actions.
+We aim to provide cross-compatibility wherever possible. 
 - [X] .NET 6
 - [X] .NET 7
 - [X] .NET 8
