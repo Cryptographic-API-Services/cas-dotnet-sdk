@@ -1,16 +1,23 @@
-name: CI
+name: PR Tests - Linux
 
 on:
   pull_request:
     branches: [ main ]
-
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: [6.0, 7.0, 8.0, 9.0]
+        include:
+          - dotnet-version: 6.0
+            tfm: net6.0
+          - dotnet-version: 7.0
+            tfm: net7.0
+          - dotnet-version: 8.0
+            tfm: net8.0
+          - dotnet-version: 9.0
+            tfm: net9.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,8 +27,26 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Run tests
+      - name: Restore (test project only, pinned TF)
         run: |
-          # Run tests that target the runtime matching the SDK where possible.
-          # Most test projects will run fine with the installed SDK.
-          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --logger "trx"
+          echo "Restoring test project for framework ${{ matrix.tfm }}"
+          dotnet restore ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj --framework ${{ matrix.tfm }}
+
+      - name: Build (override framework)
+        run: |
+          echo "Building solution for framework ${{ matrix.tfm }}"
+          dotnet build ./cas-dotnet-sdk.sln -c Release --no-restore -f ${{ matrix.tfm }}
+
+      - name: Run tests (override framework)
+        run: |
+          echo "Running tests for framework ${{ matrix.tfm }}"
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --no-build -f ${{ matrix.tfm }} --logger "trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-dotnet-${{ matrix.dotnet-version }}
+          path: |
+            **/TestResults/*.trx
+            **/*.trx
