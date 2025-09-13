@@ -3,6 +3,7 @@ using CasDotnetSdk.Types;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,19 +38,27 @@ namespace CasDotnetSdk.Queues
                 await Task.Run(async () =>
                 {
                     List<BenchmarkMacAddressSDKMethod> addBackToQueue = new List<BenchmarkMacAddressSDKMethod>();
+                    BenchmarkSender newSender = new BenchmarkSender();
+                    List<Tuple<Task<bool>, BenchmarkMacAddressSDKMethod>> requestSuccess = new();
                     foreach (BenchmarkMacAddressSDKMethod method in this.Queue)
                     {
                         BenchmarkMacAddressSDKMethod retryBnechmark = null;
                         if (this.Queue.TryDequeue(out retryBnechmark))
                         {
-                            BenchmarkSender newSender = new BenchmarkSender();
-                            bool result = await newSender.SendNewBenchmarkMethodRetry(retryBnechmark);
-                            if (!result)
-                            {
-                                addBackToQueue.Add(retryBnechmark);
-                            }
+                            var tuple = new Tuple<Task<bool>, BenchmarkMacAddressSDKMethod>(newSender.SendNewBenchmarkMethodRetry(retryBnechmark), retryBnechmark);
+                            requestSuccess.Add(tuple);
                         }
                     }
+
+                    bool[] results = await Task.WhenAll(requestSuccess.ToList().Select(x => x.Item1));
+                    for (int i = 0; i < results.Length; i++)
+                    {
+                        if (!results[i])
+                        {
+                            addBackToQueue.Add(requestSuccess[i].Item2);
+                        }
+                    }
+
                     // Check if any failed and place back into queue
                     if (addBackToQueue.Count > 0)
                     {
@@ -59,7 +68,6 @@ namespace CasDotnetSdk.Queues
                             if (method.NumberOfTries > 2)
                             {
                                 this.Enqueue(method);
-
                             }
                         }
                     }

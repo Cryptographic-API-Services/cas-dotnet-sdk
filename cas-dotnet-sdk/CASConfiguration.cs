@@ -41,9 +41,7 @@ namespace CasDotnetSdk
                     {
                         Task osSendTask = SendOSInformation(value);
                         Task dhTask = DiffieHellmanExchange.CreateSharedSecretWithServer();
-                        _IsThreadProductEnabled = new IsThreadingProductEnabled();
-                        Task isThreadingEnabledTask = _IsThreadProductEnabled.ValidateThreadingProductSubscription();
-                        Task.WhenAll(osSendTask, dhTask, isThreadingEnabledTask).GetAwaiter().GetResult();
+                        Task.WhenAll(osSendTask, dhTask).GetAwaiter().GetResult();
                     }
                     else
                     {
@@ -107,54 +105,6 @@ namespace CasDotnetSdk
         {
             get { return _DiffieHellmanExchange; }
             set { _DiffieHellmanExchange = value; }
-        }
-
-        private static IsThreadingProductEnabled _IsThreadProductEnabled;
-        internal static IsThreadingProductEnabled IsThreadProductEnabled
-        {
-            get { return _IsThreadProductEnabled; }
-            set { _IsThreadProductEnabled = value; }
-        }
-
-        private static bool _IsThreadingEnabled = IsThreadingEnabledChecker().GetAwaiter().GetResult();
-        internal static bool IsThreadingEnabled
-        {
-            get { return _IsThreadingEnabled; }
-            set { _IsThreadingEnabled = value; }
-        }
-
-        private static async Task<bool> IsThreadingEnabledChecker()
-        {
-            bool result = true;
-            if (!await IsRunningInTestMode())
-            {
-                result = false;
-            }
-            return result;
-        }
-
-
-        /// <summary>
-        /// Used to determine if the project is being run from xunit so specific things wont fail 
-        /// due to running the SDK in test mode.
-        /// </summary>
-        /// <returns></returns>
-        private static async Task<bool> IsRunningInTestMode()
-        {
-            var stackTrace = new StackTrace();
-            foreach (var frame in stackTrace.GetFrames())
-            {
-                var method = frame.GetMethod();
-                if (method != null && method.DeclaringType != null)
-                {
-                    var assembly = method.DeclaringType.Assembly;
-                    if (assembly.FullName.StartsWith("xunit"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
         private static async Task SendOSInformation(string apiKey)
         {
