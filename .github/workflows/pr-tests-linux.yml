@@ -1,4 +1,4 @@
-name: CI
+name: PR Tests - Linux
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -27,17 +27,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Restore (test project only, pinned TF)
-        run: |
-          echo "Restoring test project for framework ${{ matrix.tfm }}"
-          dotnet restore ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -p:TargetFramework=${{ matrix.tfm }}
-
-      - name: Build (override framework)
-        run: |
-          echo "Building solution for framework ${{ matrix.tfm }}"
-          dotnet build ./cas-dotnet-sdk.sln -c Release --no-restore -f ${{ matrix.tfm }}
-
       - name: Run tests (override framework)
         run: |
           echo "Running tests for framework ${{ matrix.tfm }}"
-          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --no-build -f ${{ matrix.tfm }} --logger "trx"s
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --logger "trx"
