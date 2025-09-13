@@ -8,13 +8,12 @@ CAS is here to provide a unified development experience as an abstract layer to 
 **Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
 
 ## Consuming Library Documentation
-This C# nuget package is dependent on our Rust layer that contains methods to run industry standard cryptographic operations sequentially, on threads, and the thread pool [cas-core-lib](https://github.com/Crytographic-API-Services/cas-core-lib).
+This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic[cas-lib](https://github.com/Cryptographic-API-Services/cas-lib).
 
 We utilize some smart people's existing work and we believe their documentation should be reviewed when possible.
 - [Spin Research](https://github.com/SpinResearch)
 - [Dalek-Cryptography](https://github.com/dalek-cryptography)
 - [Rust Crypto](https://github.com/RustCrypto)
-- [Rayon](https://github.com/rayon-rs/rayon)
 
 
 We recommend viewing our GitHub documentation for examples and benchmarks.
