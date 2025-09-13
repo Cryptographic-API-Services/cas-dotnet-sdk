@@ -1,79 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFrameworks>net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
-		<RootNamespace>CasDotnetSdk</RootNamespace>
-		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Title>cas-dotnet-sdk</Title>
-		<PackageIcon>icon.jpeg</PackageIcon>
-		<Version>1.5.4</Version>
-		<Authors>Mike Mulchrone</Authors>
-		<Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
-		<RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="cas-dotnet-sdk.targets" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
+    <RootNamespace>CasDotnetSdk</RootNamespace>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>cas-dotnet-sdk</Title>
+    <PackageIcon>icon.jpeg</PackageIcon>
+    <Version>1.5.7</Version>
+    <Authors>Mike Mulchrone</Authors>
+    <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
+    <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<Content Include="..\icon.jpeg">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</Content>
-		<Content Include="cas-dotnet-sdk.targets">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		  <PackagePath>build</PackagePath>
-		</Content>
-		<Content Include="Contents/cas_core_lib.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net9.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/libcas_core_lib.so">
-			<Pack>true</Pack>
-			<PackagePath>lib\net9.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/cas_core_lib.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net8.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/libcas_core_lib.so">
-			<Pack>true</Pack>
-			<PackagePath>lib\net8.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/cas_core_lib.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net7.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/libcas_core_lib.so">
-			<Pack>true</Pack>
-			<PackagePath>lib\net7.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/cas_core_lib.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net6.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Contents/libcas_core_lib.so">
-			<Pack>true</Pack>
-			<PackagePath>lib\net6.0</PackagePath>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</Content>
-	</ItemGroup>
+  <ItemGroup>
+    <Content Include="..\icon.jpeg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
 
-	<ItemGroup>
-	  <PackageReference Include="cas-helpers" Version="1.0.19" />
-	  <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
-	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-	</ItemGroup>
+    <!-- Native assets packaged to runtimes/<rid>/native so runtime probing works correctly -->
+
+    <Content Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="cas-helpers" Version="1.0.19" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="cas_core_lib.dll">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libcas_core_lib.so">
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
