@@ -28,9 +28,6 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Restore dependencies
-        run: dotnet restore
-
       - name: Run tests (override framework)
         run: |
           echo "Running tests for framework ${{ matrix.tfm }}"
