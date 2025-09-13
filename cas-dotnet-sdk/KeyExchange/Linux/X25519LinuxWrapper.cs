@@ -11,11 +11,5 @@ namespace CasDotnetSdk.KeyExchange.Linux
 
         [DllImport("libcas_core_lib.so")]
         public static extern X25519SharedSecretResult diffie_hellman(byte[] secretKey, int secretKeyLength, byte[] otherUserPublicKey, int otherUserPublickKeyLength);
-
-        [DllImport("libcas_core_lib.so")]
-        public static extern X25519SecretPublicKeyResult generate_secret_and_public_key_threadpool();
-
-        [DllImport("libcas_core_lib.so")]
-        public static extern X25519SharedSecretResult diffie_hellman_threadpool(byte[] secretKey, int secretKeyLength, byte[] otherUserPublicKey, int otherUserPublickKeyLength);
     }
 }
