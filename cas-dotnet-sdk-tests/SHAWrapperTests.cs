@@ -24,15 +24,7 @@ namespace CasDotnetSdkTests.Tests
             Assert.True(hashed.Length > 0);
         }
 
-        [Fact]
-        public void SHA512HashBytesThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512Threadpool(data);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.True(hashed.Length > 0);
-        }
+
 
         [Fact]
         public void SHA512VerifyPass()
@@ -43,14 +35,6 @@ namespace CasDotnetSdkTests.Tests
             Assert.True(isSame);
         }
 
-        [Fact]
-        public void SHA512VerifyPassThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512(data);
-            bool isSame = this._wrapper.Verify512Threadpool(data, hashed);
-            Assert.True(isSame);
-        }
 
         [Fact]
         public void SHA512VerifyFail()
@@ -63,30 +47,10 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void SHA512VerifyFailThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512Threadpool(data);
-            data = Encoding.UTF8.GetBytes("Not the same byte array");
-            bool isSame = this._wrapper.Verify512Threadpool(data, hashed);
-            Assert.False(isSame);
-        }
-
-        [Fact]
         public void SHA256HashBytes()
         {
             byte[] data = Encoding.UTF8.GetBytes(this._testString);
             byte[] hashed = this._wrapper.Hash256(data);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.True(hashed.Length > 0);
-        }
-
-        [Fact]
-        public void SHA256HashBytesThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256Threadpool(data);
             Assert.NotNull(hashed);
             Assert.NotEmpty(hashed);
             Assert.True(hashed.Length > 0);
@@ -102,31 +66,12 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void SHA256VerifyPassThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256Threadpool(data);
-            bool isSame = this._wrapper.Verify256Threadpool(data, hashed);
-            Assert.True(isSame);
-        }
-
-        [Fact]
         public void SHA256VerifyFail()
         {
             byte[] data = Encoding.UTF8.GetBytes(this._testString);
             byte[] hashed = this._wrapper.Hash256(data);
             data = Encoding.UTF8.GetBytes("Not the same byte array");
             bool isSame = this._wrapper.Verify256(data, hashed);
-            Assert.False(isSame);
-        }
-
-        [Fact]
-        public void SHA256VerifyFailThreadpool()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256Threadpool(data);
-            data = Encoding.UTF8.GetBytes("Not the same byte array");
-            bool isSame = this._wrapper.Verify256Threadpool(data, hashed);
             Assert.False(isSame);
         }
     }

@@ -25,14 +25,6 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void HashPasswordThreadPool()
-        {
-            string password = "DoNotUSETHISPASS@!";
-            string hash = this._argon2Wrapper.HashPasswordThreadPool(password);
-            Assert.NotEqual(password, hash);
-        }
-
-        [Fact]
         public void Verify()
         {
             string password = "TestPasswordToVerify";
@@ -41,14 +33,6 @@ namespace CasDotnetSdkTests.Tests
             Assert.True(isValid);
         }
 
-        [Fact]
-        public void VerifyThreadpool()
-        {
-            string password = "TestPasswordToVerify";
-            string hash = this._argon2Wrapper.HashPasswordThreadPool(password);
-            bool isValid = this._argon2Wrapper.VerifyThreadPool(hash, password);
-            Assert.True(isValid);
-        }
 
         [Fact]
         public void FactoryTest()

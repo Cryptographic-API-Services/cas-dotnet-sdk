@@ -51,39 +51,6 @@ namespace CasDotnetSdk.PasswordHashers
         }
 
         /// <summary>
-        /// Hashes a password using the BCrypt algorithm on a new thread.
-        /// </summary>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public string HashPasswordThreadPool(string password)
-        {
-            if (!CASConfiguration.IsThreadingEnabled)
-            {
-                throw new Exception("You do not have the product subscription to work with the thread pool featues");
-            }
-
-            DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash_threadpool(password);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash_threadpool(password);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return hashed;
-            }
-        }
-
-        /// <summary>
         /// Verifies a hashed password against an unhashed password using the BCrypt algorithm.
         /// </summary>
         /// <param name="hashedPassword"></param>
@@ -102,37 +69,6 @@ namespace CasDotnetSdk.PasswordHashers
             else
             {
                 bool result = BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return result;
-            }
-        }
-
-        /// <summary>
-        /// Verifies a hashed password against an unhashed password using the BCrypt algorithm on a new thread.
-        /// </summary>
-        /// <param name="hashedPassword"></param>
-        /// <param name="verifyPassword"></param>
-        /// <returns></returns>
-
-        public bool VerifyThreadPool(string hashedPassword, string verifyPassword)
-        {
-            if (!CASConfiguration.IsThreadingEnabled)
-            {
-                throw new Exception("You do not have the product subscription to work with the thread pool featues");
-            }
-
-            DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = BcryptLinuxWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return result;
-            }
-            else
-            {
-                bool result = BcryptWindowsWrapper.bcrypt_verify_threadpool(verifyPassword, hashedPassword);
                 DateTime end = DateTime.UtcNow;
                 this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
                 return result;
