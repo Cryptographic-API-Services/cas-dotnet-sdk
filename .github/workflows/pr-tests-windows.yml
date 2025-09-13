@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: [6.0, 7.0, 8.0, 9.0]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Run tests
+        run: |
+          # Run tests that target the runtime matching the SDK where possible.
+          # Most test projects will run fine with the installed SDK.
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --logger "trx"
