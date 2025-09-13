@@ -1,4 +1,4 @@
-name: PR Tests - Linux
+name: PR Tests - Windows
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         include:
