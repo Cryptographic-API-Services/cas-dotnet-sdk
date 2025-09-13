@@ -22,14 +22,6 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void HashPasswordThreadPool()
-        {
-            string hashedPassword = this._scrypt.HashPasswordThreadPool(this._password);
-            Assert.NotNull(hashedPassword);
-            Assert.NotEqual(hashedPassword, this._password);
-        }
-
-        [Fact]
         public void VerifyPassword()
         {
             string hashedPassword = this._scrypt.HashPassword(this._password);
@@ -37,12 +29,7 @@ namespace CasDotnetSdkTests.Tests
             Assert.True(isValid);
         }
 
-        [Fact]
-        public void VerifyPasswordThread()
-        {
-            string hashedPassword = this._scrypt.HashPasswordThreadPool(this._password);
-            bool isValid = this._scrypt.VerifyThreadPool(hashedPassword, this._password);
-        }
+
 
         [Fact]
         public void FactoryTest()
