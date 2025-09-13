@@ -1,0 +1,34 @@
+name: PR Tests - Windows
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - dotnet-version: 6.0
+            tfm: net6.0
+          - dotnet-version: 7.0
+            tfm: net7.0
+          - dotnet-version: 8.0
+            tfm: net8.0
+          - dotnet-version: 9.0
+            tfm: net9.0
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Run tests (override framework)
+        run: |
+          echo "Running tests for framework ${{ matrix.tfm }}"
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f ${{ matrix.tfm }} --logger "trx"
