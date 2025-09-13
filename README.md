@@ -11,7 +11,7 @@ The official Nuget page can be found [here](https://www.nuget.org/packages/cas-d
 **Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
 
 ## Consuming Library Documentation
-This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic[cas-lib](https://github.com/Cryptographic-API-Services/cas-lib).
+This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic operations. [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib).
 
 We utilize some smart people's existing work and we believe their documentation should be reviewed when possible.
 - [Spin Research](https://github.com/SpinResearch)
