@@ -18,6 +18,7 @@ jobs:
             tfm: net8.0
           - dotnet-version: 9.0
             tfm: net9.0
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,15 +28,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-packages-${{ runner.os }}-${{ hashFiles('**/project.assets.json') }}
-          restore-keys: |
-            nuget-packages-${{ runner.os }}-
+      - name: Restore dependencies
+        run: dotnet restore
 
       - name: Run tests (override framework)
         run: |
           echo "Running tests for framework ${{ matrix.tfm }}"
-          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --logger "trx"
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f ${{ matrix.tfm }} --logger "trx"
