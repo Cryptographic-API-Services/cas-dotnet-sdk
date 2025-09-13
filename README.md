@@ -17,7 +17,6 @@ We utilize some smart people's existing work and we believe their documentation 
 - [Spin Research](https://github.com/SpinResearch)
 - [Dalek-Cryptography](https://github.com/dalek-cryptography)
 - [Rust Crypto](https://github.com/RustCrypto)
-- [Rayon](https://github.com/rayon-rs/rayon)
 
 ## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
 
