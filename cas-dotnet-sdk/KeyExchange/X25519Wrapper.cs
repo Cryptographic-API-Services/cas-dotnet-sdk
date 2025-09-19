@@ -81,4 +81,3 @@ namespace CasDotnetSdk.KeyExchange
         }
     }
 }
-}
