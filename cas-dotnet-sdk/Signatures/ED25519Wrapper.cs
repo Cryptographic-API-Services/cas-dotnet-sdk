@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 namespace CasDotnetSdk.Signatures
 {
     public class ED25519Wrapper : BaseWrapper
-    { 
+    {
 
         public ED25519Wrapper()
         {
@@ -25,26 +25,15 @@ namespace CasDotnetSdk.Signatures
         public byte[] GetKeyPairBytes()
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Ed25519KeyPairBytesResultStruct resultStruct = ED25519LinuxWrapper.get_ed25519_key_pair_bytes();
-                byte[] keyPairResult = new byte[resultStruct.length];
-                Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.key_pair);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return keyPairResult;
-            }
-            else
-            {
-                Ed25519KeyPairBytesResultStruct resultStruct = ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
-                byte[] keyPairResult = new byte[resultStruct.length];
-                Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.key_pair);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return keyPairResult;
-            }
+            Ed25519KeyPairBytesResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
+                ED25519LinuxWrapper.get_ed25519_key_pair_bytes() :
+                ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
+            byte[] keyPairResult = new byte[resultStruct.length];
+            Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
+            FreeMemoryHelper.FreeBytesMemory(resultStruct.key_pair);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+            return keyPairResult;
         }
 
         /// <summary>
@@ -66,40 +55,22 @@ namespace CasDotnetSdk.Signatures
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            Ed25519ByteSignatureResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
+                ED25519LinuxWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length) :
+                ED25519WindowsWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
+            byte[] publicKeyResult = new byte[resultStruct.public_key_length];
+            Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, resultStruct.public_key_length);
+            FreeMemoryHelper.FreeBytesMemory(resultStruct.public_key);
+            byte[] signatureResult = new byte[resultStruct.signature_length];
+            Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
+            FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+            return new Ed25519ByteSignatureResult()
             {
-                Ed25519ByteSignatureResultStruct resultStruct = ED25519LinuxWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
-                byte[] publicKeyResult = new byte[resultStruct.public_key_length];
-                Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, resultStruct.public_key_length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.public_key);
-                byte[] signatureResult = new byte[resultStruct.signature_length];
-                Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return new Ed25519ByteSignatureResult()
-                {
-                    PublicKey = publicKeyResult,
-                    Signature = signatureResult
-                };
-            }
-            else
-            {
-                Ed25519ByteSignatureResultStruct resultStruct = ED25519WindowsWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
-                byte[] publicKeyResult = new byte[resultStruct.public_key_length];
-                Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, resultStruct.public_key_length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.public_key);
-                byte[] signatureResult = new byte[resultStruct.signature_length];
-                Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
-                FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return new Ed25519ByteSignatureResult()
-                {
-                    PublicKey = publicKeyResult,
-                    Signature = signatureResult
-                };
-            }
+                PublicKey = publicKeyResult,
+                Signature = signatureResult
+            };
         }
 
         /// <summary>
@@ -126,20 +97,12 @@ namespace CasDotnetSdk.Signatures
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return result;
-            }
-            else
-            {
-                bool result = ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
+                ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+            return result;
         }
 
         /// <summary>
@@ -166,20 +129,12 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide allocated data to verify for the signature to verify with ED25519-Dalek");
             }
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return result;
-            }
-            else
-            {
-                bool result = ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
+                ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+            return result;
         }
     }
 }
