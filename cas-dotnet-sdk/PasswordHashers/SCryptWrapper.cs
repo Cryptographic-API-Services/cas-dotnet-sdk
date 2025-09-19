@@ -33,24 +33,12 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = SCryptLinuxWrapper.scrypt_hash(passToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = SCryptWindowsWrapper.scrypt_hash(passToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
-                return hashed;
-            }
+            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+            return hashed;
         }
 
         /// <summary>
@@ -68,21 +56,10 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = SCryptLinuxWrapper.scrypt_verify(hashedPassword, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
-                return result;
-            }
-            else
-            {
-
-                bool result = SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_verify(hashedPassword, password) : SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SCryptWrapper));
+            return result;
         }
     }
 }

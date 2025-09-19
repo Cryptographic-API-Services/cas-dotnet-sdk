@@ -27,42 +27,23 @@ namespace CasDotnetSdk.KeyExchange
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            X25519SecretPublicKeyResult result = (this._platform == OSPlatform.Linux) ?
+                X25519LinuxWrapper.generate_secret_and_public_key() :
+                X25519WindowsWrapper.generate_secret_and_public_key();
+            byte[] secretKeyResult = new byte[result.secret_key_length];
+            Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
+            byte[] publicKeyResult = new byte[result.public_key_length];
+            Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
+            FreeMemoryHelper.FreeBytesMemory(result.public_key);
+            FreeMemoryHelper.FreeBytesMemory(result.secret_key);
+            X25519SecretPublicKey res = new X25519SecretPublicKey()
             {
-                X25519SecretPublicKeyResult result = X25519LinuxWrapper.generate_secret_and_public_key();
-                byte[] secretKeyResult = new byte[result.secret_key_length];
-                Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
-                byte[] publicKeyResult = new byte[result.public_key_length];
-                Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                FreeMemoryHelper.FreeBytesMemory(result.public_key);
-                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
-                X25519SecretPublicKey res = new X25519SecretPublicKey()
-                {
-                    PublicKey = publicKeyResult,
-                    SecretKey = secretKeyResult
-                };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
-                return res;
-            }
-            else
-            {
-                X25519SecretPublicKeyResult result = X25519WindowsWrapper.generate_secret_and_public_key();
-                byte[] secretKeyResult = new byte[result.secret_key_length];
-                Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
-                byte[] publicKeyResult = new byte[result.public_key_length];
-                Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-                FreeMemoryHelper.FreeBytesMemory(result.public_key);
-                FreeMemoryHelper.FreeBytesMemory(result.secret_key);
-                X25519SecretPublicKey res = new X25519SecretPublicKey()
-                {
-                    PublicKey = publicKeyResult,
-                    SecretKey = secretKeyResult
-                };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
-                return res;
-            }
+                PublicKey = publicKeyResult,
+                SecretKey = secretKeyResult
+            };
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.KeyExchange, nameof(X25519Wrapper));
+            return res;
         }
 
         /// <summary>
@@ -84,34 +65,20 @@ namespace CasDotnetSdk.KeyExchange
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            X25519SharedSecretResult result = (this._platform == OSPlatform.Linux) ?
+                X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length)
+                : X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
+            byte[] sharedSecret = new byte[result.shared_secret_length];
+            Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
+            FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
+            X25519SharedSecret res = new X25519SharedSecret()
             {
-                X25519SharedSecretResult result = X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
-                byte[] sharedSecret = new byte[result.shared_secret_length];
-                Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
-                X25519SharedSecret res = new X25519SharedSecret()
-                {
-                    SharedSecret = sharedSecret
-                };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
-                return res;
-            }
-            else
-            {
-                X25519SharedSecretResult result = X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
-                byte[] sharedSecret = new byte[result.shared_secret_length];
-                Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-                FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
-                X25519SharedSecret res = new X25519SharedSecret()
-                {
-                    SharedSecret = sharedSecret
-                };
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
-                return res;
-            }
+                SharedSecret = sharedSecret
+            };
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(X25519Wrapper));
+            return res;
         }
     }
+}
 }
