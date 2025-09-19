@@ -19,7 +19,7 @@ namespace CasDotnetSdk.DigitalSignature
         /// </summary>
         public SHA512DigitalSignatureWrapper()
         {
-            
+
         }
 
         /// <summary>
@@ -36,40 +36,22 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            SHAED25519DalekStructDigitalSignatureResult signatureResult = (this._platform == OSPlatform.Linux) ? 
+                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length) : 
+                DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
+            byte[] publicKey = new byte[signatureResult.public_key_length];
+            Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
+            byte[] signature = new byte[signatureResult.signature_length];
+            Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
+            FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
+            FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+            return new SHAED25519DalekDigitialSignatureResult()
             {
-                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
-                byte[] publicKey = new byte[signatureResult.public_key_length];
-                Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
-                byte[] signature = new byte[signatureResult.signature_length];
-                Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
-                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return new SHAED25519DalekDigitialSignatureResult()
-                {
-                    PublicKey = publicKey,
-                    Signature = signature,
-                };
-            }
-            else
-            {
-                SHAED25519DalekStructDigitalSignatureResult signatureResult = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
-                byte[] publicKey = new byte[signatureResult.public_key_length];
-                Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
-                byte[] signature = new byte[signatureResult.signature_length];
-                Marshal.Copy(signatureResult.signature_raw_ptr, signature, 0, signatureResult.signature_length);
-                FreeMemoryHelper.FreeBytesMemory(signatureResult.public_key);
-                FreeMemoryHelper.FreeBytesMemory(signatureResult.signature_raw_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return new SHAED25519DalekDigitialSignatureResult()
-                {
-                    PublicKey = publicKey,
-                    Signature = signature,
-                };
-            }
+                PublicKey = publicKey,
+                Signature = signature,
+            };
         }
 
         /// <summary>
@@ -91,47 +73,27 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            SHARSAStructDigitialSignatureResult result = (this._platform == OSPlatform.Linux) ? 
+                DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length) : 
+                DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
+            string publicKey = Marshal.PtrToStringAnsi(result.public_key);
+            string privateKey = Marshal.PtrToStringAnsi(result.private_key);
+            byte[] signature = new byte[result.length];
+            Marshal.Copy(result.signature, signature, 0, result.length);
+            FreeMemoryHelper.FreeCStringMemory(result.public_key);
+            FreeMemoryHelper.FreeCStringMemory(result.private_key);
+            FreeMemoryHelper.FreeBytesMemory(result.signature);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+            return new SHARSADigitalSignatureResult()
             {
-                SHARSAStructDigitialSignatureResult result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
-                string publicKey = Marshal.PtrToStringAnsi(result.public_key);
-                string privateKey = Marshal.PtrToStringAnsi(result.private_key);
-                byte[] signature = new byte[result.length];
-                Marshal.Copy(result.signature, signature, 0, result.length);
-                FreeMemoryHelper.FreeCStringMemory(result.public_key);
-                FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                FreeMemoryHelper.FreeBytesMemory(result.signature);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return new SHARSADigitalSignatureResult()
-                {
-                    PrivateKey = privateKey,
-                    PublicKey = publicKey,
-                    Signature = signature
-                };
-            }
-            else
-            {
-                SHARSAStructDigitialSignatureResult result = DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
-                string publicKey = Marshal.PtrToStringAnsi(result.public_key);
-                string privateKey = Marshal.PtrToStringAnsi(result.private_key);
-                byte[] signature = new byte[result.length];
-                Marshal.Copy(result.signature, signature, 0, result.length);
-                FreeMemoryHelper.FreeCStringMemory(result.public_key);
-                FreeMemoryHelper.FreeCStringMemory(result.private_key);
-                FreeMemoryHelper.FreeBytesMemory(result.signature);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return new SHARSADigitalSignatureResult()
-                {
-                    PrivateKey = privateKey,
-                    PublicKey = publicKey,
-                    Signature = signature
-                };
-            }
+                PrivateKey = privateKey,
+                PublicKey = publicKey,
+                Signature = signature
+            };
         }
 
-        
+
 
         /// <summary>
         /// Verifies a ED25519 Digital Signature using SHA512
@@ -157,20 +119,12 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return result;
-            }
-            else
-            {
-                bool result = DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ? 
+                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length) : 
+                DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+            return result;
         }
 
         /// <summary>
@@ -197,20 +151,12 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return result;
-            }
-            else
-            {
-                bool result = DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
+                DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));
+            return result;
         }
     }
 }

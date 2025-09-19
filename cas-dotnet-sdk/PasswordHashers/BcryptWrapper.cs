@@ -30,24 +30,14 @@ namespace CasDotnetSdk.PasswordHashers
         {
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = BcryptLinuxWrapper.bcrypt_hash(passwordToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return hashed;
-            }
+            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+                BcryptLinuxWrapper.bcrypt_hash(passwordToHash) :
+                BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+            return hashed;
         }
 
         /// <summary>
@@ -59,20 +49,12 @@ namespace CasDotnetSdk.PasswordHashers
         public bool Verify(string hashedPassword, string unhashed)
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return result;
-            }
-            else
-            {
-                bool result = BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword) :
+                BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword); ;
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(BcryptWrapper));
+            return result;
         }
     }
 }

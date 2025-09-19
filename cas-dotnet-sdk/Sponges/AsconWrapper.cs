@@ -24,26 +24,13 @@ namespace CasDotnetSdk.Sponges
         public byte[] Ascon128Key()
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Ascon128KeyStruct keyPtr = AsconLinuxWrapper.ascon_128_key();
-                byte[] key = new byte[keyPtr.length];
-                Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return key;
-            }
-            else
-            {
-                Ascon128KeyStruct keyPtr = AsconWindowsWrapper.ascon_128_key();
-                byte[] key = new byte[keyPtr.length];
-                Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
-                FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return key;
-            }
+            Ascon128KeyStruct keyPtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_key() : AsconWindowsWrapper.ascon_128_key();
+            byte[] key = new byte[keyPtr.length];
+            Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
+            FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
+            return key;
         }
 
         /// <summary>
@@ -53,26 +40,13 @@ namespace CasDotnetSdk.Sponges
         public byte[] Ascon128Nonce()
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Ascon128NonceStruct noncePtr = AsconLinuxWrapper.ascon_128_nonce();
-                byte[] nonce = new byte[noncePtr.length];
-                Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return nonce;
-            }
-            else
-            {
-                Ascon128NonceStruct noncePtr = AsconWindowsWrapper.ascon_128_nonce();
-                byte[] nonce = new byte[noncePtr.length];
-                Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
-                FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return nonce;
-            }
+            Ascon128NonceStruct noncePtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_nonce() : AsconWindowsWrapper.ascon_128_nonce();
+            byte[] nonce = new byte[noncePtr.length];
+            Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
+            FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
+            return nonce;
         }
 
         /// <summary>
@@ -99,26 +73,15 @@ namespace CasDotnetSdk.Sponges
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Ascon128EncryptResultStruct encryptResult = AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
-                byte[] result = new byte[encryptResult.length];
-                Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return result;
-            }
-            else
-            {
-                Ascon128EncryptResultStruct encryptResult = AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
-                byte[] result = new byte[encryptResult.length];
-                Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
-                FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return result;
-            }
+            Ascon128EncryptResultStruct encryptResult = (this._platform == OSPlatform.Linux) ?
+                AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
+                AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
+            byte[] result = new byte[encryptResult.length];
+            Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+            FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
+            return result;
         }
 
         /// <summary>
@@ -145,26 +108,15 @@ namespace CasDotnetSdk.Sponges
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Ascon128DecryptResultStruct decryptResult = AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
-                byte[] result = new byte[decryptResult.length];
-                Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return result;
-            }
-            else
-            {
-                Ascon128DecryptResultStruct decryptResult = AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
-                byte[] result = new byte[decryptResult.length];
-                Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
-                FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
-                return result;
-            }
+            Ascon128DecryptResultStruct decryptResult = (this._platform == OSPlatform.Linux) ?
+                AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
+                AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
+            byte[] result = new byte[decryptResult.length];
+            Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
+            FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Sponge, nameof(AsconWrapper));
+            return result;
         }
     }
 }
