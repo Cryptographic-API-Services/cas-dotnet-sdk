@@ -32,24 +32,14 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                IntPtr hashedPtr = Argon2LinuxWrapper.argon2_hash(passToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return hashed;
-            }
-            else
-            {
-                IntPtr hashedPtr = Argon2WindowsWrapper.argon2_hash(passToHash);
-                string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-                FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return hashed;
-            }
+            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+                Argon2LinuxWrapper.argon2_hash(passToHash) :
+                Argon2WindowsWrapper.argon2_hash(passToHash);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            return hashed;
         }
 
         /// <summary>
@@ -67,21 +57,12 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-
-                bool result = Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
-            else
-            {
-                bool result = Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password) :
+                Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            return result;
         }
 
         /// <summary>
@@ -92,26 +73,15 @@ namespace CasDotnetSdk.PasswordHashers
         public byte[] DeriveAES256Key(string password)
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Argon2KDFResult kdfResult = Argon2LinuxWrapper.argon2_derive_aes_256_key(password);
-                byte[] result = new byte[kdfResult.length];
-                Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
-                FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
-            else
-            {
-                Argon2KDFResult kdfResult = Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
-                byte[] result = new byte[kdfResult.length];
-                Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
-                FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
+            Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
+                Argon2LinuxWrapper.argon2_derive_aes_256_key(password) :
+                Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
+            byte[] result = new byte[kdfResult.length];
+            Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
+            FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            return result;
         }
 
         /// <summary>
@@ -122,26 +92,15 @@ namespace CasDotnetSdk.PasswordHashers
         public byte[] DeriveAES128Key(string password)
         {
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Argon2KDFResult kdfResult = Argon2LinuxWrapper.argon2_derive_aes_128_key(password);
-                byte[] result = new byte[kdfResult.length];
-                Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
-                FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
-            else
-            {
-                Argon2KDFResult kdfResult = Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
-                byte[] result = new byte[kdfResult.length];
-                Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
-                FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
-                return result;
-            }
+            Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
+                Argon2LinuxWrapper.argon2_derive_aes_128_key(password) :
+                Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
+            byte[] result = new byte[kdfResult.length];
+            Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
+            FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            return result;
         }
     }
 }

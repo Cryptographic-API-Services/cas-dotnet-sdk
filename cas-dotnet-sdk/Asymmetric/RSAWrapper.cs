@@ -17,7 +17,7 @@ namespace CasDotnetSdk.Asymmetric
         /// </summary>
         public RSAWrapper()
         {
-            
+
         }
 
         /// <summary>
@@ -39,26 +39,15 @@ namespace CasDotnetSdk.Asymmetric
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                RsaSignBytesResults signResult = RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
-                byte[] result = new byte[signResult.length];
-                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
-                FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
-            else
-            {
-                RsaSignBytesResults signResult = RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length);
-                byte[] result = new byte[signResult.length];
-                Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
-                FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
+            RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
+                RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
+                RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
+            byte[] result = new byte[signResult.length];
+            Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+            FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+            return result;
         }
 
 
@@ -85,21 +74,12 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide an allocated signature to verify with RSA");
             }
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-
-                bool result = RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
-            else
-            {
-                bool result = RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
+                 RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+            return result;
         }
         /// <summary>
         /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
@@ -115,34 +95,19 @@ namespace CasDotnetSdk.Asymmetric
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
+            RsaKeyPairStruct keyPairStruct = (this._platform == OSPlatform.Linux) ?
+                RSALinuxWrapper.get_key_pair(keySize) :
+                RSAWindowsWrapper.get_key_pair(keySize);
+            RsaKeyPairResult result = new RsaKeyPairResult()
             {
-                RsaKeyPairStruct keyPairStruct = RSALinuxWrapper.get_key_pair(keySize);
-                RsaKeyPairResult result = new RsaKeyPairResult()
-                {
-                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
-                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
-                };
-                FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
-                FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
-            else
-            {
-                RsaKeyPairStruct keyPairStruct = RSAWindowsWrapper.get_key_pair(keySize);
-                RsaKeyPairResult result = new RsaKeyPairResult()
-                {
-                    PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
-                    PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
-                };
-                FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
-                FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
-                return result;
-            }
+                PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
+                PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+            };
+            FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
+            FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Asymmetric, nameof(RSAWrapper));
+            return result;
         }
     }
 }

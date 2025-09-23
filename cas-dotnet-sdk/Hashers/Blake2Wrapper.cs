@@ -19,7 +19,7 @@ namespace CasDotnetSdk.Hashers
         /// </summary>
         public Blake2Wrapper()
         {
-            
+
         }
 
         /// <summary>
@@ -36,26 +36,15 @@ namespace CasDotnetSdk.Hashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Blake2HashByteResult hashResult = Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length);
-                byte[] result = new byte[hashResult.length];
-                Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
-            else
-            {
-                Blake2HashByteResult hashResult = Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
-                byte[] result = new byte[hashResult.length];
-                Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
-                FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
+            Blake2HashByteResult hashResult = (this._platform == OSPlatform.Linux) ?
+                Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length) :
+                Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
+            byte[] result = new byte[hashResult.length];
+            Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
+            FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
+            return result;
         }
 
 
@@ -78,20 +67,12 @@ namespace CasDotnetSdk.Hashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
-            else
-            {
-                bool result = Blake2WindowsWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
+                Blake2WindowsWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
+            return result;
         }
 
         /// <summary>
@@ -106,29 +87,17 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide an array of allocated data to hash with Blake2 256");
             }
-
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                Blake2HashByteResult hashedResult = Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length);
-                byte[] result = new byte[hashedResult.length];
-                Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
-            else
-            {
-                Blake2HashByteResult hashedResult = Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
-                byte[] result = new byte[hashedResult.length];
-                Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
-                FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
-        } 
+            Blake2HashByteResult hashedResult = (this._platform == OSPlatform.Linux) ?
+                Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length) :
+                Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
+            byte[] result = new byte[hashedResult.length];
+            Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
+            FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
+            return result;
+        }
 
         /// <summary>
         /// Verifies data using the Blake2 256 algorithm.
@@ -149,20 +118,12 @@ namespace CasDotnetSdk.Hashers
             }
 
             DateTime start = DateTime.UtcNow;
-            if (this._platform == OSPlatform.Linux)
-            {
-                bool result = Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
-            else
-            {
-                bool result = Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-                DateTime end = DateTime.UtcNow;
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
-                return result;
-            }
+            bool result = (this._platform == OSPlatform.Linux) ?
+                Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
+                Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
+            DateTime end = DateTime.UtcNow;
+            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(Blake2Wrapper));
+            return result;
         }
     }
 }
