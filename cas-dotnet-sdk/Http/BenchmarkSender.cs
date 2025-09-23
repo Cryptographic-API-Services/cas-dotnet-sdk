@@ -29,10 +29,6 @@ namespace CasDotnetSdk.Http
             {
                 result = false;
             }
-            else if (CASConfiguration.DiffieHellmanExchange?.AesNonce == null || CASConfiguration.DiffieHellmanExchange?.AesNonce?.Length == 0)
-            {
-                result = false;
-            }
             else if (DateTime.UtcNow >= CASConfiguration.TokenCache.TokenExpiresIn)
             {
                 result = false;
@@ -58,11 +54,13 @@ namespace CasDotnetSdk.Http
                 };
                 byte[] newBenchMarkBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newBenchmarkSub));
                 AESWrapper aesWrapper = new AESWrapper();
-                byte[] encryptedBenchmark = aesWrapper.Aes256Encrypt(CASConfiguration.DiffieHellmanExchange.AesNonce, CASConfiguration.DiffieHellmanExchange.AESKey, newBenchMarkBytes, false);
+                byte[] aesNonce = aesWrapper.GenerateAESNonce(false);
+                byte[] encryptedBenchmark = aesWrapper.Aes256Encrypt(aesNonce, CASConfiguration.DiffieHellmanExchange.AESKey, newBenchMarkBytes, false);
                 BenchmarkMacAddressSDKMethod newBenchmark = new BenchmarkMacAddressSDKMethod()
                 {
                     MacAddress = CASConfiguration.Networking.MacAddress,
-                    EncryptedBenchMarkSend = encryptedBenchmark
+                    EncryptedBenchMarkSend = encryptedBenchmark,
+                    AesNonce = aesNonce
                 };
                 httpClient.DefaultRequestHeaders.Add(Constants.HeaderNames.Authorization, CASConfiguration.TokenCache.Token);
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync(url, newBenchmark);

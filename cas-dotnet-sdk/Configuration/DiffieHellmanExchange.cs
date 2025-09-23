@@ -58,7 +58,6 @@ namespace CasDotnetSdk.Configuration
             AESWrapper aes = new AESWrapper();
             Aes256KeyAndNonceX25519DiffieHellman aesKey = aes.Aes256KeyNonceX25519DiffieHellman(this.SharedSecret);
             this.AESKey = aesKey.AesKey;
-            this.
         }
     }
 }

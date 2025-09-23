@@ -271,7 +271,7 @@ namespace CasDotnetSdk.Symmetric
         /// Generates a AES Nonce usuable for AES-128-GCM and AES-256-GCM.
         /// </summary>
         /// <returns></returns>
-        public byte[] GenerateAESNonce()
+        public byte[] GenerateAESNonce(bool sendBenchmark = true)
         {
             DateTime start = DateTime.UtcNow;
             AesNonceResult nonceResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_nonce() : AESWindowsWrapper.aes_nonce();
@@ -279,7 +279,8 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
             FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+            if (sendBenchmark)
+                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
             return result;
         }
     }
