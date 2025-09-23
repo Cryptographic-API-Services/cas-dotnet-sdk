@@ -18,7 +18,6 @@ namespace CasDotnetSdk.Configuration
     internal class DiffieHellmanExchange
     {
         public byte[] AESKey { get; set; }
-        public byte[] AesNonce { get; set; }
         private byte[] PublicKey { get; set; }
         private byte[] Secret { get; set; }
         private byte[] SharedSecret { get; set; }
@@ -59,7 +58,7 @@ namespace CasDotnetSdk.Configuration
             AESWrapper aes = new AESWrapper();
             Aes256KeyAndNonceX25519DiffieHellman aesKey = aes.Aes256KeyNonceX25519DiffieHellman(this.SharedSecret);
             this.AESKey = aesKey.AesKey;
-            this.AesNonce = aesKey.AesNonce;
+            this.
         }
     }
 }
