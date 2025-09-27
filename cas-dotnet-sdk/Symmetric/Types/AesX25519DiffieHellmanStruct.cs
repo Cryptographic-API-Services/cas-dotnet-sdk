@@ -2,11 +2,9 @@
 
 namespace CasDotnetSdk.Symmetric.Types
 {
-    internal struct Aes256KeyAndNonceX25519DiffieHellmanStruct
+    internal struct AesKeyX25519DiffieHellmanStruct
     {
         public IntPtr aes_key_ptr;
         public int aes_key_ptr_length;
-        public IntPtr aes_nonce_ptr;
-        public int aes_nonce_ptr_length;
     }
 }

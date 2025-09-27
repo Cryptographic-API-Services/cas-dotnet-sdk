@@ -56,8 +56,8 @@ namespace CasDotnetSdk.Configuration
             X25519SharedSecret sharedSecret = this._x25519Wrapper.GenerateSharedSecret(this.Secret, parsedContent.ResponsersPublicKey);
             this.SharedSecret = sharedSecret.SharedSecret;
             AESWrapper aes = new AESWrapper();
-            Aes256KeyAndNonceX25519DiffieHellman aesKey = aes.Aes256KeyNonceX25519DiffieHellman(this.SharedSecret);
-            this.AESKey = aesKey.AesKey;
+            byte[] aesKey = aes.Aes256KeyNonceX25519DiffieHellman(this.SharedSecret);
+            this.AESKey = aesKey;
         }
     }
 }

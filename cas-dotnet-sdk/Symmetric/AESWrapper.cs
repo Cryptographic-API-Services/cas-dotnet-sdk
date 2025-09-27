@@ -64,7 +64,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
 
-        public Aes256KeyAndNonceX25519DiffieHellman Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
+        public byte[] Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
             {
@@ -72,23 +72,15 @@ namespace CasDotnetSdk.Symmetric
             }
 
             DateTime start = DateTime.UtcNow;
-            Aes256KeyAndNonceX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
-                AESWindowsWrapper.aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+            AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
+                AESLinuxWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
+                AESWindowsWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             byte[] aesKey = new byte[result.aes_key_ptr_length];
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
-            byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
-            Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
-            Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
-            {
-                AesKey = aesKey,
-                AesNonce = aesNonce
-            };
             DateTime end = DateTime.UtcNow;
             this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
-            return keyAndNonce;
+            return aesKey;
         }
 
         /// <summary>
@@ -97,7 +89,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sharedSecret"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Aes256KeyAndNonceX25519DiffieHellman Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
+        public byte[] Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
             {
@@ -105,23 +97,15 @@ namespace CasDotnetSdk.Symmetric
             }
 
             DateTime start = DateTime.UtcNow;
-            Aes256KeyAndNonceX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
-                AESWindowsWrapper.aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
+            AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
+                AESLinuxWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
+                AESWindowsWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             byte[] aesKey = new byte[result.aes_key_ptr_length];
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
-            byte[] aesNonce = new byte[result.aes_nonce_ptr_length];
-            Marshal.Copy(result.aes_nonce_ptr, aesNonce, 0, result.aes_nonce_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(result.aes_nonce_ptr);
-            Aes256KeyAndNonceX25519DiffieHellman keyAndNonce = new Aes256KeyAndNonceX25519DiffieHellman()
-            {
-                AesKey = aesKey,
-                AesNonce = aesNonce
-            };
             DateTime end = DateTime.UtcNow;
             this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
-            return keyAndNonce;
+            return aesKey;
         }
 
         /// <summary>

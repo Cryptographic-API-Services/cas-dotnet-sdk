@@ -28,9 +28,9 @@ namespace CasDotnetSdk.Symmetric.Windows
         public static extern AesBytesDecrypt aes_256_decrypt_bytes_with_key(byte[] nonceKey, int nonceKeyLength, byte[] key, int keyLength, byte[] dataToDecrypt, int dataToDecryptLength);
 
         [DllImport("cas_core_lib.dll")]
-        public static extern Aes256KeyAndNonceX25519DiffieHellmanStruct aes_256_key_and_nonce_from_x25519_diffie_hellman_shared_secret(byte[] sharedSecret, int sharedSecretLength);
+        public static extern AesKeyX25519DiffieHellmanStruct aes_256_key_from_x25519_diffie_hellman_shared_secret(byte[] sharedSecret, int sharedSecretLength);
 
         [DllImport("cas_core_lib.dll")]
-        public static extern Aes256KeyAndNonceX25519DiffieHellmanStruct aes_128_key_and_nonce_from_x25519_diffie_hellman_shared_secret(byte[] sharedSecret, int sharedSecretLength);
+        public static extern AesKeyX25519DiffieHellmanStruct aes_128_key_from_x25519_diffie_hellman_shared_secret(byte[] sharedSecret, int sharedSecretLength);
     }
 }
