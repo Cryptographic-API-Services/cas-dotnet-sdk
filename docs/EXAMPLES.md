@@ -8,10 +8,13 @@
 | [CAS AES-256](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Symmetric/AESWrapper.cs) | 00.0068827 (s) |
 | [AES C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-8.0)| 00.0079577 (s) |
 ```csharp
+using CasDotnetSdk.Symmetric;
+
 AESWrapper aesWrapper = new AESWrapper();
 byte[] nonceKey = aesWrapper.GenerateAESNonce();
-string key2 = aesWrapper.Aes256Key();
-byte[] encrypted = aesWrapper.Aes256EncryptBytes(nonceKey, key2, data);
+byte[] key2 = aesWrapper.Aes256Key();
+byte[] data = System.Text.Encoding.UTF8.GetBytes("Hello World");
+byte[] encrypted = aesWrapper.Aes256Encrypt(nonceKey, key2, data);
 ```
 
 
@@ -134,5 +137,6 @@ AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(256, 4096);
 AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybrid(dataToEncrypt, initializer);
 byte[] plaintext = this._hybridEncryptionWrapper.DecryptAESRSAHybrid(initializer.RsaKeyPair.PrivateKey, result);
 ```
+
 
 
