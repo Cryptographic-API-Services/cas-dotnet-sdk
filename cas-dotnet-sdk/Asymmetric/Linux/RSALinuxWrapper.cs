@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.Asymmetric.Types;
-using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Asymmetric.Linux

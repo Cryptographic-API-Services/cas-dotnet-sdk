@@ -1,9 +1,7 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;

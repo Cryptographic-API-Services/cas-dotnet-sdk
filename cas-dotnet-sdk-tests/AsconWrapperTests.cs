@@ -1,5 +1,4 @@
-﻿using CasDotnetSdk.Signatures.Types;
-using CasDotnetSdk.Sponges;
+﻿using CasDotnetSdk.Sponges;
 using System.Text;
 using Xunit;
 

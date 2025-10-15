@@ -1,11 +1,11 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Hybrid.Types;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using System.Reflection;
-using System;
-using System.Runtime.InteropServices;
-using CasDotnetSdk.Hybrid.Windows;
 using CasDotnetSdk.Hybrid.Linux;
+using CasDotnetSdk.Hybrid.Types;
+using CasDotnetSdk.Hybrid.Windows;
+using CASHelpers.Types.HttpResponses.BenchmarkAPI;
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hybrid
 {

@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.KeyExchange.Types;
-using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.KeyExchange.Windows

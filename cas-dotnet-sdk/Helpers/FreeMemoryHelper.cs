@@ -23,7 +23,7 @@ namespace CasDotnetSdk.Helpers
             {
                 FreeMemoryHelperWindowsWrapper.free_cstring(memoryToFree);
             }
-        }   
+        }
 
         public static void FreeBytesMemory(IntPtr memoryToFree)
         {
