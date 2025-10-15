@@ -15,7 +15,7 @@ namespace CasDotnetSdk
         static CASConfiguration()
         {
             IsDevelopment = false;
-            Url = "https://cryptographicapiservices.com";
+            Url = "https://cryptographicapiservices.com/";
             TokenCache = new TokenCache();
             BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
             Networking = new Networking();
