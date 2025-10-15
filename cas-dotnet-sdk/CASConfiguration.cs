@@ -4,7 +4,6 @@ using CasDotnetSdk.Queues;
 using CasDotnetSdk.Storage;
 using CASHelpers;
 using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace CasDotnetSdk
         static CASConfiguration()
         {
             IsDevelopment = false;
-            Url = "https://encryptionapiservices.com";
+            Url = "https://cryptographicapiservices.com";
             TokenCache = new TokenCache();
             BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
             Networking = new Networking();

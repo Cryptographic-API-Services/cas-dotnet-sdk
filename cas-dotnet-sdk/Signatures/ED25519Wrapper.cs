@@ -1,9 +1,7 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.Signatures.Linux;
 using CasDotnetSdk.Signatures.Types;
 using CasDotnetSdk.Signatures.Windows;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;

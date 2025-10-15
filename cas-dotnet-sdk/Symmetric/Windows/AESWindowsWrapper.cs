@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.Symmetric.Types;
-using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Symmetric.Windows

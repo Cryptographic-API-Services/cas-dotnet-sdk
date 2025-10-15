@@ -1,9 +1,7 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.Sponges.Linux;
 using CasDotnetSdk.Sponges.Types;
 using CasDotnetSdk.Sponges.Windows;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
 using System.Reflection;

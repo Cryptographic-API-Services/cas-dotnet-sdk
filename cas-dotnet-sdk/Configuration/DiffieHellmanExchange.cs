@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
-using CasDotnetSdk.Symmetric.Types;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
 using System.Net.Http;

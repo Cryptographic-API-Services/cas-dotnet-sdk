@@ -26,7 +26,7 @@ namespace CasDotnetSdkTests
             Assert.NotEmpty(result.InfoStr);
         }
 
-        [Fact] 
+        [Fact]
         public void Encrypt()
         {
             HpkeKeyPairResult keyPair = this._wrapper.GenerateKeyPair();

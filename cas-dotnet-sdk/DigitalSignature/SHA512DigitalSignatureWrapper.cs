@@ -2,7 +2,6 @@
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
@@ -36,8 +35,8 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            SHAED25519DalekStructDigitalSignatureResult signatureResult = (this._platform == OSPlatform.Linux) ? 
-                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length) : 
+            SHAED25519DalekStructDigitalSignatureResult signatureResult = (this._platform == OSPlatform.Linux) ?
+                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length) :
                 DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature(dataToSign, dataToSign.Length);
             byte[] publicKey = new byte[signatureResult.public_key_length];
             Marshal.Copy(signatureResult.public_key, publicKey, 0, signatureResult.public_key_length);
@@ -73,8 +72,8 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            SHARSAStructDigitialSignatureResult result = (this._platform == OSPlatform.Linux) ? 
-                DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length) : 
+            SHARSAStructDigitialSignatureResult result = (this._platform == OSPlatform.Linux) ?
+                DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length) :
                 DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
             string publicKey = Marshal.PtrToStringAnsi(result.public_key);
             string privateKey = Marshal.PtrToStringAnsi(result.private_key);
@@ -119,8 +118,8 @@ namespace CasDotnetSdk.DigitalSignature
             }
 
             DateTime start = DateTime.UtcNow;
-            bool result = (this._platform == OSPlatform.Linux) ? 
-                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length) : 
+            bool result = (this._platform == OSPlatform.Linux) ?
+                DigitalSignatureLinuxWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                 DigitalSignatureWindowsWrapper.sha512_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
             DateTime end = DateTime.UtcNow;
             this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA512DigitalSignatureWrapper));

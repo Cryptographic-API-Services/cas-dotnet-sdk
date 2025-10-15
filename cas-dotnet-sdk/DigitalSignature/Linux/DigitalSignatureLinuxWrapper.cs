@@ -1,5 +1,4 @@
 ﻿using CasDotnetSdk.DigitalSignature.Types;
-using System;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.DigitalSignature.Linux

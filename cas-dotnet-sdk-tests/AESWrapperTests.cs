@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
-using CasDotnetSdk.Symmetric.Types;
 using System.Text;
 using Xunit;
 
@@ -118,7 +117,7 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[]  aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
             byte[] bobAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
 
 
