@@ -20,18 +20,25 @@ namespace CasDotnetSdk.Signatures
         /// Generates and public and private key pair non split in bytes for ED25519-Dalek.
         /// </summary>
         /// <returns></returns>
-        public byte[] GetKeyPairBytes()
+        public Ed25519KeyPairResult GetKeyPair()
         {
             DateTime start = DateTime.UtcNow;
             Ed25519KeyPairBytesResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
                 ED25519LinuxWrapper.get_ed25519_key_pair_bytes() :
                 ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
-            byte[] keyPairResult = new byte[resultStruct.length];
-            Marshal.Copy(resultStruct.key_pair, keyPairResult, 0, resultStruct.length);
-            FreeMemoryHelper.FreeBytesMemory(resultStruct.key_pair);
+            byte[] signingKey = new byte[resultStruct.signing_key_length];
+            Marshal.Copy(resultStruct.signing_key, signingKey, 0, resultStruct.signing_key_length);
+            byte[] verifyingKey = new byte[resultStruct.verifying_key_length];
+            Marshal.Copy(resultStruct.verifying_key, verifyingKey, 0, resultStruct.verifying_key_length);
+            FreeMemoryHelper.FreeBytesMemory(resultStruct.verifying_key);
+            FreeMemoryHelper.FreeBytesMemory(resultStruct.signing_key);
             DateTime end = DateTime.UtcNow;
             this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
-            return keyPairResult;
+            return new Ed25519KeyPairResult()
+            {
+                SigningKey = signingKey,
+                VerifyingKey = verifyingKey
+            };
         }
 
         /// <summary>
