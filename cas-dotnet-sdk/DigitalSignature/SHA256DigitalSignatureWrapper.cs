@@ -20,40 +20,6 @@ namespace CasDotnetSdk.DigitalSignature
         }
 
         /// <summary>
-        /// Creates a SHA256 ED25519 Digital Signature.
-        /// </summary>
-        /// <param name="dataToSign"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public SHAED25519DalekDigitialSignatureResult CreateED25519(byte[] dataToSign)
-        {
-            if (dataToSign == null || dataToSign.Length == 0)
-            {
-                throw new Exception("You must provide an allocated array of data to sign to create a SHA256 Ed25519 Digital Signature");
-            }
-
-            DateTime start = DateTime.UtcNow;
-            SHAED25519DalekStructDigitalSignatureResult structResult =
-                (this._platform == OSPlatform.Linux) ?
-                DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature(dataToSign, dataToSign.Length) :
-                DigitalSignatureWindowsWrapper.sha256_ed25519_digital_signature(dataToSign, dataToSign.Length);
-            byte[] publicKey = new byte[structResult.public_key_length];
-            byte[] signature = new byte[structResult.signature_length];
-            Marshal.Copy(structResult.public_key, publicKey, 0, publicKey.Length);
-            Marshal.Copy(structResult.signature_raw_ptr, signature, 0, signature.Length);
-            FreeMemoryHelper.FreeBytesMemory(structResult.public_key);
-            FreeMemoryHelper.FreeBytesMemory(structResult.signature_raw_ptr);
-            SHAED25519DalekDigitialSignatureResult result = new SHAED25519DalekDigitialSignatureResult()
-            {
-                PublicKey = publicKey,
-                Signature = signature
-            };
-            DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
-            return result;
-        }
-
-        /// <summary>
         /// Creates a SHA256 RSA Digital Signature.
         /// </summary>
         /// <param name="rsaKeySize"></param>
@@ -91,38 +57,6 @@ namespace CasDotnetSdk.DigitalSignature
             FreeMemoryHelper.FreeCStringMemory(result.private_key);
             this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
             return resultToReturn;
-        }
-
-        /// <summary>
-        /// Verifies a SHA256 ED25519 Digital Signature.
-        /// </summary>
-        /// <param name="publicKey"></param>
-        /// <param name="dataToVerify"></param>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool VerifyED25519(byte[] publicKey, byte[] dataToVerify, byte[] signature)
-        {
-            if (publicKey == null || publicKey.Length == 0)
-            {
-                throw new Exception("You must provide an allocated public key");
-            }
-            if (dataToVerify == null || dataToVerify.Length == 0)
-            {
-                throw new Exception("You must provide an allocated data to verify");
-            }
-            if (signature == null || signature.Length == 0)
-            {
-                throw new Exception("You must provide an allocated signature ");
-            }
-
-            DateTime start = DateTime.UtcNow;
-            bool result = (this._platform == OSPlatform.Linux) ?
-                DigitalSignatureLinuxWrapper.sha256_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length) :
-                DigitalSignatureWindowsWrapper.sha256_ed25519_digital_signature_verify(publicKey, publicKey.Length, dataToVerify, dataToVerify.Length, signature, signature.Length);
-            DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
-            return result;
         }
 
         /// <summary>

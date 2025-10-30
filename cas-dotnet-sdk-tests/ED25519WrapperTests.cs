@@ -16,17 +16,19 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void GetKeyPairBytes()
         {
-            byte[] keyPair = this._wrapper.GetKeyPairBytes();
-            Assert.NotNull(keyPair);
-            Assert.NotEmpty(keyPair);
+            var keyPair = this._wrapper.GetKeyPair();
+            Assert.NotNull(keyPair.SigningKey);
+            Assert.NotEmpty(keyPair.SigningKey);
+            Assert.NotNull(keyPair.VerifyingKey);
+            Assert.NotEmpty(keyPair.VerifyingKey);
         }
 
         [Fact]
         public void SignDataByes()
         {
-            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            var keyPair = this._wrapper.GetKeyPair();
             byte[] dataToSign = Encoding.UTF8.GetBytes("SignThisDataWithEd25519Dalek");
-            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair.SigningKey, dataToSign);
             Assert.NotNull(result.Signature);
             Assert.NotNull(result.PublicKey);
             Assert.NotEmpty(result.Signature);
@@ -36,20 +38,21 @@ namespace CasDotnetSdkTests.Tests
         [Fact]
         public void VerifyBytes()
         {
-            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            var keyPair = this._wrapper.GetKeyPair();
             byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsGarbageDataThatShouldBeIncreased");
-            Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytes(keyPair, dataToSign);
-            bool isValid = this._wrapper.VerifyBytes(keyPair, signatureResult.Signature, dataToSign);
+            Ed25519ByteSignatureResult signatureResult = this._wrapper.SignBytes(keyPair.SigningKey, dataToSign);
+            bool isValid = this._wrapper.VerifyBytes(keyPair.SigningKey, signatureResult.Signature, dataToSign);
             Assert.True(isValid);
         }
 
         [Fact]
         public void VerifyWithPublicKeyBytes()
         {
-            byte[] keyPair = this._wrapper.GetKeyPairBytes();
+            var keyPair = this._wrapper.GetKeyPair();
             byte[] dataToSign = Encoding.UTF8.GetBytes("ThisIsBadDataToVerifyWithEd25519-Dalek");
-            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair, dataToSign);
+            Ed25519ByteSignatureResult result = this._wrapper.SignBytes(keyPair.SigningKey, dataToSign);
             bool isValid = this._wrapper.VerifyWithPublicKeyBytes(result.PublicKey, result.Signature, dataToSign);
+            Assert.True(isValid);
         }
     }
 }
