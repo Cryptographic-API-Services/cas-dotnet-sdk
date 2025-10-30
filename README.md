@@ -4,7 +4,7 @@
 
 This .NET Nuget package is a cryptographic wrapper library for developers that are seeking the memory safety of Rust for their crypto implementations.
 
-## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
+## [Examples Documentation](./docs/EXAMPLES.md)
 
 The official Nuget page can be found [here](https://www.nuget.org/packages/cas-dotnet-sdk).
 
