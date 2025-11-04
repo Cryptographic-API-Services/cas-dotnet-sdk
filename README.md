@@ -1,6 +1,6 @@
 # cas-dotnet-sdk
 
-[![image](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/7bXXCQj45q)
+[![image](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/UAGqKfmvUS)
 
 This .NET Nuget package is a cryptographic wrapper library for developers that are seeking the memory safety of Rust for their crypto implementations.
 
