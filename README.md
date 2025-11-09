@@ -1,27 +1,32 @@
-# cas-dotnet-sdk
+# CAS .NET SDK
 
-[![image](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/7bXXCQj45q)
+[![image](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/UAGqKfmvUS)
 
-This .NET Nuget package is a cryptographic wrapper library for developers that are seeking the memory safety of Rust for their crypto implementations.
+## Overview
 
-Ever wanted all of your most useful cryptographic operations in one module and not have to surf documentation for various packages? 
-CAS is here to provide a unified development experience as an abstract layer to the RustCrypto and Dalek-Cryptography suite of algorithms.
-The official Nuget page can be found [here](https://www.nuget.org/packages/cas-dotnet-sdk).
+CAS .NET SDK is a comprehensive cryptographic toolkit for .NET, designed to provide developers with a unified, high-level interface to industry-standard cryptographic algorithms. This library acts as an abstraction layer over the powerful RustCrypto and Dalek-Cryptography suites, enabling secure and efficient cryptographic operations through a simple .NET API.
 
-**Note: All work is experimental and we understand some benchmarks might not be the most optimal.**
+- **Official NuGet Package:** [cas-dotnet-sdk](https://www.nuget.org/packages/cas-dotnet-sdk)
 
-## Consuming Library Documentation
-This C# nuget package is dependent on our Rust layer that contains methods to run industry-standard cryptographic operations. [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib).
+## Features
+- Modern cryptographic primitives: digital signatures (RSA, Ed25519), hashing, and more
+- Seamless integration with [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib) Rust FFI layer for optimal performance
+- Unified interface: no need to manage multiple cryptography packages or surf disparate documentation
+- Built on trusted, open-source cryptography libraries
+- Cross-platform support: Windows x64, Linux x64
+- Multi-framework support: .NET 6, 7, 8, 9
 
-We utilize some smart people's existing work and we believe their documentation should be reviewed when possible.
+## Documentation & References
+We build on the work of leading cryptography projects. For in-depth algorithm details and implementation notes, please refer to:
 - [Spin Research](https://github.com/SpinResearch)
 - [Dalek-Cryptography](https://github.com/dalek-cryptography)
 - [Rust Crypto](https://github.com/RustCrypto)
 
-## [Sequential Examples / Benchmarks](./docs/EXAMPLES.md)
+## Usage Examples
+See practical usage and code samples in our [Examples](./docs/EXAMPLES.md).
 
 ## Supported Frameworks / Operating Systems
-We aim to provide cross-compatibility wherever possible. 
+We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-9 for Windows and Linux (Ubuntu) on each pull request and release to NuGet through GitHub Actions.
 - [X] .NET 6
 - [X] .NET 7
 - [X] .NET 8
@@ -30,4 +35,7 @@ We aim to provide cross-compatibility wherever possible.
 - [X] Linux x64
 
 ## Disclaimer
-Many of the cryptographic crates that are utilized in our core FFI [layer](https://github.com/Crytographic-API-Services/cas-core-lib) have never had a security audit performed. Utilize this SDK at your own risk.
+This SDK leverages several cryptographic crates via our core FFI [layer](https://github.com/Cryptographic-API-Services/cas-core-lib). Please note that many of these crates have not undergone formal security audits. Use this library at your own risk and always review the underlying cryptographic implementations for your security requirements.
+
+---
+For questions, support, or to contribute, join our Discord or visit the [GitHub repository](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk).
