@@ -2,9 +2,7 @@
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
@@ -43,7 +41,7 @@ namespace CasDotnetSdk.Hashers
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
             return result;
         }
 
@@ -71,7 +69,7 @@ namespace CasDotnetSdk.Hashers
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
             return result;
         }
 
@@ -97,7 +95,7 @@ namespace CasDotnetSdk.Hashers
                 SHALinuxWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
             return result;
         }
 
@@ -123,7 +121,7 @@ namespace CasDotnetSdk.Hashers
                 SHALinuxWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(SHAWrapper));
+
             return result;
         }
     }

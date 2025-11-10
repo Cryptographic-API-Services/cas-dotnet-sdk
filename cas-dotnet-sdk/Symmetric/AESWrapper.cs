@@ -1,28 +1,21 @@
 ﻿using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Http;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
 using CasDotnetSdk.Symmetric.Windows;
-using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Symmetric
 {
     public class AESWrapper : BaseWrapper
     {
-        private readonly OSPlatform _platform;
-        private readonly BenchmarkSender _sender;
 
         /// <summary>
         /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
         /// </summary>
         public AESWrapper()
         {
-            this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
+
         }
 
         /// <summary>
@@ -37,7 +30,6 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(keyResult.key, key, 0, keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
             return key;
         }
 
@@ -53,7 +45,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(keyResult.key, key, 0, keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return key;
         }
 
@@ -79,7 +71,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return aesKey;
         }
 
@@ -104,7 +96,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return aesKey;
         }
 
@@ -117,7 +109,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sendBenchmark"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt, bool sendBenchmark = true)
+        public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
             if (nonceKey?.Length == 0)
             {
@@ -140,8 +132,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
             DateTime end = DateTime.UtcNow;
-            if (sendBenchmark)
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return result;
         }
 
@@ -178,7 +169,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return result;
         }
 
@@ -213,7 +204,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return result;
         }
 
@@ -247,7 +238,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return result;
         }
 
@@ -255,7 +246,7 @@ namespace CasDotnetSdk.Symmetric
         /// Generates a AES Nonce usuable for AES-128-GCM and AES-256-GCM.
         /// </summary>
         /// <returns></returns>
-        public byte[] GenerateAESNonce(bool sendBenchmark = true)
+        public byte[] GenerateAESNonce()
         {
             DateTime start = DateTime.UtcNow;
             AesNonceResult nonceResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_nonce() : AESWindowsWrapper.aes_nonce();
@@ -263,8 +254,7 @@ namespace CasDotnetSdk.Symmetric
             Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
             FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
             DateTime end = DateTime.UtcNow;
-            if (sendBenchmark)
-                this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Symmetric, nameof(AESWrapper));
+
             return result;
         }
     }
