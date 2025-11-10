@@ -20,7 +20,6 @@
       <PackagePath>\</PackagePath>
     </Content>
 
-    <!-- Native assets packaged to runtimes/<rid>/native so runtime probing works correctly -->
 
     <Content Include="README.md">
       <Pack>True</Pack>
@@ -34,6 +33,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 
+  <!-- Native assets packaged to runtimes/<rid>/native so runtime probing works correctly -->
   <ItemGroup>
     <Content Include="cas_core_lib.dll">
       <PackagePath>runtimes/win-x64/native</PackagePath>
