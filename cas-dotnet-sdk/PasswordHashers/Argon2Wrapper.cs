@@ -38,7 +38,6 @@ namespace CasDotnetSdk.PasswordHashers
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
             return hashed;
         }
 
@@ -61,7 +60,6 @@ namespace CasDotnetSdk.PasswordHashers
                 Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password) :
                 Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
             return result;
         }
 
@@ -80,7 +78,7 @@ namespace CasDotnetSdk.PasswordHashers
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            
             return result;
         }
 
@@ -99,7 +97,7 @@ namespace CasDotnetSdk.PasswordHashers
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.PasswordHash, nameof(Argon2Wrapper));
+            
             return result;
         }
     }

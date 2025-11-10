@@ -10,11 +10,9 @@ namespace CasDotnetSdk.Helpers
     public class BaseWrapper
     {
         public readonly OSPlatform _platform;
-        public readonly BenchmarkSender _sender;
         public BaseWrapper()
         {
             this._platform = new OperatingSystemDeterminator().GetOperatingSystem();
-            this._sender = new BenchmarkSender();
         }
     }
 }
