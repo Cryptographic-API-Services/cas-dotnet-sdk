@@ -1,6 +1,5 @@
 ﻿using CasDotnetSdk.Configuration;
 using CasDotnetSdk.Models;
-using CasDotnetSdk.Queues;
 using CasDotnetSdk.Storage;
 using CASHelpers;
 using System;
@@ -17,7 +16,6 @@ namespace CasDotnetSdk
             IsDevelopment = false;
             Url = "https://cryptographicapiservices.com/";
             TokenCache = new TokenCache();
-            BenchmarkSenderQueue = new BenchmarkSenderRetryQueue();
             Networking = new Networking();
             DiffieHellmanExchange = new DiffieHellmanExchange();
         }
@@ -83,13 +81,6 @@ namespace CasDotnetSdk
         {
             get { return _TokenCache; }
             set { _TokenCache = value; }
-        }
-
-        private static BenchmarkSenderRetryQueue _senderQueue;
-        internal static BenchmarkSenderRetryQueue BenchmarkSenderQueue
-        {
-            get { return _senderQueue; }
-            set { _senderQueue = value; }
         }
 
         private static Networking _Networking;

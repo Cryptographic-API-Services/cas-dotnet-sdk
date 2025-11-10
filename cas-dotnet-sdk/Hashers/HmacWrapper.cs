@@ -2,9 +2,7 @@
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
@@ -46,7 +44,7 @@ namespace CasDotnetSdk.Hashers
             Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
             FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
             return result;
         }
 
@@ -77,7 +75,7 @@ namespace CasDotnetSdk.Hashers
                 HmacLinuxWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length) :
                 HmacWindowsWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HmacWrapper));
+
             return result;
         }
     }

@@ -3,9 +3,7 @@ using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 using CasDotnetSdk.Helpers;
 using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.DigitalSignature
@@ -55,7 +53,7 @@ namespace CasDotnetSdk.DigitalSignature
             FreeMemoryHelper.FreeBytesMemory(result.signature);
             FreeMemoryHelper.FreeCStringMemory(result.public_key);
             FreeMemoryHelper.FreeCStringMemory(result.private_key);
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
             return resultToReturn;
         }
 
@@ -88,7 +86,7 @@ namespace CasDotnetSdk.DigitalSignature
                 DigitalSignatureLinuxWrapper.sha_256_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                 DigitalSignatureWindowsWrapper.sha_256_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.DigitalSignature, nameof(SHA256DigitalSignatureWrapper));
+
             return result;
         }
     }

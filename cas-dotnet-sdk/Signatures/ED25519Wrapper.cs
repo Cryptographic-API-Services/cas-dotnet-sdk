@@ -2,9 +2,7 @@
 using CasDotnetSdk.Signatures.Linux;
 using CasDotnetSdk.Signatures.Types;
 using CasDotnetSdk.Signatures.Windows;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Signatures
@@ -33,7 +31,7 @@ namespace CasDotnetSdk.Signatures
             FreeMemoryHelper.FreeBytesMemory(resultStruct.verifying_key);
             FreeMemoryHelper.FreeBytesMemory(resultStruct.signing_key);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+
             return new Ed25519KeyPairResult()
             {
                 SigningKey = signingKey,
@@ -70,7 +68,7 @@ namespace CasDotnetSdk.Signatures
             Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
             FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+
             return new Ed25519ByteSignatureResult()
             {
                 PublicKey = publicKeyResult,
@@ -106,7 +104,7 @@ namespace CasDotnetSdk.Signatures
                 ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
                 ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+
             return result;
         }
 
@@ -138,7 +136,7 @@ namespace CasDotnetSdk.Signatures
                 ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
                 ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(ED25519Wrapper));
+
             return result;
         }
     }

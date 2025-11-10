@@ -16,7 +16,7 @@ namespace CasDotnetSdk.PQC
         {
             SLHDSAKeyPairStruct result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_generate_signing_and_verification_key() : SLHDSAWindowsWrapper.slh_dsa_generate_signing_and_verification_key();
             byte[] signingKey = new byte[result.signing_key_length];
-            Marshal.Copy(result.signing_key_ptr,  signingKey, 0, result.signing_key_length);
+            Marshal.Copy(result.signing_key_ptr, signingKey, 0, result.signing_key_length);
             FreeMemoryHelper.FreeBytesMemory(result.signing_key_ptr);
 
             byte[] verificationKey = new byte[result.verification_key_length];

@@ -2,9 +2,7 @@
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Types;
 using CasDotnetSdk.PasswordHashers.Windows;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers
@@ -78,7 +76,7 @@ namespace CasDotnetSdk.PasswordHashers
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
             DateTime end = DateTime.UtcNow;
-            
+
             return result;
         }
 
@@ -97,7 +95,7 @@ namespace CasDotnetSdk.PasswordHashers
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
             DateTime end = DateTime.UtcNow;
-            
+
             return result;
         }
     }

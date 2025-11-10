@@ -2,9 +2,7 @@
 using CasDotnetSdk.Hybrid.Linux;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Hybrid.Windows;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hybrid
@@ -42,7 +40,7 @@ namespace CasDotnetSdk.Hybrid
                 InfoStr = infoStrResult
             };
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
             return result;
         }
 
@@ -83,7 +81,7 @@ namespace CasDotnetSdk.Hybrid
                 EncappedKey = encappedKeyResult,
             };
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
+
             return result;
         }
 
@@ -122,7 +120,6 @@ namespace CasDotnetSdk.Hybrid
             Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
             DateTime end = DateTime.UtcNow;
-            this._sender.SendNewBenchmarkMethod(MethodBase.GetCurrentMethod().Name, start, end, BenchmarkMethodType.Hash, nameof(HpkeWrapper));
             return result;
         }
     }

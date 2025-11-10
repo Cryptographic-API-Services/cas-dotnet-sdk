@@ -1,5 +1,4 @@
-﻿using CasDotnetSdk.Http;
-using CASHelpers;
+﻿using CASHelpers;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Helpers
