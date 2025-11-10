@@ -9,7 +9,6 @@ namespace CasDotnetSdk.Symmetric
 {
     public class AESWrapper : BaseWrapper
     {
-        private readonly OSPlatform _platform;
 
         /// <summary>
         /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
