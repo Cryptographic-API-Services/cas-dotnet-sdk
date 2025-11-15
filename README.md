@@ -31,6 +31,7 @@ We aim to provide cross-compatibility wherever possible. Test cases are run on .
 - [X] .NET 7
 - [X] .NET 8
 - [X] .NET 9
+- [X] .NET 10
 - [X] Windows x64
 - [X] Linux x64
 
