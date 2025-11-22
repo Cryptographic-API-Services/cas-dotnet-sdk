@@ -1,13 +1,4 @@
-﻿using CasDotnetSdk.Configuration;
-using CasDotnetSdk.Models;
-using CasDotnetSdk.Storage;
-using CASHelpers;
-using System;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-
-namespace CasDotnetSdk
+﻿namespace CasDotnetSdk
 {
     public static class CASConfiguration
     {
@@ -15,9 +6,6 @@ namespace CasDotnetSdk
         {
             IsDevelopment = false;
             Url = "https://cryptographicapiservices.com/";
-            TokenCache = new TokenCache();
-            Networking = new Networking();
-            DiffieHellmanExchange = new DiffieHellmanExchange();
         }
 
         private static string _ApiKey;
@@ -30,21 +18,7 @@ namespace CasDotnetSdk
             get { return _ApiKey; }
             set
             {
-                if (value != null)
-                {
-                    AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-                    _ApiKey = TokenCache.GetTokenAfterApiKeySet(value).GetAwaiter().GetResult();
-                    if (_ApiKey != null)
-                    {
-                        Task osSendTask = SendOSInformation(value);
-                        Task dhTask = DiffieHellmanExchange.CreateSharedSecretWithServer();
-                        Task.WhenAll(osSendTask, dhTask).GetAwaiter().GetResult();
-                    }
-                    else
-                    {
-                        throw new Exception("The API key that you supplied is not authorized");
-                    }
-                }
+                _ApiKey = value;
             }
         }
 
@@ -74,52 +48,6 @@ namespace CasDotnetSdk
                 }
             }
             set { _Url = value; }
-        }
-
-        private static TokenCache _TokenCache;
-        internal static TokenCache TokenCache
-        {
-            get { return _TokenCache; }
-            set { _TokenCache = value; }
-        }
-
-        private static Networking _Networking;
-        internal static Networking Networking
-        {
-            get { return _Networking; }
-            set { _Networking = value; }
-        }
-
-        private static DiffieHellmanExchange _DiffieHellmanExchange;
-        internal static DiffieHellmanExchange DiffieHellmanExchange
-        {
-            get { return _DiffieHellmanExchange; }
-            set { _DiffieHellmanExchange = value; }
-        }
-        private static async Task SendOSInformation(string apiKey)
-        {
-            OperatingSystemDeterminator osd = new OperatingSystemDeterminator();
-            OSInfoCacheSend osInfoSend = new OSInfoCacheSend()
-            {
-                OperatingSystem = osd.OperationSystemVersionString(),
-                ApiKey = apiKey
-            };
-            HttpClientSingleton httpClient = HttpClientSingleton.Instance;
-            string url = CASConfiguration.Url + "/Authentication/OperatingSystemCacheStore";
-            httpClient.DefaultRequestHeaders.Add(Constants.HeaderNames.Authorization, TokenCache.Token);
-            HttpResponseMessage response = await httpClient.PostAsJsonAsync(url, osInfoSend);
-            if (!response.IsSuccessStatusCode)
-            {
-                string errorMessage = await response.Content.ReadAsStringAsync();
-                // will stop the process by throwing an exception
-                throw new Exception(errorMessage);
-            }
-        }
-
-        private static void OnProcessExit(object sender, EventArgs e)
-        {
-            OnProcessExit onProcExit = new OnProcessExit();
-            onProcExit.StartProcessCustomExit().GetAwaiter().GetResult();
         }
     }
 }
