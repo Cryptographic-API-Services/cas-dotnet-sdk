@@ -30,7 +30,24 @@
         public static bool IsDevelopment
         {
             get { return _IsDevelopment; }
-            set { _IsDevelopment = value; }
+            set { 
+                _IsDevelopment = value;
+                // TODO: Update underlying Rust services to point to development environment
+            }
+        }
+
+        /// <summary>
+        /// This method is mostly for development purposes of the SDk. We don't recommend changing this in a production environment.
+        /// </summary>
+        private static bool _IsStaging;
+
+        public static bool IsStaging
+        {
+            get { return _IsStaging; }
+            set { 
+                _IsStaging = value;
+                // TODO: Update underlying Rust services to point to staging environment
+            }
         }
 
         private static string _Url;
