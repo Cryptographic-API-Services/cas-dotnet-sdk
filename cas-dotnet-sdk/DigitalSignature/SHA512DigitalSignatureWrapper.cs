@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.DigitalSignature.Linux;
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
+using CasDotnetSdk.Fodies;
 using CasDotnetSdk.Helpers;
 using CASHelpers;
 using System;
@@ -26,6 +27,8 @@ namespace CasDotnetSdk.DigitalSignature
         /// <param name="dataToSign"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
@@ -37,7 +40,7 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("Must provide an allocated data set to sign");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             SHARSAStructDigitialSignatureResult result = (this._platform == OSPlatform.Linux) ?
                 DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length) :
                 DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);
@@ -48,7 +51,6 @@ namespace CasDotnetSdk.DigitalSignature
             FreeMemoryHelper.FreeCStringMemory(result.public_key);
             FreeMemoryHelper.FreeCStringMemory(result.private_key);
             FreeMemoryHelper.FreeBytesMemory(result.signature);
-            DateTime end = DateTime.UtcNow;
 
             return new SHARSADigitalSignatureResult()
             {
@@ -66,6 +68,8 @@ namespace CasDotnetSdk.DigitalSignature
         /// <param name="signature"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
@@ -80,12 +84,9 @@ namespace CasDotnetSdk.DigitalSignature
             {
                 throw new Exception("You must provide a allocated signature to verify");
             }
-
-            DateTime start = DateTime.UtcNow;
             bool result = (this._platform == OSPlatform.Linux) ?
                 DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                 DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature_verify(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-            DateTime end = DateTime.UtcNow;
 
             return result;
         }

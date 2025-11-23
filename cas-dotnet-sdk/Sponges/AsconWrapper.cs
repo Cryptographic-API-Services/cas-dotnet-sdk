@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Sponges.Linux;
 using CasDotnetSdk.Sponges.Types;
 using CasDotnetSdk.Sponges.Windows;
@@ -17,14 +18,16 @@ namespace CasDotnetSdk.Sponges
         /// Generates a key for Ascon 128
         /// </summary>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] Ascon128Key()
         {
-            DateTime start = DateTime.UtcNow;
+
             Ascon128KeyStruct keyPtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_key() : AsconWindowsWrapper.ascon_128_key();
             byte[] key = new byte[keyPtr.length];
             Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
             FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-            DateTime end = DateTime.UtcNow;
+
 
             return key;
         }
@@ -33,14 +36,16 @@ namespace CasDotnetSdk.Sponges
         /// Generates a nonce for Ascon 128
         /// </summary>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] Ascon128Nonce()
         {
-            DateTime start = DateTime.UtcNow;
+
             Ascon128NonceStruct noncePtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_nonce() : AsconWindowsWrapper.ascon_128_nonce();
             byte[] nonce = new byte[noncePtr.length];
             Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
             FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
-            DateTime end = DateTime.UtcNow;
+
 
             return nonce;
         }
@@ -53,6 +58,8 @@ namespace CasDotnetSdk.Sponges
         /// <param name="toEncrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Ascon128Encrypt(byte[] nonce, byte[] key, byte[] toEncrypt)
         {
             if (nonce?.Length == 0)
@@ -68,14 +75,14 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to encrypt with Ascon 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             Ascon128EncryptResultStruct encryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
                 AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
@@ -88,6 +95,8 @@ namespace CasDotnetSdk.Sponges
         /// <param name="toDecrypt"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Ascon128Decrypt(byte[] nonce, byte[] key, byte[] toDecrypt)
         {
             if (nonce?.Length == 0)
@@ -103,14 +112,14 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to decrypt with Ascon 128");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             Ascon128DecryptResultStruct decryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
                 AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
             byte[] result = new byte[decryptResult.length];
             Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }

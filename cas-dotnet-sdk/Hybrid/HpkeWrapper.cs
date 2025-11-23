@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Hybrid.Linux;
 using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.Hybrid.Windows;
@@ -18,9 +19,11 @@ namespace CasDotnetSdk.Hybrid
         /// Generates a Private Key, Public Key, and InfoStr for usage with HPKE
         /// </summary>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public HpkeKeyPairResult GenerateKeyPair()
         {
-            DateTime start = DateTime.UtcNow;
+
             HpkeKeyPairResultStruct keyPair = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_generate_keypair() :
                 HpkeWindowsWrapper.hpke_generate_keypair();
@@ -39,11 +42,12 @@ namespace CasDotnetSdk.Hybrid
                 PublicKey = publicKeyResult,
                 InfoStr = infoStrResult
             };
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
 
+        [BenchmarkSender]
         public HpkeEncryptResult Encrypt(byte[] plaintText, byte[] publicKey, byte[] infoStr)
         {
             if (plaintText == null || plaintText.Length == 0)
@@ -61,7 +65,7 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to encrypt with HPKE");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             HpkeEncryptResultStruct encrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length);
@@ -80,11 +84,12 @@ namespace CasDotnetSdk.Hybrid
                 Tag = tagResult,
                 EncappedKey = encappedKeyResult,
             };
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
 
+        [BenchmarkSender]
         public byte[] Decrypt(byte[] cipherText, byte[] privateKey, byte[] encappedKey, byte[] tag, byte[] infoStr)
         {
             if (cipherText == null || cipherText.Length == 0)
@@ -112,14 +117,14 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to decrypt with HPKE");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             HpkeDecryptResultStruct decrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
             byte[] result = new byte[decrypt.plaintext_ptr_length];
             Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
-            DateTime end = DateTime.UtcNow;
+
             return result;
         }
     }

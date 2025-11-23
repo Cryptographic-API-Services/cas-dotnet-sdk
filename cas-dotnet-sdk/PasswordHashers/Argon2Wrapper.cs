@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Types;
 using CasDotnetSdk.PasswordHashers.Windows;
@@ -22,6 +23,8 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="passToHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -29,13 +32,13 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a password to hash using argon2");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_hash(passToHash) :
                 Argon2WindowsWrapper.argon2_hash(passToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            DateTime end = DateTime.UtcNow;
+
             return hashed;
         }
 
@@ -46,6 +49,8 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="password"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify(string hashedPasswrod, string password)
         {
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
@@ -53,11 +58,11 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password) :
                 Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
-            DateTime end = DateTime.UtcNow;
+
             return result;
         }
 
@@ -66,16 +71,18 @@ namespace CasDotnetSdk.PasswordHashers
         /// </summary>
         /// <param name="password"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] DeriveAES256Key(string password)
         {
-            DateTime start = DateTime.UtcNow;
+
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_256_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
@@ -85,16 +92,18 @@ namespace CasDotnetSdk.PasswordHashers
         /// </summary>
         /// <param name="password"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] DeriveAES128Key(string password)
         {
-            DateTime start = DateTime.UtcNow;
+
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_128_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }

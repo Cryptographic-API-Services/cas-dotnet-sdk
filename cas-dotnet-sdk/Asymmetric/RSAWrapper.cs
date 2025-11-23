@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Asymmetric.Linux;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
+using CasDotnetSdk.Fodies;
 using CasDotnetSdk.Helpers;
 using CASHelpers;
 using System;
@@ -25,6 +26,8 @@ namespace CasDotnetSdk.Asymmetric
         /// <param name="dataToSign"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
         {
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
@@ -36,14 +39,14 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide allocated data to sign with RSA");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
                 RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
             byte[] result = new byte[signResult.length];
             Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
             FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
@@ -57,6 +60,8 @@ namespace CasDotnetSdk.Asymmetric
         /// <param name="signature"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
@@ -71,20 +76,22 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You must provide an allocated signature to verify with RSA");
             }
-            DateTime start = DateTime.UtcNow;
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                  RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }
+
         /// <summary>
         /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
         /// </summary>
         /// <param name="keySize"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        [BenchmarkSender]
         public RsaKeyPairResult GetKeyPair(int keySize)
         {
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
@@ -92,7 +99,6 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("Please pass in a valid key size.");
             }
 
-            DateTime start = DateTime.UtcNow;
             RsaKeyPairStruct keyPairStruct = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.get_key_pair(keySize) :
                 RSAWindowsWrapper.get_key_pair(keySize);
@@ -103,8 +109,6 @@ namespace CasDotnetSdk.Asymmetric
             };
             FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
             FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
-            DateTime end = DateTime.UtcNow;
-
             return result;
         }
     }

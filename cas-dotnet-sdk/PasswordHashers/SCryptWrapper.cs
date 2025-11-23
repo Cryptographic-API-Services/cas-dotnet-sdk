@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using System;
@@ -21,6 +22,8 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="passToHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -28,11 +31,11 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            DateTime end = DateTime.UtcNow;
+
 
             return hashed;
         }
@@ -44,6 +47,8 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="hash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify(string hashedPassword, string password)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hashedPassword))
@@ -51,9 +56,9 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password and a hash to verify");
             }
 
-            DateTime start = DateTime.UtcNow;
+
             bool result = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_verify(hashedPassword, password) : SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
-            DateTime end = DateTime.UtcNow;
+
 
             return result;
         }

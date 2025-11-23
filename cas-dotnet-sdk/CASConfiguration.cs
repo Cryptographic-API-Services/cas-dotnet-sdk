@@ -1,11 +1,14 @@
-﻿namespace CasDotnetSdk
+﻿using CasDotnetSdk.HTTP;
+
+namespace CasDotnetSdk
 {
     public static class CASConfiguration
     {
         static CASConfiguration()
         {
             IsDevelopment = false;
-            Url = "https://cryptographicapiservices.com/";
+            IsStaging = false;
+            Url = "https://cryptographicapiservices.com";
         }
 
         private static string _ApiKey;
@@ -19,6 +22,8 @@
             set
             {
                 _ApiKey = value;
+                HTTPWrapper.SetBaseUrl(Url);
+                HTTPWrapper.SetApiKey(_ApiKey);
             }
         }
 
@@ -30,7 +35,25 @@
         public static bool IsDevelopment
         {
             get { return _IsDevelopment; }
-            set { _IsDevelopment = value; }
+            set
+            {
+                _IsDevelopment = value;
+            }
+        }
+
+        /// <summary>
+        /// This method is mostly for development purposes of the SDk. We don't recommend changing this in a production environment.
+        /// </summary>
+        private static bool _IsStaging;
+
+        public static bool IsStaging
+        {
+            get { return _IsStaging; }
+            set
+            {
+                _IsStaging = value;
+                // TODO: Update underlying Rust services to point to staging environment
+            }
         }
 
         private static string _Url;
@@ -40,11 +63,15 @@
             {
                 if (_IsDevelopment)
                 {
-                    return "https://localhost:8081";
+                    return "http://localhost:5000";
+                }
+                else if (_IsStaging)
+                {
+                    return "https://staging.cryptographicapiservices.com";
                 }
                 else
                 {
-                    return _Url;
+                    return "https://cryptographicapiservices.com";
                 }
             }
             set { _Url = value; }
