@@ -5,7 +5,8 @@
         static CASConfiguration()
         {
             IsDevelopment = false;
-            Url = "https://cryptographicapiservices.com/";
+            IsStaging = false;
+            Url = "https://cryptographicapiservices.com";
         }
 
         private static string _ApiKey;
@@ -19,6 +20,8 @@
             set
             {
                 _ApiKey = value;
+                // TODO: Update underlying Rust services with new API key
+                // TODO: Get Token and RefreshToken from CAS services and store them securely in a Rust cache.
             }
         }
 
@@ -57,11 +60,15 @@
             {
                 if (_IsDevelopment)
                 {
-                    return "https://localhost:8081";
+                    return "http://localhost:5000";
+                }
+                else if (_IsStaging)
+                {
+                    return "https://staging.cryptographicapiservices.com";
                 }
                 else
                 {
-                    return _Url;
+                    return "https://cryptographicapiservices.com";
                 }
             }
             set { _Url = value; }
