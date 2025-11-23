@@ -36,7 +36,6 @@ namespace CasDotnetSdk.Fodies
             if (this.CanSend())
             {
                 HTTPWrapper.SendBenchmarkToApi(this.watch.ElapsedMilliseconds, this.methodClass, this.methodName);
-                Thread.Sleep(2000);
             }
         }
 
