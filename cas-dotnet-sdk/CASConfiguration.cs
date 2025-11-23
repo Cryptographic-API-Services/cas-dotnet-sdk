@@ -60,15 +60,15 @@
             {
                 if (_IsDevelopment)
                 {
-                    return "http://localhost:5000";
+                    return "http://localhost:5000/api";
                 }
                 else if (_IsStaging)
                 {
-                    return "https://staging.cryptographicapiservices.com";
+                    return "https://staging.cryptographicapiservices.com/api/userapi";
                 }
                 else
                 {
-                    return "https://cryptographicapiservices.com";
+                    return "https://cryptographicapiservices.com/api/userapi";
                 }
             }
             set { _Url = value; }
