@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using System;
@@ -22,16 +23,18 @@ namespace CasDotnetSdk.PasswordHashers
         /// </summary>
         /// <param name="passwordToHash"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public string HashPassword(string passwordToHash)
         {
 
-            DateTime start = DateTime.UtcNow;
+            
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_hash(passwordToHash) :
                 BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            DateTime end = DateTime.UtcNow;
+            
 
             return hashed;
         }
@@ -42,13 +45,15 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="hashedPassword"></param>
         /// <param name="unhashed"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public bool Verify(string hashedPassword, string unhashed)
         {
-            DateTime start = DateTime.UtcNow;
+            
             bool result = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword) :
                 BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword); ;
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }

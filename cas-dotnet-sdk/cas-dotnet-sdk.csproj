@@ -29,6 +29,11 @@
 
   <ItemGroup>
     <PackageReference Include="cas-helpers" Version="1.0.27" />
+    <PackageReference Include="Fody" Version="6.9.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MethodDecorator.Fody" Version="1.1.1" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
@@ -43,8 +48,5 @@
       <PackagePath>runtimes/linux-x64/native</PackagePath>
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
   </ItemGroup>
 </Project>

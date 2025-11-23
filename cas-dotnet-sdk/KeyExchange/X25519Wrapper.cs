@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Helpers;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.KeyExchange.Windows;
@@ -20,9 +21,11 @@ namespace CasDotnetSdk.KeyExchange
         /// Generates a secret key and a public key using the X25519 algorithm.
         /// </summary>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
-            DateTime start = DateTime.UtcNow;
+            
             X25519SecretPublicKeyResult result = (this._platform == OSPlatform.Linux) ?
                 X25519LinuxWrapper.generate_secret_and_public_key() :
                 X25519WindowsWrapper.generate_secret_and_public_key();
@@ -37,7 +40,7 @@ namespace CasDotnetSdk.KeyExchange
                 PublicKey = publicKeyResult,
                 SecretKey = secretKeyResult
             };
-            DateTime end = DateTime.UtcNow;
+            
             return res;
         }
 
@@ -48,6 +51,8 @@ namespace CasDotnetSdk.KeyExchange
         /// <param name="otherUserPublicKey"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public X25519SharedSecret GenerateSharedSecret(byte[] secretKey, byte[] otherUserPublicKey)
         {
             if (secretKey == null || secretKey.Length == 0)
@@ -59,7 +64,7 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You must provide an allocated data array");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             X25519SharedSecretResult result = (this._platform == OSPlatform.Linux) ?
                 X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length)
                 : X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
@@ -70,7 +75,7 @@ namespace CasDotnetSdk.KeyExchange
             {
                 SharedSecret = sharedSecret
             };
-            DateTime end = DateTime.UtcNow;
+            
 
             return res;
         }

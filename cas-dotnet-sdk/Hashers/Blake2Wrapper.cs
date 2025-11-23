@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Linux;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
@@ -24,6 +25,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="toHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Hash512(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
@@ -31,14 +34,14 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide data to hash with Blake 2 512");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             Blake2HashByteResult hashResult = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length) :
                 Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
             byte[] result = new byte[hashResult.length];
             Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
             FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -51,6 +54,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="toCompare"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify512(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
@@ -62,11 +67,11 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide data to compare to verify with Blake 2 512");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             bool result = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
                 Blake2WindowsWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -77,20 +82,22 @@ namespace CasDotnetSdk.Hashers
         /// <param name="toHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Hash256(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
             {
                 throw new Exception("You must provide an array of allocated data to hash with Blake2 256");
             }
-            DateTime start = DateTime.UtcNow;
+            
             Blake2HashByteResult hashedResult = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length) :
                 Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
             byte[] result = new byte[hashedResult.length];
             Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
             FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -102,6 +109,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="toCompare"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify256(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
@@ -113,11 +122,11 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide allocated data for the data to compare with Blake 2 256");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             bool result = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
                 Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }

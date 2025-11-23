@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Compression.Linux;
 using CasDotnetSdk.Compression.Types;
 using CasDotnetSdk.Compression.Windows;
+using CasDotnetSdk.Fodies;
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -22,6 +23,8 @@ namespace CasDotnetSdk.Compression
         /// <param name="data"></param>
         /// <param name="level"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] Compress(byte[] data, int level)
         {
             if (data == null || data.Length == 0)
@@ -33,14 +36,14 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Please pass in a valid level for ZSTD Compression");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             ZSTDResult compressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.compress(data, data.Length, level) :
                 ZSTDWindowsWrapper.compress(data, data.Length, level);
             byte[] result = new byte[compressResult.length];
             Marshal.Copy(compressResult.data, result, 0, compressResult.length);
             FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -51,6 +54,8 @@ namespace CasDotnetSdk.Compression
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
+        /// 
+        [BenchmarkSender]
         public byte[] Decompress(byte[] data)
         {
             if (data == null || data.Length == 0)
@@ -58,14 +63,14 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Must pass in an allocated array of data to decompress");
             }
 
-            DateTime start = DateTime.UtcNow;
+            
             ZSTDResult decompressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.decompress(data, data.Length) :
                 ZSTDWindowsWrapper.decompress(data, data.Length);
             byte[] result = new byte[decompressResult.length];
             Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
             FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }

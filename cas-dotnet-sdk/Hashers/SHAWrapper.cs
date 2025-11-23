@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Hashers.Linux;
+﻿using CasDotnetSdk.Fodies;
+using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
@@ -23,6 +24,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="dataToHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Hash512(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -33,14 +36,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+            
             SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -51,6 +54,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="dataToHash"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public byte[] Hash256(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -61,14 +66,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            DateTime start = DateTime.UtcNow;
+            
             SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -80,6 +85,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="hashedData"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify512(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
@@ -90,11 +97,11 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+            
             bool result = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
@@ -106,6 +113,8 @@ namespace CasDotnetSdk.Hashers
         /// <param name="hashedData"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        /// 
+        [BenchmarkSender]
         public bool Verify256(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
@@ -116,11 +125,11 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            DateTime start = DateTime.UtcNow;
+            
             bool result = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-            DateTime end = DateTime.UtcNow;
+            
 
             return result;
         }
