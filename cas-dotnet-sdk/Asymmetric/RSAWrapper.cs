@@ -39,14 +39,14 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide allocated data to sign with RSA");
             }
 
-            
+
             RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
                 RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
             byte[] result = new byte[signResult.length];
             Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
             FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
-            
+
 
             return result;
         }
@@ -76,11 +76,11 @@ namespace CasDotnetSdk.Asymmetric
             {
                 throw new Exception("You must provide an allocated signature to verify with RSA");
             }
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                  RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-            
+
 
             return result;
         }

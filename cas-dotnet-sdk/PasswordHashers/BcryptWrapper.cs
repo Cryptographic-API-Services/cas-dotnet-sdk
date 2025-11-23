@@ -28,13 +28,13 @@ namespace CasDotnetSdk.PasswordHashers
         public string HashPassword(string passwordToHash)
         {
 
-            
+
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_hash(passwordToHash) :
                 BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            
+
 
             return hashed;
         }
@@ -49,11 +49,11 @@ namespace CasDotnetSdk.PasswordHashers
         [BenchmarkSender]
         public bool Verify(string hashedPassword, string unhashed)
         {
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword) :
                 BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword); ;
-            
+
 
             return result;
         }

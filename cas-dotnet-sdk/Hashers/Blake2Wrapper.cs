@@ -34,14 +34,14 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide data to hash with Blake 2 512");
             }
 
-            
+
             Blake2HashByteResult hashResult = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length) :
                 Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
             byte[] result = new byte[hashResult.length];
             Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
             FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
-            
+
 
             return result;
         }
@@ -67,11 +67,11 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide data to compare to verify with Blake 2 512");
             }
 
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
                 Blake2WindowsWrapper.blake2_512_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-            
+
 
             return result;
         }
@@ -90,14 +90,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide an array of allocated data to hash with Blake2 256");
             }
-            
+
             Blake2HashByteResult hashedResult = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_256_bytes(toHash, toHash.Length) :
                 Blake2WindowsWrapper.blake2_256_bytes(toHash, toHash.Length);
             byte[] result = new byte[hashedResult.length];
             Marshal.Copy(hashedResult.result_bytes_ptr, result, 0, result.Length);
             FreeMemoryHelper.FreeBytesMemory(hashedResult.result_bytes_ptr);
-            
+
 
             return result;
         }
@@ -122,11 +122,11 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide allocated data for the data to compare with Blake 2 256");
             }
 
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 Blake2LinuxWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length) :
                 Blake2WindowsWrapper.blake2_256_bytes_verify(hashedData, hashedData.Length, toCompare, toCompare.Length);
-            
+
 
             return result;
         }

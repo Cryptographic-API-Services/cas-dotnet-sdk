@@ -23,7 +23,7 @@ namespace CasDotnetSdk.Signatures
         [BenchmarkSender]
         public Ed25519KeyPairResult GetKeyPair()
         {
-            
+
             Ed25519KeyPairBytesResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
                 ED25519LinuxWrapper.get_ed25519_key_pair_bytes() :
                 ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
@@ -33,7 +33,7 @@ namespace CasDotnetSdk.Signatures
             Marshal.Copy(resultStruct.verifying_key, verifyingKey, 0, resultStruct.verifying_key_length);
             FreeMemoryHelper.FreeBytesMemory(resultStruct.verifying_key);
             FreeMemoryHelper.FreeBytesMemory(resultStruct.signing_key);
-            
+
 
             return new Ed25519KeyPairResult()
             {
@@ -62,7 +62,7 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide an array allocated with data to Sign with ED25519-Dalek");
             }
 
-            
+
             Ed25519ByteSignatureResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
                 ED25519LinuxWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length) :
                 ED25519WindowsWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
@@ -72,7 +72,7 @@ namespace CasDotnetSdk.Signatures
             byte[] signatureResult = new byte[resultStruct.signature_length];
             Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, resultStruct.signature_length);
             FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
-            
+
 
             return new Ed25519ByteSignatureResult()
             {
@@ -106,11 +106,11 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide allocated data to Verify with ED25519-Dalek");
             }
 
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
                 ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-            
+
 
             return result;
         }
@@ -139,11 +139,11 @@ namespace CasDotnetSdk.Signatures
             {
                 throw new Exception("You must provide allocated data to verify for the signature to verify with ED25519-Dalek");
             }
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
                 ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-            
+
 
             return result;
         }

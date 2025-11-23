@@ -27,12 +27,12 @@ namespace CasDotnetSdk.Symmetric
         [BenchmarkSender]
         public byte[] Aes128Key()
         {
-            
+
             AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_128_key() : AESWindowsWrapper.aes_128_key();
             byte[] key = new byte[keyResult.length];
             Marshal.Copy(keyResult.key, key, 0, keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-            
+
             return key;
         }
 
@@ -44,12 +44,12 @@ namespace CasDotnetSdk.Symmetric
         [BenchmarkSender]
         public byte[] Aes256Key()
         {
-            
+
             AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_256_key() : AESWindowsWrapper.aes_256_key();
             byte[] key = new byte[keyResult.length];
             Marshal.Copy(keyResult.key, key, 0, keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-            
+
 
             return key;
         }
@@ -68,14 +68,14 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            
+
             AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
                 AESWindowsWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             byte[] aesKey = new byte[result.aes_key_ptr_length];
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
-            
+
 
             return aesKey;
         }
@@ -95,14 +95,14 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-            
+
             AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
                 AESWindowsWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             byte[] aesKey = new byte[result.aes_key_ptr_length];
             Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
             FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
-            
+
 
             return aesKey;
         }
@@ -133,14 +133,14 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 256");
             }
 
-            
+
             AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
                 AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-            
+
 
             return result;
         }
@@ -172,14 +172,14 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to decrypt with AES 256");
             }
 
-            
+
             AesBytesDecrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
                 AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-            
+
 
             return result;
         }
@@ -209,14 +209,14 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data to encrypt with AES 128");
             }
 
-            
+
             AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length) :
                 AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-            
+
 
             return result;
         }
@@ -245,14 +245,14 @@ namespace CasDotnetSdk.Symmetric
             {
                 throw new Exception("You must provide allocated data to decrypt with AES 128");
             }
-            
+
             AesBytesDecrypt decryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length) :
                 AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
             byte[] result = new byte[decryptResult.length];
             Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-            
+
 
             return result;
         }
@@ -265,12 +265,12 @@ namespace CasDotnetSdk.Symmetric
         [BenchmarkSender]
         public byte[] GenerateAESNonce()
         {
-            
+
             AesNonceResult nonceResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_nonce() : AESWindowsWrapper.aes_nonce();
             byte[] result = new byte[nonceResult.length];
             Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
             FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-            
+
 
             return result;
         }

@@ -22,12 +22,12 @@ namespace CasDotnetSdk.Sponges
         [BenchmarkSender]
         public byte[] Ascon128Key()
         {
-            
+
             Ascon128KeyStruct keyPtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_key() : AsconWindowsWrapper.ascon_128_key();
             byte[] key = new byte[keyPtr.length];
             Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
             FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-            
+
 
             return key;
         }
@@ -40,12 +40,12 @@ namespace CasDotnetSdk.Sponges
         [BenchmarkSender]
         public byte[] Ascon128Nonce()
         {
-            
+
             Ascon128NonceStruct noncePtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_nonce() : AsconWindowsWrapper.ascon_128_nonce();
             byte[] nonce = new byte[noncePtr.length];
             Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
             FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
-            
+
 
             return nonce;
         }
@@ -75,14 +75,14 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to encrypt with Ascon 128");
             }
 
-            
+
             Ascon128EncryptResultStruct encryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
                 AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-            
+
 
             return result;
         }
@@ -112,14 +112,14 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to decrypt with Ascon 128");
             }
 
-            
+
             Ascon128DecryptResultStruct decryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
                 AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
             byte[] result = new byte[decryptResult.length];
             Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-            
+
 
             return result;
         }

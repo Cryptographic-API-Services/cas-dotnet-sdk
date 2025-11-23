@@ -25,7 +25,7 @@ namespace CasDotnetSdk.KeyExchange
         [BenchmarkSender]
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
-            
+
             X25519SecretPublicKeyResult result = (this._platform == OSPlatform.Linux) ?
                 X25519LinuxWrapper.generate_secret_and_public_key() :
                 X25519WindowsWrapper.generate_secret_and_public_key();
@@ -40,7 +40,7 @@ namespace CasDotnetSdk.KeyExchange
                 PublicKey = publicKeyResult,
                 SecretKey = secretKeyResult
             };
-            
+
             return res;
         }
 
@@ -64,7 +64,7 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You must provide an allocated data array");
             }
 
-            
+
             X25519SharedSecretResult result = (this._platform == OSPlatform.Linux) ?
                 X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length)
                 : X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
@@ -75,7 +75,7 @@ namespace CasDotnetSdk.KeyExchange
             {
                 SharedSecret = sharedSecret
             };
-            
+
 
             return res;
         }

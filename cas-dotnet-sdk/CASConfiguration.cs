@@ -33,7 +33,8 @@
         public static bool IsDevelopment
         {
             get { return _IsDevelopment; }
-            set { 
+            set
+            {
                 _IsDevelopment = value;
                 // TODO: Update underlying Rust services to point to development environment
             }
@@ -47,7 +48,8 @@
         public static bool IsStaging
         {
             get { return _IsStaging; }
-            set { 
+            set
+            {
                 _IsStaging = value;
                 // TODO: Update underlying Rust services to point to staging environment
             }

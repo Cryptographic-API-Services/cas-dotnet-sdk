@@ -36,14 +36,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            
+
             SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-            
+
 
             return result;
         }
@@ -66,14 +66,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to hash");
             }
-            
+
             SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
             Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-            
+
 
             return result;
         }
@@ -97,11 +97,11 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-            
+
 
             return result;
         }
@@ -125,11 +125,11 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a byte array with allocated data to verify");
             }
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 SHALinuxWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
                 SHAWindowsWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-            
+
 
             return result;
         }

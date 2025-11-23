@@ -39,14 +39,14 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a message to sign with HMAC");
             }
-            
+
             HmacSignByteResult signed = (this._platform == OSPlatform.Linux) ?
                 HmacLinuxWrapper.hmac_sign_bytes(key, key.Length, message, message.Length) :
                 HmacWindowsWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
             byte[] result = new byte[signed.length];
             Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
             FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-            
+
 
             return result;
         }
@@ -75,11 +75,11 @@ namespace CasDotnetSdk.Hashers
             {
                 throw new Exception("You must provide a signature to verify with HMAC");
             }
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 HmacLinuxWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length) :
                 HmacWindowsWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
-            
+
 
             return result;
         }

@@ -23,7 +23,7 @@ namespace CasDotnetSdk.Hybrid
         [BenchmarkSender]
         public HpkeKeyPairResult GenerateKeyPair()
         {
-            
+
             HpkeKeyPairResultStruct keyPair = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_generate_keypair() :
                 HpkeWindowsWrapper.hpke_generate_keypair();
@@ -42,7 +42,7 @@ namespace CasDotnetSdk.Hybrid
                 PublicKey = publicKeyResult,
                 InfoStr = infoStrResult
             };
-            
+
 
             return result;
         }
@@ -65,7 +65,7 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to encrypt with HPKE");
             }
 
-            
+
             HpkeEncryptResultStruct encrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length);
@@ -84,7 +84,7 @@ namespace CasDotnetSdk.Hybrid
                 Tag = tagResult,
                 EncappedKey = encappedKeyResult,
             };
-            
+
 
             return result;
         }
@@ -117,14 +117,14 @@ namespace CasDotnetSdk.Hybrid
                 throw new Exception("Must a info str to decrypt with HPKE");
             }
 
-            
+
             HpkeDecryptResultStruct decrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
             byte[] result = new byte[decrypt.plaintext_ptr_length];
             Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
-            
+
             return result;
         }
     }

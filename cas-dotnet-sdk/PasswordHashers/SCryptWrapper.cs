@@ -31,11 +31,11 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            
+
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            
+
 
             return hashed;
         }
@@ -56,9 +56,9 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password and a hash to verify");
             }
 
-            
+
             bool result = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_verify(hashedPassword, password) : SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
-            
+
 
             return result;
         }

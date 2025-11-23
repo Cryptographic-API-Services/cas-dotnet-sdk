@@ -40,7 +40,7 @@ namespace CasDotnetSdk.DigitalSignature
                 throw new Exception("Must provide an allocated data set to sign");
             }
 
-            
+
             SHARSAStructDigitialSignatureResult result = (this._platform == OSPlatform.Linux) ?
                 DigitalSignatureLinuxWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length) :
                 DigitalSignatureWindowsWrapper.sha_512_rsa_digital_signature(rsaKeySize, dataToSign, dataToSign.Length);

@@ -36,14 +36,14 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Please pass in a valid level for ZSTD Compression");
             }
 
-            
+
             ZSTDResult compressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.compress(data, data.Length, level) :
                 ZSTDWindowsWrapper.compress(data, data.Length, level);
             byte[] result = new byte[compressResult.length];
             Marshal.Copy(compressResult.data, result, 0, compressResult.length);
             FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-            
+
 
             return result;
         }
@@ -63,14 +63,14 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Must pass in an allocated array of data to decompress");
             }
 
-            
+
             ZSTDResult decompressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.decompress(data, data.Length) :
                 ZSTDWindowsWrapper.decompress(data, data.Length);
             byte[] result = new byte[decompressResult.length];
             Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
             FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-            
+
 
             return result;
         }

@@ -32,13 +32,13 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a password to hash using argon2");
             }
 
-            
+
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_hash(passToHash) :
                 Argon2WindowsWrapper.argon2_hash(passToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
-            
+
             return hashed;
         }
 
@@ -58,11 +58,11 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("You must provide a hashed password and password to verify with argon2");
             }
 
-            
+
             bool result = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password) :
                 Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
-            
+
             return result;
         }
 
@@ -75,14 +75,14 @@ namespace CasDotnetSdk.PasswordHashers
         [BenchmarkSender]
         public byte[] DeriveAES256Key(string password)
         {
-            
+
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_256_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-            
+
 
             return result;
         }
@@ -96,14 +96,14 @@ namespace CasDotnetSdk.PasswordHashers
         [BenchmarkSender]
         public byte[] DeriveAES128Key(string password)
         {
-            
+
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_128_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
-            
+
 
             return result;
         }
