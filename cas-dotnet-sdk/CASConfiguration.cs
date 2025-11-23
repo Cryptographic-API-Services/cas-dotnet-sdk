@@ -64,11 +64,11 @@
                 }
                 else if (_IsStaging)
                 {
-                    return "https://staging.cryptographicapiservices.com/api/userapi";
+                    return "https://staging.cryptographicapiservices.com";
                 }
                 else
                 {
-                    return "https://cryptographicapiservices.com/api/userapi";
+                    return "https://cryptographicapiservices.com";
                 }
             }
             set { _Url = value; }
