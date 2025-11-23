@@ -1,7 +1,9 @@
-﻿using MethodDecorator.Fody.Interfaces;
+﻿using CasDotnetSdk.HTTP;
+using MethodDecorator.Fody.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 
 namespace CasDotnetSdk.Fodies
 {
@@ -11,13 +13,11 @@ namespace CasDotnetSdk.Fodies
         private Stopwatch watch { get; set; }
         private string methodName { get; set; }
         private string methodClass { get; set; }
-        private string libraryName { get; set; }
         public void Init(object instance, MethodBase method, object[] args)
         {
             this.watch = new Stopwatch();
             this.methodName = method.Name;
             this.methodClass = method.DeclaringType.Name;
-            this.libraryName = "cas-dotnet-sdk";
         }
 
         public void OnEntry()
@@ -35,7 +35,8 @@ namespace CasDotnetSdk.Fodies
             this.watch.Stop();
             if (this.CanSend())
             {
-
+                HTTPWrapper.SendBenchmarkToApi(this.watch.ElapsedMilliseconds, this.methodClass, this.methodName);
+                Thread.Sleep(2000);
             }
         }
 

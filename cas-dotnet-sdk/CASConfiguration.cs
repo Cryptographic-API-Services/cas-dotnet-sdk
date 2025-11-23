@@ -1,4 +1,6 @@
-﻿namespace CasDotnetSdk
+﻿using CasDotnetSdk.HTTP;
+
+namespace CasDotnetSdk
 {
     public static class CASConfiguration
     {
@@ -20,8 +22,8 @@
             set
             {
                 _ApiKey = value;
-                // TODO: Update underlying Rust services with new API key
-                // TODO: Get Token and RefreshToken from CAS services and store them securely in a Rust cache.
+                HTTPWrapper.SetBaseUrl(Url);
+                HTTPWrapper.SetApiKey(_ApiKey);
             }
         }
 
@@ -36,7 +38,6 @@
             set
             {
                 _IsDevelopment = value;
-                // TODO: Update underlying Rust services to point to development environment
             }
         }
 
@@ -62,7 +63,7 @@
             {
                 if (_IsDevelopment)
                 {
-                    return "http://localhost:5000/api";
+                    return "http://localhost:5000";
                 }
                 else if (_IsStaging)
                 {
