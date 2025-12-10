@@ -17,6 +17,29 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void HashPasswordParameters()
+        {
+            string password = "ParameterTestPass@123";
+            int memoryCost = 64; 
+            int iterations = 3;
+            int parallelism = 4;
+            string hash = this._argon2Wrapper.HashPasswordWithParameters(memoryCost, iterations, parallelism, password);
+            Assert.NotEqual(password, hash);
+        }
+
+        [Fact]
+        public void HashPasswordParametersVerify()
+        {
+            string password = "ParamVerifyPass@456";
+            int memoryCost = 500; 
+            int iterations = 4;
+            int parallelism = 2;
+            string hash = this._argon2Wrapper.HashPasswordWithParameters(memoryCost, iterations, parallelism, password);
+            bool isValid = this._argon2Wrapper.Verify(hash, password);
+            Assert.True(isValid);
+        }
+
+        [Fact]
         public void HashPassword()
         {
             string password = "DoNotUSETHISPASS@!";

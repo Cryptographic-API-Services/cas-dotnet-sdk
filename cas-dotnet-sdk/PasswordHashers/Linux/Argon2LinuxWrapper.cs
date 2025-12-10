@@ -18,5 +18,8 @@ namespace CasDotnetSdk.PasswordHashers.Linux
         [DllImport("libcas_core_lib.so")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool argon2_verify(string hashedPassword, string passToVerify);
+
+        [DllImport("libcas_core_lib.so")]
+        public static extern IntPtr argon2_hash_password_parameters(int memoryCost, int iterations, int parallelism, string passToHash);
     }
 }
