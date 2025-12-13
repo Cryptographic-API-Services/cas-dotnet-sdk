@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -34,6 +36,19 @@ jobs:
             8.0.x
             9.0.x
             10.0.x
+
+      - name: Build Rust native (Linux)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native lib for tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUTDIR="cas-dotnet-sdk-tests/bin/Release/${{ matrix.tfm }}"
+          mkdir -p "$OUTDIR"
+          cp "cas-core-lib/target/release/libcas_core_lib.so" "$OUTDIR/"
+          ls -la "$OUTDIR"
 
       - name: Run tests (override framework)
         run: |

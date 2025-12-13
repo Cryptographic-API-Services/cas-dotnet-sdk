@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -34,6 +36,21 @@ jobs:
             8.0.x
             9.0.x
             10.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust native (Windows)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native lib for tests
+        shell: pwsh
+        run: |
+          $outDir = "cas-dotnet-sdk-tests\bin\Release\${{ matrix.tfm }}"
+          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+          Copy-Item "cas-core-lib/target/release/cas_core_lib.dll" -Destination $outDir -Force
+          Get-ChildItem $outDir
 
       - name: Run tests (override framework)
         run: |

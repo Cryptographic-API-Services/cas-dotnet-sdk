@@ -7,13 +7,62 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.8.3</Version>
+    <Version>1.8.5</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Platforms>AnyCPU;x64</Platforms>
+    <!-- Paths -->
+    <RustProjectDir>../cas-core-lib</RustProjectDir>
+    <CasSdkDir>$(MSBuildProjectDirectory)</CasSdkDir>
+    <NativeArtifactsDir>$(MSBuildProjectDirectory)\artifacts\native</NativeArtifactsDir>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <BuildNativeRust Condition="'$(BuildNativeRust)'==''">true</BuildNativeRust>
+  </PropertyGroup>
+
+  <Target Name="BuildRust" BeforeTargets="Build"
+          Condition="'$(BuildNativeRust)'=='true'">
+    <Exec Command="cargo build --release" WorkingDirectory="$(RustProjectDir)" />
+  </Target>
+
+  <Target Name="StageRustArtifacts" AfterTargets="BuildRust"
+          Condition="'$(BuildNativeRust)'=='true'">
+    <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+      <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
+      <_DestDir Include="$(NativeArtifactsDir)\win-x64\" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+      <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.so" />
+      <_DestDir Include="$(NativeArtifactsDir)\linux-x64\" />
+    </ItemGroup>
+
+    <MakeDir Directories="@(_DestDir)" />
+    <Copy SourceFiles="@(_RustOut)" DestinationFolder="@(_DestDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+    <!-- Pack staged native artifacts into runtimes/<rid>/native -->
+  <ItemGroup>
+    <None Include="$(NativeArtifactsDir)\win-x64\cas_core_lib.dll"
+          Condition="Exists('$(NativeArtifactsDir)\win-x64\cas_core_lib.dll')">
+      <Pack>true</Pack>
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+      <Link>cas_core_lib.dll</Link>
+      <!-- Optional: helps for projects that reference this library directly -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so"
+          Condition="Exists('$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so')">
+      <Pack>true</Pack>
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+      <Link>libcas_core_lib.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\icon.jpeg">
@@ -36,17 +85,5 @@
     <PackageReference Include="MethodDecorator.Fody" Version="1.1.1" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-  </ItemGroup>
-
-  <!-- Native assets packaged to runtimes/<rid>/native so runtime probing works correctly -->
-  <ItemGroup>
-    <Content Include="cas_core_lib.dll">
-      <PackagePath>runtimes/win-x64/native</PackagePath>
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libcas_core_lib.so">
-      <PackagePath>runtimes/linux-x64/native</PackagePath>
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>

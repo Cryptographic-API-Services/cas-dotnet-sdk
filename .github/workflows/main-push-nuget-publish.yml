@@ -8,21 +8,73 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  native-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - uses: dtolnay/rust-toolchain@stable
 
+      - name: Build Rust (Windows)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native
+        run: |
+          mkdir cas-dotnet-sdk\artifacts\native\win-x64
+          copy cas-core-lib\target\release\cas_core_lib.dll cas-dotnet-sdk\artifacts\native\win-x64\
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-win
+          path: cas-dotnet-sdk/artifacts/native/win-x64
+
+  native-linux:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust (Linux)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native
+        run: |
+          mkdir -p cas-dotnet-sdk/artifacts/native/linux-x64
+          cp cas-core-lib/target/release/libcas_core_lib.so cas-dotnet-sdk/artifacts/native/linux-x64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-linux
+          path: cas-dotnet-sdk/artifacts/native/linux-x64
+
+  pack-and-publish:
+    runs-on: ubuntu-latest
+    needs: [native-windows, native-linux]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 10.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Publish Nuget Package
-      run: cd cas-dotnet-sdk/bin/Release && dotnet nuget push *.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
-           
-        
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-win
+          path: cas-dotnet-sdk/artifacts/native/win-x64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-linux
+          path: cas-dotnet-sdk/artifacts/native/linux-x64
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Pack (includes both natives)
+        working-directory: cas-dotnet-sdk
+        run: dotnet pack -c Release -p:BuildNativeRust=false
+      
+      - name: Publish to NuGet
+        run: dotnet nuget push cas-dotnet-sdk/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
