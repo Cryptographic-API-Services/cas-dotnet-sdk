@@ -36,7 +36,7 @@ jobs:
             10.0.x
 
       - name: Build Rust native (Linux)
-        working-directory: cas-core-lib
+        working-directory: ../cas-core-lib
         run: cargo build --release
 
       - name: Stage native lib for tests
@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           OUTDIR="cas-dotnet-sdk-tests/bin/Release/${{ matrix.tfm }}"
           mkdir -p "$OUTDIR"
-          cp "cas-core-lib/target/release/libcas_core_lib.so" "$OUTDIR/"
+          cp "../cas-core-lib/target/release/libcas_core_lib.so" "$OUTDIR/"
           ls -la "$OUTDIR"
 
       - name: Run tests (override framework)
