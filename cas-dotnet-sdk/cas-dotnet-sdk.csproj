@@ -14,9 +14,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Platforms>AnyCPU;x64</Platforms>
     <!-- Paths -->
-    <RustProjectDir>../cas-core-lib</RustProjectDir>
+    <RustProjectDir>..\cas-core-lib</RustProjectDir>
     <CasSdkDir>$(MSBuildProjectDirectory)</CasSdkDir>
-    <NativeArtifactsDir>$(MSBuildProjectDirectory)/artifacts/native</NativeArtifactsDir>
+    <NativeArtifactsDir>$(MSBuildProjectDirectory)\artifacts\native</NativeArtifactsDir>
   </PropertyGroup>
 
   <PropertyGroup>
