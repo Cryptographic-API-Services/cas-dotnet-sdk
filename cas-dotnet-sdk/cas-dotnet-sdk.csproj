@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.8.5</Version>
+    <Version>1.8.6</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -16,7 +16,7 @@
     <!-- Paths -->
     <RustProjectDir>../cas-core-lib</RustProjectDir>
     <CasSdkDir>$(MSBuildProjectDirectory)</CasSdkDir>
-    <NativeArtifactsDir>$(MSBuildProjectDirectory)\artifacts\native</NativeArtifactsDir>
+    <NativeArtifactsDir>$(MSBuildProjectDirectory)/artifacts/native</NativeArtifactsDir>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -45,24 +45,21 @@
   </Target>
 
     <!-- Pack staged native artifacts into runtimes/<rid>/native -->
-  <ItemGroup>
-    <None Include="$(NativeArtifactsDir)\win-x64\cas_core_lib.dll"
-          Condition="Exists('$(NativeArtifactsDir)\win-x64\cas_core_lib.dll')">
-      <Pack>true</Pack>
-      <PackagePath>runtimes/win-x64/native</PackagePath>
-      <Link>cas_core_lib.dll</Link>
-      <!-- Optional: helps for projects that reference this library directly -->
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ItemGroup>
+      <None Include="$(NativeArtifactsDir)/win-x64/cas_core_lib.dll"
+            Condition="Exists('$(NativeArtifactsDir)/win-x64/cas_core_lib.dll')">
+        <Pack>true</Pack>
+        <PackagePath>runtimes/win-x64/native</PackagePath>
+        <Link>cas_core_lib.dll</Link>
+      </None>
 
-    <None Include="$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so"
-          Condition="Exists('$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so')">
-      <Pack>true</Pack>
-      <PackagePath>runtimes/linux-x64/native</PackagePath>
-      <Link>libcas_core_lib.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+      <None Include="$(NativeArtifactsDir)/linux-x64/libcas_core_lib.so"
+            Condition="Exists('$(NativeArtifactsDir)/linux-x64/libcas_core_lib.so')">
+        <Pack>true</Pack>
+        <PackagePath>runtimes/linux-x64/native</PackagePath>
+        <Link>libcas_core_lib.so</Link>
+      </None>
+    </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\icon.jpeg">
