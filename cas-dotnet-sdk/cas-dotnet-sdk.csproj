@@ -14,9 +14,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Platforms>AnyCPU;x64</Platforms>
     <!-- Paths -->
-    <RustProjectDir>../cas-core-lib</RustProjectDir>
+    <RustProjectDir>..\cas-core-lib</RustProjectDir>
     <CasSdkDir>$(MSBuildProjectDirectory)</CasSdkDir>
-    <NativeArtifactsDir>$(MSBuildProjectDirectory)/artifacts/native</NativeArtifactsDir>
+    <NativeArtifactsDir>$(MSBuildProjectDirectory)\artifacts\native</NativeArtifactsDir>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -45,18 +45,20 @@
 
     <!-- Pack staged native artifacts into runtimes/<rid>/native -->
     <ItemGroup>
-      <None Include="$(NativeArtifactsDir)/win-x64/cas_core_lib.dll"
-            Condition="Exists('$(NativeArtifactsDir)/win-x64/cas_core_lib.dll')">
+      <None Include="$(NativeArtifactsDir)\win-x64\cas_core_lib.dll"
+            Condition="Exists('$(NativeArtifactsDir)\win-x64\cas_core_lib.dll')">
         <Pack>true</Pack>
-        <PackagePath>runtimes/win-x64/native</PackagePath>
+        <PackagePath>runtimes\win-x64\native</PackagePath>
         <Link>cas_core_lib.dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
-      <None Include="$(NativeArtifactsDir)/linux-x64/libcas_core_lib.so"
-            Condition="Exists('$(NativeArtifactsDir)/linux-x64/libcas_core_lib.so')">
+      <None Include="$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so"
+            Condition="Exists('$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so')">
         <Pack>true</Pack>
-        <PackagePath>runtimes/linux-x64/native</PackagePath>
+        <PackagePath>runtimes\linux-x64\native</PackagePath>
         <Link>libcas_core_lib.so</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 
