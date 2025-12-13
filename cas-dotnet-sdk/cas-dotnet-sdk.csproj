@@ -50,6 +50,7 @@
         <Pack>true</Pack>
         <PackagePath>runtimes/win-x64/native</PackagePath>
         <Link>cas_core_lib.dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
       <None Include="$(NativeArtifactsDir)/linux-x64/libcas_core_lib.so"
@@ -57,6 +58,7 @@
         <Pack>true</Pack>
         <PackagePath>runtimes/linux-x64/native</PackagePath>
         <Link>libcas_core_lib.so</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 
