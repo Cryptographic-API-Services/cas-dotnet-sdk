@@ -28,8 +28,7 @@
     <Exec Command="cargo build --release" WorkingDirectory="$(RustProjectDir)" />
   </Target>
 
-  <Target Name="StageRustArtifacts" AfterTargets="BuildRust"
-          Condition="'$(BuildNativeRust)'=='true'">
+  <Target Name="StageRustArtifacts" AfterTargets="BuildRust">
     <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
       <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
       <_DestDir Include="$(NativeArtifactsDir)\win-x64\" />
