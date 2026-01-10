@@ -34,8 +34,24 @@ namespace CasDotnetSdk.PasswordHashers
                 BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            return hashed;
+        }
+        /// <summary>
+        /// Hashes a password using the BCrypt algorithm with specified parameters.
+        /// Max cost is 31.
+        /// </summary>
+        /// <param name="passToHash"></param>
+        /// <param name="cost"></param>
+        /// <returns></returns>
 
-
+        [BenchmarkSender]
+        public string HashPasswordWithParameters(string passToHash, uint cost = 12)
+        {
+            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+                BcryptLinuxWrapper.bcrypt_hash_with_parameters(passToHash, cost) :
+                BcryptWindowsWrapper.bcrypt_hash_with_parameters(passToHash, cost);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
             return hashed;
         }
 

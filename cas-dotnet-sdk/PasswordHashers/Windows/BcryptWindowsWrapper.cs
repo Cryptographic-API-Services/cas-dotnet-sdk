@@ -11,5 +11,8 @@ namespace CasDotnetSdk.PasswordHashers.Windows
         [DllImport("cas_core_lib.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool bcrypt_verify(string password, string hash);
+
+        [DllImport("cas_core_lib.dll")]
+        public static extern IntPtr bcrypt_hash_with_parameters(string passToHash, uint cost);
     }
 }

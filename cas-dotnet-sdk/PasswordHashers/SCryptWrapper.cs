@@ -37,6 +37,7 @@ namespace CasDotnetSdk.PasswordHashers
             return hashed;
         }
 
+        [BenchmarkSender]
         public string HashPasswordWithParameters(string passToHash, int cpuCost = 17, int blockSize = 8, int parallelism = 1)
         {
             if (string.IsNullOrEmpty(passToHash))

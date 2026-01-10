@@ -22,6 +22,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void HashPasswordWithParameters()
+        {
+            uint cost = 12;
+            string hashed = this._cryptWrapper.HashPasswordWithParameters(this._testPassword, cost);
+            Assert.NotEqual(hashed, this._testPassword);
+        }
+
+        [Fact]
         public async Task Verify()
         {
             string hashedPassword = this._cryptWrapper.HashPassword(this._testPassword);
