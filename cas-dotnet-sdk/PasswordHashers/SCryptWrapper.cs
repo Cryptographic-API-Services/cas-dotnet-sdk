@@ -31,12 +31,22 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
             string hashed = Marshal.PtrToStringAnsi(hashedPtr);
             FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            return hashed;
+        }
 
+        public string HashPasswordWithParameters(string passToHash, int cpuCost = 17, int blockSize = 8, int parallelism = 1)
+        {
+            if (string.IsNullOrEmpty(passToHash))
+            {
+                throw new Exception("Please provide a password to hash");
+            }
 
+            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism) : SCryptWindowsWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism);
+            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
+            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
             return hashed;
         }
 

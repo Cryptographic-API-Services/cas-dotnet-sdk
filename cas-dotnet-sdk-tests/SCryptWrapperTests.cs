@@ -22,6 +22,14 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
+        public void HashPasswordWithParameters()
+        {
+            string hashedPassword = this._scrypt.HashPasswordWithParameters(this._password, cpuCost: 16, blockSize: 8, parallelism: 2);
+            Assert.NotNull(hashedPassword);
+            Assert.NotEqual(hashedPassword, this._password);
+        }
+
+        [Fact]
         public void VerifyPassword()
         {
             string hashedPassword = this._scrypt.HashPassword(this._password);

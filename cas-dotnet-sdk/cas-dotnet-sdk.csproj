@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.8.7</Version>
+    <Version>1.8.8</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -81,7 +81,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MethodDecorator.Fody" Version="1.1.1" />
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.2.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 </Project>

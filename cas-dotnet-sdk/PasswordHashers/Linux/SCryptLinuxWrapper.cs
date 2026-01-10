@@ -11,5 +11,8 @@ namespace CasDotnetSdk.PasswordHashers.Linux
         [DllImport("libcas_core_lib.so")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool scrypt_verify(string hashedPassword, string password);
+
+        [DllImport("libcas_core_lib.so")]
+        public static extern IntPtr scrypt_hash_with_parameters(string passToHash, int cpuCost, int blockSize, int paralelism);
     }
 }
