@@ -71,6 +71,12 @@ jobs:
           name: native-linux
           path: cas-dotnet-sdk/artifacts/native/linux-x64
 
+      - name: Verify staged natives
+        run: |
+          ls -R cas-dotnet-sdk/artifacts/native
+          test -f cas-dotnet-sdk/artifacts/native/linux-x64/libcas_core_lib.so
+          test -f cas-dotnet-sdk/artifacts/native/win-x64/cas_core_lib.dll
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"

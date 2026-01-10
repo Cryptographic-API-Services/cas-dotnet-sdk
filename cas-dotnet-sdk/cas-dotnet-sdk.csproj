@@ -28,16 +28,16 @@
     <Exec Command="cargo build --release" WorkingDirectory="$(RustProjectDir)" />
   </Target>
 
-  <Target Name="StageRustArtifacts" AfterTargets="BuildRust">
-    <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-      <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
-      <_DestDir Include="$(NativeArtifactsDir)\win-x64\" />
-    </ItemGroup>
+  <Target Name="StageRustArtifacts" AfterTargets="BuildRust" Condition="'$(BuildNativeRust)'=='true'">
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+    <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
+    <_DestDir Include="$(NativeArtifactsDir)/win-x64/" />
+  </ItemGroup>
 
-    <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
-      <_RustOut Include="$(RustProjectDir)\target\release\libcas_core_lib.so" />
-      <_DestDir Include="$(NativeArtifactsDir)\linux-x64\" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.so" />
+    <_DestDir Include="$(NativeArtifactsDir)/linux-x64/" />
+  </ItemGroup>
 
     <MakeDir Directories="@(_DestDir)" />
     <Copy SourceFiles="@(_RustOut)" DestinationFolder="@(_DestDir)" SkipUnchangedFiles="true" />
