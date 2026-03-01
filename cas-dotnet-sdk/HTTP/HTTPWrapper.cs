@@ -29,11 +29,11 @@ namespace CasDotnetSdk.HTTP
         {
             if (_operatingSystem == OSPlatform.Linux)
             {
-                HTTPLinuxWrapper.set_api_key(apiKey);
+                bool result = HTTPLinuxWrapper.set_api_key(apiKey);
             }
             else
             {
-                HTTPWindowsWrapper.set_api_key(apiKey);
+                bool result = HTTPWindowsWrapper.set_api_key(apiKey);
             }
         }
 
