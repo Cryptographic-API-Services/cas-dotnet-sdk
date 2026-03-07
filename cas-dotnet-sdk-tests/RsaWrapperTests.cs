@@ -28,7 +28,7 @@ namespace CasDotnetSdkTests.Tests
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
             RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(4096);
-            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytes(keys.PrivateKey, dataToSign);
+            byte[] signature = this._RSAWrapper.Sign(keys.PrivateKey, dataToSign);
             Assert.NotEqual(dataToSign, signature);
         }
 
@@ -38,8 +38,8 @@ namespace CasDotnetSdkTests.Tests
         {
             byte[] dataToSign = Encoding.UTF8.GetBytes("Sign This Data For RSA");
             RsaKeyPairResult keys = this._RSAWrapper.GetKeyPair(4096);
-            byte[] signature = this._RSAWrapper.RsaSignWithKeyBytes(keys.PrivateKey, dataToSign);
-            bool isValid = this._RSAWrapper.RsaVerifyBytes(keys.PublicKey, dataToSign, signature);
+            byte[] signature = this._RSAWrapper.Sign(keys.PrivateKey, dataToSign);
+            bool isValid = this._RSAWrapper.Verify(keys.PublicKey, dataToSign, signature);
             Assert.True(isValid);
         }
     }

@@ -28,7 +28,7 @@ namespace CasDotnetSdk.Asymmetric
         /// <exception cref="Exception"></exception>
         /// 
         [BenchmarkSender]
-        public byte[] RsaSignWithKeyBytes(string privateKey, byte[] dataToSign)
+        public byte[] Sign(string privateKey, byte[] dataToSign)
         {
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
             {
@@ -62,7 +62,7 @@ namespace CasDotnetSdk.Asymmetric
         /// <exception cref="Exception"></exception>
         /// 
         [BenchmarkSender]
-        public bool RsaVerifyBytes(string publicKey, byte[] dataToVerify, byte[] signature)
+        public bool Verify(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
             {
