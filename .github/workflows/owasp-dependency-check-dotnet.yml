@@ -18,6 +18,7 @@ jobs:
       run: |
              curl -Ls https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o dependency-check-12.2.0-release.zip
              unzip dependency-check-12.2.0-release.zip
+             ./dependency-check-12.2.0-release/bin/dependency-check.sh -h
 
     - name: Run scan
       run: |
