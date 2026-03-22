@@ -1,29 +1,57 @@
-name: OWASP Dependency Check (.NET)
+name: Build + Dependency Check
 
 on:
-  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  dependency-check:
-    name: Scan dependencies
+  build-and-scan:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Install Dependency-Check
-      run: |
-             curl -Ls https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o dependency-check-12.2.0-release.zip
-             unzip dependency-check-12.2.0-release.zip
-             ./dependency-check-12.2.0-release/bin/dependency-check.sh -h
+    # Setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
 
-    - name: Run scan
-      run: |
-        ./dependency-check-12.2.0-release/bin/dependency-check.sh \
-          --project "cas-dotnet-sdk" \
-          --scan . \
-          --format "HTML" \
-          --out reports
+    # Restore dependencies
+    - name: Restore
+      run: dotnet restore
+
+    # Build project
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    # Cache Dependency-Check DB (IMPORTANT for speed)
+    - name: Cache Dependency-Check data
+      uses: actions/cache@v4
+      with:
+        path: ~/.dependency-check
+        key: dependency-check-${{ runner.os }}
+        restore-keys: |
+          dependency-check-
+
+    # Run OWASP Dependency Check
+    - name: OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: "cas-dotnet-sdk"
+        path: "."
+        format: "HTML"
+        out: "dependency-check-report"
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+
+    # Upload report as artifact
+    - name: Upload Dependency Check Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-check-report
+        path: dependency-check-report
