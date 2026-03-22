@@ -8,6 +8,7 @@ namespace CasDotnetSdkTests.Tests
     {
         private readonly SHAWrapper _wrapper;
         private const string DataDirectory = "SHA/Data";
+        private const string ProjectDataDirectory = "cas-dotnet-sdk-tests/SHA/Data";
 
         public SHAWrapperTests()
         {
@@ -46,11 +47,7 @@ namespace CasDotnetSdkTests.Tests
 
         private static IEnumerable<object[]> LoadRspVectors(string fileName)
         {
-            string path = Path.Combine(AppContext.BaseDirectory, DataDirectory, fileName);
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException($"Missing NIST SHA vector file: {path}");
-            }
+            string path = ResolveVectorPath(fileName);
 
             string? msgHex = null;
             int? bitLength = null;
@@ -106,6 +103,27 @@ namespace CasDotnetSdkTests.Tests
 
             byte[] fullMessage = Convert.FromHexString(msgHex);
             return fullMessage.Take(bitLength / 8).ToArray();
+        }
+
+        private static string ResolveVectorPath(string fileName)
+        {
+            string[] candidatePaths =
+            {
+                Path.Combine(AppContext.BaseDirectory, DataDirectory, fileName),
+                Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ProjectDataDirectory, fileName)),
+                Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ProjectDataDirectory, fileName))
+            };
+
+            foreach (string candidatePath in candidatePaths)
+            {
+                if (File.Exists(candidatePath))
+                {
+                    return candidatePath;
+                }
+            }
+
+            throw new FileNotFoundException(
+                $"Missing NIST SHA vector file: {fileName}. Checked: {string.Join(", ", candidatePaths)}");
         }
     }
 }

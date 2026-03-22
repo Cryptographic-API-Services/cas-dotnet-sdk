@@ -33,4 +33,8 @@
       <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SHA\Data\" />
+  </ItemGroup>
 </Project>
