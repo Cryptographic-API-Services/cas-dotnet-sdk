@@ -28,8 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SHA\Data\*.rsp">
+    <Content Include="SHA\Data\*.rsp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
 </Project>
