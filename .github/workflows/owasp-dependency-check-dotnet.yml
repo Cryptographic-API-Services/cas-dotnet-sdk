@@ -13,15 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Install Dependency-Check
       run: |
-             VERSION=$(curl -s https://dependency-check.github.io/DependencyCheck/current.txt)
-             wget https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip
-             unzip dependency-check-$VERSION-release.zip
+             curl -Ls https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o dependency-check-12.2.0-release.zip
+             unzip dependency-check-12.2.0-release.zip
 
     - name: Run scan
       run: |
-        ./dependency-check-$VERSION-release/bin/dependency-check.sh \
+        ./dependency-check-12.2.0-release/bin/dependency-check.sh \
           --project "cas-dotnet-sdk" \
           --scan . \
           --format "HTML" \
