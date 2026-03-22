@@ -1,0 +1,71 @@
+name: OWASP Dependency Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  depscan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate Rust lockfile when missing
+        working-directory: cas-core-lib
+        run: |
+          if [ ! -f Cargo.lock ]; then
+            cargo generate-lockfile
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore .NET dependencies
+        run: dotnet restore cas-dotnet-sdk.sln
+
+      - name: Build .NET solution
+        run: dotnet build cas-dotnet-sdk.sln --no-restore --configuration Release
+
+      - name: Install OWASP scanning tools
+        run: |
+          npm install -g @cyclonedx/cdxgen
+          python -m pip install --upgrade pip
+          pip install owasp-depscan
+
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Generate CycloneDX SBOM
+        run: cdxgen -o reports/sbom.json .
+
+      - name: Run OWASP dep-scan
+        run: depscan --bom reports/sbom.json --reports-dir reports
+
+      - name: Upload dependency scan reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-scan-reports
+          path: reports/
