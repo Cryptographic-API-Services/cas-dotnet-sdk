@@ -1,4 +1,4 @@
-name: Build + Dependency Check
+name: OWASP Dependency Check
 
 on:
   push:
