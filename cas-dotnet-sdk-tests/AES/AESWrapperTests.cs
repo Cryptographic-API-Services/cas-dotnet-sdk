@@ -165,12 +165,12 @@ namespace CasDotnetSdkTests.Tests
 
         public static IEnumerable<object[]> AES128NistVectors()
         {
-            return LoadGcmEncryptVectors("gcmEncryptExtIV128.rsp");
+            return LoadGcmEncryptVectors("gcmDecrypt128.rsp");
         }
 
         public static IEnumerable<object[]> AES256NistVectors()
         {
-            return LoadGcmEncryptVectors("gcmEncryptExtIV256.rsp");
+            return LoadGcmEncryptVectors("gcmDecrypt256.rsp");
         }
 
         private static IEnumerable<object[]> LoadGcmEncryptVectors(string fileName)
@@ -183,6 +183,7 @@ namespace CasDotnetSdkTests.Tests
             string? ptHex = null;
             int? ivBitLength = null;
             int? aadBitLength = null;
+            bool isFailureCase = false;
 
             foreach (string rawLine in File.ReadLines(path))
             {
@@ -216,6 +217,7 @@ namespace CasDotnetSdkTests.Tests
                         ref ivHex,
                         ref ctHex,
                         ref ptHex);
+                    isFailureCase = false;
                     continue;
                 }
 
@@ -234,29 +236,17 @@ namespace CasDotnetSdkTests.Tests
                 if (line.StartsWith("CT =", StringComparison.Ordinal))
                 {
                     ctHex = line["CT =".Length..].Trim();
-
-                    if (ivBitLength != 96 || aadBitLength != 0)
-                    {
-                        continue;
-                    }
-
-                    if (string.IsNullOrEmpty(keyHex) || string.IsNullOrEmpty(ivHex) || string.IsNullOrEmpty(ctHex) || string.IsNullOrEmpty(ptHex))
-                    {
-                        continue;
-                    }
-
-                    yield return new object[]
-                    {
-                        HexToBytes(ivHex),
-                        HexToBytes(keyHex),
-                        HexToBytes(ptHex),
-                        HexToBytes(ctHex)
-                    };
                     continue;
                 }
 
                 if (line.StartsWith("AAD =", StringComparison.Ordinal))
                 {
+                    continue;
+                }
+
+                if (line.Equals("FAIL", StringComparison.Ordinal))
+                {
+                    isFailureCase = true;
                     continue;
                 }
 
@@ -266,6 +256,24 @@ namespace CasDotnetSdkTests.Tests
                 }
 
                 ptHex = line["PT =".Length..].Trim();
+
+                if (isFailureCase || ivBitLength != 96 || aadBitLength != 0)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(keyHex) || string.IsNullOrEmpty(ivHex) || ctHex is null || ptHex is null)
+                {
+                    continue;
+                }
+
+                yield return new object[]
+                {
+                    HexToBytes(ivHex),
+                    HexToBytes(keyHex),
+                    HexToBytes(ptHex),
+                    HexToBytes(ctHex)
+                };
             }
         }
 
