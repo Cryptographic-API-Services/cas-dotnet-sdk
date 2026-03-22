@@ -26,4 +26,15 @@
   <ItemGroup>
     <ProjectReference Include="..\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SHA\Data\*.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SHA\Data\" />
+  </ItemGroup>
 </Project>
