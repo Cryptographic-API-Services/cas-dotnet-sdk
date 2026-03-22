@@ -15,12 +15,12 @@ jobs:
     steps:
     - name: Install Dependency-Check
       run: |
-             wget https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check.zip
-             unzip dependency-check.zip
+             wget https://github.com/jeremylong/DependencyCheck/releases/download/v12.1.0/dependency-check-12.1.0-release.zip
+             unzip dependency-check-12.1.0-release.zip
 
     - name: Run scan
       run: |
-        ./dependency-check/bin/dependency-check.sh \
+        ./dependency-check-12.1.0-release/bin/dependency-check.sh \
           --project "cas-dotnet-sdk" \
           --scan . \
           --format "HTML" \
