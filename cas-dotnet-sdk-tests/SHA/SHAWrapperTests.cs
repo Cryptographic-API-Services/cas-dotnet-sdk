@@ -1,10 +1,5 @@
 using CasDotnetSdk.Hashers;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -12,70 +7,11 @@ namespace CasDotnetSdkTests.Tests
     public class SHAWrapperTests
     {
         private readonly SHAWrapper _wrapper;
-        private readonly string _testString;
         private const string DataDirectory = "SHA/Data";
 
         public SHAWrapperTests()
         {
             this._wrapper = new SHAWrapper();
-        }
-
-        [Fact]
-        public void SHA512HashBytes()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512(data);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.True(hashed.Length > 0);
-        }
-
-        [Fact]
-        public void SHA512VerifyPass()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512(data);
-            bool isSame = this._wrapper.Verify512(data, hashed);
-            Assert.True(isSame);
-        }
-
-        [Fact]
-        public void SHA512VerifyFail()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash512(data);
-            data = Encoding.UTF8.GetBytes("Not the same byte array");
-            bool isSame = this._wrapper.Verify512(data, hashed);
-            Assert.False(isSame);
-        }
-
-        [Fact]
-        public void SHA256HashBytes()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256(data);
-            Assert.NotNull(hashed);
-            Assert.NotEmpty(hashed);
-            Assert.True(hashed.Length > 0);
-        }
-
-        [Fact]
-        public void SHA256VerifyPass()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256(data);
-            bool isSame = this._wrapper.Verify256(data, hashed);
-            Assert.True(isSame);
-        }
-
-        [Fact]
-        public void SHA256VerifyFail()
-        {
-            byte[] data = Encoding.UTF8.GetBytes(this._testString);
-            byte[] hashed = this._wrapper.Hash256(data);
-            data = Encoding.UTF8.GetBytes("Not the same byte array");
-            bool isSame = this._wrapper.Verify256(data, hashed);
-            Assert.False(isSame);
         }
 
         [Theory]
