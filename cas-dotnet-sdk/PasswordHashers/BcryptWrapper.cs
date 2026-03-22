@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
@@ -24,7 +24,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="passwordToHash"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public string HashPassword(string passwordToHash)
         {
 
@@ -44,7 +44,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="cost"></param>
         /// <returns></returns>
 
-        [BenchmarkSender]
+
         public string HashPasswordWithParameters(string passToHash, uint cost = 12)
         {
             IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
@@ -62,7 +62,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="unhashed"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public bool Verify(string hashedPassword, string unhashed)
         {
 

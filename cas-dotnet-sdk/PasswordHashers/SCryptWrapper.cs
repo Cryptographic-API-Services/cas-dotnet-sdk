@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
@@ -23,7 +23,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -37,7 +37,7 @@ namespace CasDotnetSdk.PasswordHashers
             return hashed;
         }
 
-        [BenchmarkSender]
+
         public string HashPasswordWithParameters(string passToHash, int cpuCost = 17, int blockSize = 8, int parallelism = 1)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -59,7 +59,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify(string hashedPassword, string password)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hashedPassword))

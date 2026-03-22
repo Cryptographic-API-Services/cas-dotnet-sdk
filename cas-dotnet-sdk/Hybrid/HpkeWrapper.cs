@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Hybrid.Linux;
 using CasDotnetSdk.Hybrid.Types;
@@ -20,7 +20,7 @@ namespace CasDotnetSdk.Hybrid
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public HpkeKeyPairResult GenerateKeyPair()
         {
 
@@ -47,7 +47,7 @@ namespace CasDotnetSdk.Hybrid
             return result;
         }
 
-        [BenchmarkSender]
+
         public HpkeEncryptResult Encrypt(byte[] plaintText, byte[] publicKey, byte[] infoStr)
         {
             if (plaintText == null || plaintText.Length == 0)
@@ -89,7 +89,7 @@ namespace CasDotnetSdk.Hybrid
             return result;
         }
 
-        [BenchmarkSender]
+
         public byte[] Decrypt(byte[] cipherText, byte[] privateKey, byte[] encappedKey, byte[] tag, byte[] infoStr)
         {
             if (cipherText == null || cipherText.Length == 0)

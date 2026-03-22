@@ -1,7 +1,7 @@
 ﻿using CasDotnetSdk.DigitalSignature.Linux;
 using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
-using CasDotnetSdk.Fodies;
+
 using CasDotnetSdk.Helpers;
 using CASHelpers;
 using System;
@@ -26,7 +26,7 @@ namespace CasDotnetSdk.DigitalSignature
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public SHARSADigitalSignatureResult CreateRsa(int rsaKeySize, byte[] dataToSign)
         {
             if (rsaKeySize != 1024 && rsaKeySize != 2048 && rsaKeySize != 4096)
@@ -67,7 +67,7 @@ namespace CasDotnetSdk.DigitalSignature
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
 
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {

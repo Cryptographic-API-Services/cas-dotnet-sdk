@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Symmetric.Linux;
 using CasDotnetSdk.Symmetric.Types;
@@ -24,7 +24,7 @@ namespace CasDotnetSdk.Symmetric
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes128Key()
         {
 
@@ -41,7 +41,7 @@ namespace CasDotnetSdk.Symmetric
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes256Key()
         {
 
@@ -60,7 +60,7 @@ namespace CasDotnetSdk.Symmetric
         /// <param name="sharedSecret"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [BenchmarkSender]
+
         public byte[] Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
@@ -87,7 +87,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
@@ -117,7 +117,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
             if (nonceKey?.Length == 0)
@@ -156,7 +156,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes256Decrypt(byte[] nonceKey, byte[] key, byte[] toDecrypt)
         {
             if (nonceKey?.Length == 0)
@@ -193,7 +193,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
             if (nonceKey?.Length == 0)
@@ -230,7 +230,7 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Aes128Decrypt(byte[] nonceKey, byte[] key, byte[] dataToDecrypt)
         {
             if (nonceKey?.Length == 0)
@@ -262,7 +262,7 @@ namespace CasDotnetSdk.Symmetric
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] GenerateAESNonce()
         {
 

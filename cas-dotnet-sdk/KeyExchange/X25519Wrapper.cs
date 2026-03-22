@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
@@ -22,7 +22,7 @@ namespace CasDotnetSdk.KeyExchange
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
 
@@ -52,7 +52,7 @@ namespace CasDotnetSdk.KeyExchange
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public X25519SharedSecret GenerateSharedSecret(byte[] secretKey, byte[] otherUserPublicKey)
         {
             if (secretKey == null || secretKey.Length == 0)

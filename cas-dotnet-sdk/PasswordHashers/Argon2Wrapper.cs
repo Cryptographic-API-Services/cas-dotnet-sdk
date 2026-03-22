@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Types;
@@ -35,7 +35,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="passToHash">The password to hash. Cannot be null or empty.</param>
         /// <returns>A string containing the Argon2-hashed representation of the input password.</returns>
         /// <exception cref="Exception">Thrown if passToHash is null or empty.</exception>
-        [BenchmarkSender]
+
         public string HashPasswordWithParameters(int memoryCost, int iterations, int parallelism, string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -58,7 +58,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public string HashPassword(string passToHash)
         {
             if (string.IsNullOrEmpty(passToHash))
@@ -84,7 +84,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify(string hashedPasswrod, string password)
         {
             if (string.IsNullOrEmpty(hashedPasswrod) || string.IsNullOrEmpty(password))
@@ -106,7 +106,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="password"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] DeriveAES256Key(string password)
         {
 
@@ -127,7 +127,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// <param name="password"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] DeriveAES128Key(string password)
         {
 

@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
@@ -28,7 +28,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] HmacSignBytes(byte[] key, byte[] message)
         {
             if (key == null || key.Length == 0)
@@ -60,7 +60,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool HmacVerifyBytes(byte[] key, byte[] message, byte[] signature)
         {
             if (key == null || key.Length == 0)

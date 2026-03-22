@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.PQC.Linux;
 using CasDotnetSdk.PQC.Types;
@@ -14,7 +14,7 @@ namespace CasDotnetSdk.PQC
 
         }
 
-        [BenchmarkSender]
+
         public SLHDSAKeyPair GenerateSigningAndVerificationKey()
         {
             SLHDSAKeyPairStruct result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_generate_signing_and_verification_key() : SLHDSAWindowsWrapper.slh_dsa_generate_signing_and_verification_key();
@@ -32,7 +32,7 @@ namespace CasDotnetSdk.PQC
             };
         }
 
-        [BenchmarkSender]
+
         public byte[] Sign(byte[] signingKey, byte[] message)
         {
             SLHDSASignatureStruct result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_sign_message(signingKey, signingKey.Length, message, message.Length) : SLHDSAWindowsWrapper.slh_dsa_sign_message(signingKey, signingKey.Length, message, message.Length);
@@ -42,7 +42,7 @@ namespace CasDotnetSdk.PQC
             return signature;
         }
 
-        [BenchmarkSender]
+
         public bool Verify(byte[] verificationKey, byte[] signature, byte[] message)
         {
             return (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_verify_signature(verificationKey, verificationKey.Length, signature, signature.Length, message, message.Length) : SLHDSAWindowsWrapper.slh_dsa_verify_signature(verificationKey, verificationKey.Length, signature, signature.Length, message, message.Length);

@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
@@ -26,7 +26,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Hash512(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
@@ -55,7 +55,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify512(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)
@@ -83,7 +83,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Hash256(byte[] toHash)
         {
             if (toHash == null || toHash.Length == 0)
@@ -110,7 +110,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify256(byte[] hashedData, byte[] toCompare)
         {
             if (hashedData == null || hashedData.Length == 0)

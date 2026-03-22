@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Sponges.Linux;
 using CasDotnetSdk.Sponges.Types;
@@ -19,7 +19,7 @@ namespace CasDotnetSdk.Sponges
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Ascon128Key()
         {
 
@@ -37,7 +37,7 @@ namespace CasDotnetSdk.Sponges
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Ascon128Nonce()
         {
 
@@ -59,7 +59,7 @@ namespace CasDotnetSdk.Sponges
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Ascon128Encrypt(byte[] nonce, byte[] key, byte[] toEncrypt)
         {
             if (nonce?.Length == 0)
@@ -96,7 +96,7 @@ namespace CasDotnetSdk.Sponges
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Ascon128Decrypt(byte[] nonce, byte[] key, byte[] toDecrypt)
         {
             if (nonce?.Length == 0)

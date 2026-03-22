@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Helpers;
 using CasDotnetSdk.Signatures.Linux;
 using CasDotnetSdk.Signatures.Types;
@@ -20,7 +20,7 @@ namespace CasDotnetSdk.Signatures
         /// </summary>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public Ed25519KeyPairResult GetKeyPair()
         {
 
@@ -50,7 +50,7 @@ namespace CasDotnetSdk.Signatures
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public Ed25519ByteSignatureResult SignBytes(byte[] keyBytes, byte[] dataToSign)
         {
             if (keyBytes == null || keyBytes.Length == 0)
@@ -90,7 +90,7 @@ namespace CasDotnetSdk.Signatures
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool VerifyBytes(byte[] keyPair, byte[] signature, byte[] dataToVerify)
         {
             if (keyPair?.Length == 0)
@@ -124,7 +124,7 @@ namespace CasDotnetSdk.Signatures
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool VerifyWithPublicKeyBytes(byte[] publicKey, byte[] signature, byte[] dataToVerify)
         {
             if (publicKey?.Length == 0)

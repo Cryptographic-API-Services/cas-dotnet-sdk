@@ -1,7 +1,7 @@
 ﻿using CasDotnetSdk.Compression.Linux;
 using CasDotnetSdk.Compression.Types;
 using CasDotnetSdk.Compression.Windows;
-using CasDotnetSdk.Fodies;
+
 using CasDotnetSdk.Helpers;
 using System;
 using System.Runtime.InteropServices;
@@ -24,7 +24,7 @@ namespace CasDotnetSdk.Compression
         /// <param name="level"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Compress(byte[] data, int level)
         {
             if (data == null || data.Length == 0)
@@ -55,7 +55,7 @@ namespace CasDotnetSdk.Compression
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        [BenchmarkSender]
+
         public byte[] Decompress(byte[] data)
         {
             if (data == null || data.Length == 0)

@@ -1,4 +1,4 @@
-﻿using CasDotnetSdk.Fodies;
+﻿
 using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
@@ -25,7 +25,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Hash512(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -55,7 +55,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Hash256(byte[] dataToHash)
         {
             if (dataToHash == null)
@@ -86,7 +86,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify512(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
@@ -114,7 +114,7 @@ namespace CasDotnetSdk.Hashers
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify256(byte[] dataToVerify, byte[] hashedData)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)

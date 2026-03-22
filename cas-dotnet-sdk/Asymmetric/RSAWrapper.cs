@@ -1,7 +1,7 @@
 ﻿using CasDotnetSdk.Asymmetric.Linux;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
-using CasDotnetSdk.Fodies;
+
 using CasDotnetSdk.Helpers;
 using CASHelpers;
 using System;
@@ -27,7 +27,7 @@ namespace CasDotnetSdk.Asymmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public byte[] Sign(string privateKey, byte[] dataToSign)
         {
             if (!RSAValidator.ValidateRsaPemKey(privateKey))
@@ -61,7 +61,7 @@ namespace CasDotnetSdk.Asymmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-        [BenchmarkSender]
+
         public bool Verify(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (!RSAValidator.ValidateRsaPemKey(publicKey))
@@ -91,7 +91,7 @@ namespace CasDotnetSdk.Asymmetric
         /// <param name="keySize"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [BenchmarkSender]
+
         public RsaKeyPairResult GetKeyPair(int keySize)
         {
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
