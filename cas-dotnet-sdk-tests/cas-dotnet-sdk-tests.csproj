@@ -28,6 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="AES\Data\*.rsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>AES\Data\%(Filename)%(Extension)</TargetPath>
+    </Content>
+
     <Content Include="SHA\Data\*.rsp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
@@ -35,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="AES\Data\" />
     <Folder Include="SHA\Data\" />
   </ItemGroup>
 </Project>

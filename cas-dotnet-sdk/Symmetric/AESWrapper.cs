@@ -120,20 +120,6 @@ namespace CasDotnetSdk.Symmetric
 
         public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
-            if (nonceKey?.Length == 0)
-            {
-                throw new Exception("You must provide a nonce to encrypt with AES 256");
-            }
-            if (key?.Length == 0)
-            {
-                throw new Exception("You must provide a key  to encrypt with AES 256");
-            }
-            if (toEncrypt == null || toEncrypt.Length <= 0)
-            {
-                throw new Exception("You must provide allocated data to encrypt with AES 256");
-            }
-
-
             AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
                 AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
@@ -159,20 +145,6 @@ namespace CasDotnetSdk.Symmetric
 
         public byte[] Aes256Decrypt(byte[] nonceKey, byte[] key, byte[] toDecrypt)
         {
-            if (nonceKey?.Length == 0)
-            {
-                throw new Exception("You must provide a nonce to decrypt with AES 256");
-            }
-            if (key?.Length == 0)
-            {
-                throw new Exception("You must provide a key  to decrypt with AES 256");
-            }
-            if (toDecrypt == null || toDecrypt.Length <= 0)
-            {
-                throw new Exception("You must provide allocated data to decrypt with AES 256");
-            }
-
-
             AesBytesDecrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
                 AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
@@ -193,23 +165,8 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-
         public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
-            if (nonceKey?.Length == 0)
-            {
-                throw new Exception("You must provide a nonce key to encrypt with AES 128");
-            }
-            if (key?.Length == 0)
-            {
-                throw new Exception("You must provide a key to encrypt with AES 128");
-            }
-            if (dataToEncrypt == null || dataToEncrypt?.Length == 0)
-            {
-                throw new Exception("You must provide allocated data to encrypt with AES 128");
-            }
-
-
             AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length) :
                 AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
@@ -233,19 +190,6 @@ namespace CasDotnetSdk.Symmetric
 
         public byte[] Aes128Decrypt(byte[] nonceKey, byte[] key, byte[] dataToDecrypt)
         {
-            if (nonceKey?.Length == 0)
-            {
-                throw new Exception("You must provide a nonce key to decrypt with AES 128");
-            }
-            if (key?.Length == 0)
-            {
-                throw new Exception("You must provide a key to decrypt with AES 128");
-            }
-            if (dataToDecrypt?.Length == 0)
-            {
-                throw new Exception("You must provide allocated data to decrypt with AES 128");
-            }
-
             AesBytesDecrypt decryptResult = (this._platform == OSPlatform.Linux) ?
                 AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length) :
                 AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
