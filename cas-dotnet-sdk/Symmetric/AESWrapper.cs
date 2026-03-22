@@ -165,7 +165,6 @@ namespace CasDotnetSdk.Symmetric
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         /// 
-
         public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
             AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
