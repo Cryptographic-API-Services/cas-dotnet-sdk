@@ -3,7 +3,7 @@ using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
 
 using CasDotnetSdk.Helpers;
-using CASHelpers;
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -30,15 +30,10 @@ namespace CasDotnetSdk.Asymmetric
 
         public byte[] Sign(string privateKey, byte[] dataToSign)
         {
-            if (!RSAValidator.ValidateRsaPemKey(privateKey))
-            {
-                throw new Exception("You must provide a private key to sign with RSA");
-            }
             if (dataToSign == null || dataToSign.Length == 0)
             {
                 throw new Exception("You must provide allocated data to sign with RSA");
             }
-
 
             RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
@@ -64,10 +59,6 @@ namespace CasDotnetSdk.Asymmetric
 
         public bool Verify(string publicKey, byte[] dataToVerify, byte[] signature)
         {
-            if (!RSAValidator.ValidateRsaPemKey(publicKey))
-            {
-                throw new Exception("You must provide a public key to verify with RSA");
-            }
             if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide allocated data to verify with RSA");

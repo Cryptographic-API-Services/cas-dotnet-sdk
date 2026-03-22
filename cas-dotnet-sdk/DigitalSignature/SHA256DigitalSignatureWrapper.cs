@@ -3,7 +3,7 @@ using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 
 using CasDotnetSdk.Helpers;
-using CASHelpers;
+
 using System;
 using System.Runtime.InteropServices;
 

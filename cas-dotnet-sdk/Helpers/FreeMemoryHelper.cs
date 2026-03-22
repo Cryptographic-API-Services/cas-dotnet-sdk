@@ -1,6 +1,6 @@
 ﻿using CasDotnetSdk.Helpers.Linux;
 using CasDotnetSdk.Helpers.Windows;
-using CASHelpers;
+
 using System;
 using System.Runtime.InteropServices;
 

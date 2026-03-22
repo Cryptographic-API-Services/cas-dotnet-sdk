@@ -3,7 +3,7 @@ using CasDotnetSdk.DigitalSignature.Types;
 using CasDotnetSdk.DigitalSignature.Windows;
 
 using CasDotnetSdk.Helpers;
-using CASHelpers;
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -72,10 +72,6 @@ namespace CasDotnetSdk.DigitalSignature
 
         public bool VerifyRsa(string publicKey, byte[] dataToVerify, byte[] signature)
         {
-            if (!RSAValidator.ValidateRsaPemKey(publicKey))
-            {
-                throw new Exception("You must provide a public key to verify with SHA512 RSA Digital Signature");
-            }
             if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide allocated data to verify");
