@@ -5,7 +5,7 @@ namespace CasDotnetSdk.Compression.Types
     internal struct ZSTDResult
     {
         public IntPtr data;
-        public int length;
+        public long length;
         public int error_code;
     }
 }
