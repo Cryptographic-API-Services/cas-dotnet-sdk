@@ -8,5 +8,6 @@ namespace CasDotnetSdk.Signatures.Types
         public int signature_length { get; set; }
         public IntPtr public_key { get; set; }
         public int public_key_length { get; set; }
+        public int error_code { get; set; }
     }
 }

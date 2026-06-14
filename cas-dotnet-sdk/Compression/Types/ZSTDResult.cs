@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Compression.Types
     {
         public IntPtr data;
         public int length;
+        public int error_code;
     }
 }

@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Hashers.Types
     {
         public IntPtr result_bytes_ptr;
         public int length;
+        public int error_code;
     }
 }

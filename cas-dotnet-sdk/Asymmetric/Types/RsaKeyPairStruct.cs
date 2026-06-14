@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Asymmetric.Types
     {
         public IntPtr pub_key;
         public IntPtr priv_key;
+        public int error_code;
     }
 }

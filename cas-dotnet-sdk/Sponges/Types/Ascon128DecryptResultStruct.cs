@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Sponges.Types
     {
         public IntPtr plaintext { get; set; }
         public int length { get; set; }
+        public int error_code { get; set; }
     }
 }

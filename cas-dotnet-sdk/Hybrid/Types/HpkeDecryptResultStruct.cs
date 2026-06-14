@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Hybrid.Types
     {
         public IntPtr plaintext_ptr;
         public int plaintext_ptr_length;
+        public int error_code;
     }
 }

@@ -69,6 +69,7 @@ namespace CasDotnetSdk.Hybrid
             HpkeEncryptResultStruct encrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length);
+            CasErrorHandler.ThrowIfError(encrypt.error_code, "HPKE encrypt");
             byte[] encappedKeyResult = new byte[encrypt.encapped_key_ptr_length];
             byte[] cipherTextResult = new byte[encrypt.ciphertext_ptr_length];
             byte[] tagResult = new byte[encrypt.tag_ptr_length];
@@ -121,6 +122,7 @@ namespace CasDotnetSdk.Hybrid
             HpkeDecryptResultStruct decrypt = (this._platform == OSPlatform.Linux) ?
                 HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length) :
                 HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
+            CasErrorHandler.ThrowIfError(decrypt.error_code, "HPKE decrypt");
             byte[] result = new byte[decrypt.plaintext_ptr_length];
             Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);

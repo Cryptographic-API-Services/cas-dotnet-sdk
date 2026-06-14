@@ -10,5 +10,6 @@ namespace CasDotnetSdk.Hybrid.Types
         public int ciphertext_ptr_length;
         public IntPtr tag_ptr;
         public int tag_ptr_length;
+        public int error_code;
     }
 }

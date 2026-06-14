@@ -79,6 +79,7 @@ namespace CasDotnetSdk.Sponges
             Ascon128EncryptResultStruct encryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
                 AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
+            CasErrorHandler.ThrowIfError(encryptResult.error_code, "Ascon-128 encrypt");
             byte[] result = new byte[encryptResult.length];
             Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
@@ -116,6 +117,7 @@ namespace CasDotnetSdk.Sponges
             Ascon128DecryptResultStruct decryptResult = (this._platform == OSPlatform.Linux) ?
                 AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
                 AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
+            CasErrorHandler.ThrowIfError(decryptResult.error_code, "Ascon-128 decrypt");
             byte[] result = new byte[decryptResult.length];
             Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);

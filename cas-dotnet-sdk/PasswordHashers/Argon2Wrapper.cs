@@ -1,5 +1,6 @@
 ﻿
 using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Helpers.Types;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Types;
 using CasDotnetSdk.PasswordHashers.Windows;
@@ -42,11 +43,12 @@ namespace CasDotnetSdk.PasswordHashers
             {
                 throw new Exception("You must provide a password to hash using argon2");
             }
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_hash_password_parameters(memoryCost, iterations, parallelism, passToHash) :
                 Argon2WindowsWrapper.argon2_hash_password_parameters(memoryCost, iterations, parallelism, passToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "Argon2 hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
             return hashed;
         }
 
@@ -67,11 +69,12 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
 
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_hash(passToHash) :
                 Argon2WindowsWrapper.argon2_hash(passToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "Argon2 hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
 
             return hashed;
         }
@@ -93,11 +96,12 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
 
-            bool result = (this._platform == OSPlatform.Linux) ?
+            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_verify(hashedPasswrod, password) :
                 Argon2WindowsWrapper.argon2_verify(hashedPasswrod, password);
+            CasErrorHandler.ThrowIfError(result.error_code, "Argon2 verify");
 
-            return result;
+            return result.is_valid;
         }
 
         /// <summary>
@@ -113,6 +117,7 @@ namespace CasDotnetSdk.PasswordHashers
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_256_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
+            CasErrorHandler.ThrowIfError(kdfResult.error_code, "Argon2 derive AES-256 key");
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
@@ -134,6 +139,7 @@ namespace CasDotnetSdk.PasswordHashers
             Argon2KDFResult kdfResult = (this._platform == OSPlatform.Linux) ?
                 Argon2LinuxWrapper.argon2_derive_aes_128_key(password) :
                 Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
+            CasErrorHandler.ThrowIfError(kdfResult.error_code, "Argon2 derive AES-128 key");
             byte[] result = new byte[kdfResult.length];
             Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);

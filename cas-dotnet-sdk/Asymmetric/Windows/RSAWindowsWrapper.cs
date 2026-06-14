@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric.Types;
+using CasDotnetSdk.Helpers.Types;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Asymmetric.Windows
@@ -12,7 +13,6 @@ namespace CasDotnetSdk.Asymmetric.Windows
         public static extern RsaSignBytesResults rsa_sign_with_key_bytes(string privateKey, byte[] dataToSign, int dataToSignLength);
 
         [DllImport("cas_core_lib.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool rsa_verify_bytes(string publicKey, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
+        public static extern CasVerifyResult rsa_verify_bytes(string publicKey, byte[] dataToVerify, int dataToVerifyLength, byte[] signature, int signatureLength);
     }
 }

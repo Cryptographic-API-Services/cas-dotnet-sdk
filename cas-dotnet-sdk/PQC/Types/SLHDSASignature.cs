@@ -6,5 +6,6 @@ namespace CasDotnetSdk.PQC.Types
     {
         public IntPtr signature_ptr { get; set; }
         public int signature_length { get; set; }
+        public int error_code { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Helpers.Types;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using System;
@@ -31,9 +32,10 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash(passToHash) : SCryptWindowsWrapper.scrypt_hash(passToHash);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "SCrypt hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
             return hashed;
         }
 
@@ -45,9 +47,10 @@ namespace CasDotnetSdk.PasswordHashers
                 throw new Exception("Please provide a password to hash");
             }
 
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism) : SCryptWindowsWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism) : SCryptWindowsWrapper.scrypt_hash_with_parameters(passToHash, cpuCost, blockSize, parallelism);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "SCrypt hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
             return hashed;
         }
 
@@ -68,10 +71,11 @@ namespace CasDotnetSdk.PasswordHashers
             }
 
 
-            bool result = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_verify(hashedPassword, password) : SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
+            CasVerifyResult result = (this._platform == OSPlatform.Linux) ? SCryptLinuxWrapper.scrypt_verify(hashedPassword, password) : SCryptWindowsWrapper.scrypt_verify(hashedPassword, password);
+            CasErrorHandler.ThrowIfError(result.error_code, "SCrypt verify");
 
 
-            return result;
+            return result.is_valid;
         }
     }
 }

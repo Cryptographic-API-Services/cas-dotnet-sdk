@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.PQC.Types;
+﻿using CasDotnetSdk.Helpers.Types;
+using CasDotnetSdk.PQC.Types;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PQC.Windows
@@ -12,7 +13,6 @@ namespace CasDotnetSdk.PQC.Windows
         public static extern SLHDSASignatureStruct slh_dsa_sign_message(byte[] signingKey, int signingKeyLength, byte[] message, int messageLength);
 
         [DllImport("cas_core_lib.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool slh_dsa_verify_signature(byte[] verificationKey, int verificationKeyLength, byte[] signature, int signatureLength, byte[] message, int messageLength);
+        public static extern CasVerifyResult slh_dsa_verify_signature(byte[] verificationKey, int verificationKeyLength, byte[] signature, int signatureLength, byte[] message, int messageLength);
     }
 }

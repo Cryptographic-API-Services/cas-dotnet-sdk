@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Asymmetric.Types
     {
         public IntPtr signature_raw_ptr;
         public int length;
+        public int error_code;
     }
 }

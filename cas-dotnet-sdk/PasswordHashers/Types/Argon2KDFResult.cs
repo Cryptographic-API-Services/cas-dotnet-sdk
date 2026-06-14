@@ -6,5 +6,6 @@ namespace CasDotnetSdk.PasswordHashers.Types
     {
         public IntPtr key { get; set; }
         public int length { get; set; }
+        public int error_code { get; set; }
     }
 }

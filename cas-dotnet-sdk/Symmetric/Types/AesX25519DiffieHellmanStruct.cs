@@ -6,5 +6,6 @@ namespace CasDotnetSdk.Symmetric.Types
     {
         public IntPtr aes_key_ptr;
         public int aes_key_ptr_length;
+        public int error_code;
     }
 }

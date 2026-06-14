@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.Signatures.Types;
+﻿using CasDotnetSdk.Helpers.Types;
+using CasDotnetSdk.Signatures.Types;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Signatures.Linux
@@ -12,11 +13,9 @@ namespace CasDotnetSdk.Signatures.Linux
         public static extern Ed25519ByteSignatureResultStruct sign_with_key_pair_bytes(byte[] keyPair, int keyPairLength, byte[] message, int messageLength);
 
         [DllImport("libcas_core_lib.so")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool verify_with_key_pair_bytes(byte[] keyPair, int keyPairLength, byte[] signature, int signatureLength, byte[] message, int messageLength);
+        public static extern CasVerifyResult verify_with_key_pair_bytes(byte[] keyPair, int keyPairLength, byte[] signature, int signatureLength, byte[] message, int messageLength);
 
         [DllImport("libcas_core_lib.so")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool verify_with_public_key_bytes(byte[] publicKey, int publicKeyLength, byte[] signature, int signatureLength, byte[] dataToVerify, int dataToVerifyLength);
+        public static extern CasVerifyResult verify_with_public_key_bytes(byte[] publicKey, int publicKeyLength, byte[] signature, int signatureLength, byte[] dataToVerify, int dataToVerifyLength);
     }
 }
