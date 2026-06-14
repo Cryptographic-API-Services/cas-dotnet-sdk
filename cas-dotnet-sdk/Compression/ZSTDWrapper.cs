@@ -40,8 +40,9 @@ namespace CasDotnetSdk.Compression
             ZSTDResult compressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.compress(data, data.Length, level) :
                 ZSTDWindowsWrapper.compress(data, data.Length, level);
+            CasErrorHandler.ThrowIfError(compressResult.error_code, "ZSTD compress");
             byte[] result = new byte[compressResult.length];
-            Marshal.Copy(compressResult.data, result, 0, compressResult.length);
+            Marshal.Copy(compressResult.data, result, 0, (int)compressResult.length);
             FreeMemoryHelper.FreeBytesMemory(compressResult.data);
 
 
@@ -67,8 +68,9 @@ namespace CasDotnetSdk.Compression
             ZSTDResult decompressResult = (this._platform == OSPlatform.Linux) ?
                 ZSTDLinuxWrapper.decompress(data, data.Length) :
                 ZSTDWindowsWrapper.decompress(data, data.Length);
+            CasErrorHandler.ThrowIfError(decompressResult.error_code, "ZSTD decompress");
             byte[] result = new byte[decompressResult.length];
-            Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
+            Marshal.Copy(decompressResult.data, result, 0, (int)decompressResult.length);
             FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
 
 

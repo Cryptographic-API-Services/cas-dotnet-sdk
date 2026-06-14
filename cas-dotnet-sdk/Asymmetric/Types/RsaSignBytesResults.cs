@@ -5,6 +5,7 @@ namespace CasDotnetSdk.Asymmetric.Types
     internal struct RsaSignBytesResults
     {
         public IntPtr signature_raw_ptr;
-        public int length;
+        public long length;
+        public int error_code;
     }
 }

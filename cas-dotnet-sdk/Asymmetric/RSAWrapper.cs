@@ -3,6 +3,7 @@ using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Asymmetric.Windows;
 
 using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Helpers.Types;
 
 using System;
 using System.Runtime.InteropServices;
@@ -38,8 +39,9 @@ namespace CasDotnetSdk.Asymmetric
             RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
                 RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
+            CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
             byte[] result = new byte[signResult.length];
-            Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+            Marshal.Copy(signResult.signature_raw_ptr, result, 0, (int)signResult.length);
             FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
 
 
@@ -68,12 +70,13 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide an allocated signature to verify with RSA");
             }
 
-            bool result = (this._platform == OSPlatform.Linux) ?
+            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
                  RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
+            CasErrorHandler.ThrowIfError(result.error_code, "RSA verify");
 
 
-            return result;
+            return result.is_valid;
         }
 
         /// <summary>
@@ -93,6 +96,7 @@ namespace CasDotnetSdk.Asymmetric
             RsaKeyPairStruct keyPairStruct = (this._platform == OSPlatform.Linux) ?
                 RSALinuxWrapper.get_key_pair(keySize) :
                 RSAWindowsWrapper.get_key_pair(keySize);
+            CasErrorHandler.ThrowIfError(keyPairStruct.error_code, "RSA key pair generation");
             RsaKeyPairResult result = new RsaKeyPairResult()
             {
                 PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),

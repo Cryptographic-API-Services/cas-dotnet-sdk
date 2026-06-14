@@ -5,6 +5,7 @@ namespace CasDotnetSdk.KeyExchange.Types
     internal struct X25519SharedSecretResult
     {
         public IntPtr shared_secret;
-        public int shared_secret_length;
+        public long shared_secret_length;
+        public int error_code;
     }
 }

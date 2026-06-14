@@ -1,5 +1,5 @@
-﻿using CasDotnetSdk.PasswordHashers.Types;
-using System;
+﻿using CasDotnetSdk.Helpers.Types;
+using CasDotnetSdk.PasswordHashers.Types;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PasswordHashers.Windows
@@ -13,13 +13,12 @@ namespace CasDotnetSdk.PasswordHashers.Windows
         public static extern Argon2KDFResult argon2_derive_aes_256_key(string password);
 
         [DllImport("cas_core_lib.dll")]
-        public static extern IntPtr argon2_hash(string passToHash);
+        public static extern CasStringResult argon2_hash(string passToHash);
 
         [DllImport("cas_core_lib.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool argon2_verify(string hashedPassword, string passToVerify);
+        public static extern CasVerifyResult argon2_verify(string hashedPassword, string passToVerify);
 
         [DllImport("cas_core_lib.dll")]
-        public static extern IntPtr argon2_hash_password_parameters(int memoryCost, int iterations, int parallelism, string passToHash);
+        public static extern CasStringResult argon2_hash_password_parameters(int memoryCost, int iterations, int parallelism, string passToHash);
     }
 }

@@ -3,6 +3,7 @@ using CasDotnetSdk.Hashers.Linux;
 using CasDotnetSdk.Hashers.Types;
 using CasDotnetSdk.Hashers.Windows;
 using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Helpers.Types;
 using System;
 using System.Runtime.InteropServices;
 
@@ -43,8 +44,9 @@ namespace CasDotnetSdk.Hashers
             HmacSignByteResult signed = (this._platform == OSPlatform.Linux) ?
                 HmacLinuxWrapper.hmac_sign_bytes(key, key.Length, message, message.Length) :
                 HmacWindowsWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
+            CasErrorHandler.ThrowIfError(signed.error_code, "HMAC sign");
             byte[] result = new byte[signed.length];
-            Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
+            Marshal.Copy(signed.result_bytes_ptr, result, 0, (int)signed.length);
             FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
 
 
@@ -76,12 +78,13 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide a signature to verify with HMAC");
             }
 
-            bool result = (this._platform == OSPlatform.Linux) ?
+            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
                 HmacLinuxWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length) :
                 HmacWindowsWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
+            CasErrorHandler.ThrowIfError(result.error_code, "HMAC verify");
 
 
-            return result;
+            return result.is_valid;
         }
     }
 }

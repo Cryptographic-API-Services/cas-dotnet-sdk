@@ -68,6 +68,7 @@ namespace CasDotnetSdk.KeyExchange
             X25519SharedSecretResult result = (this._platform == OSPlatform.Linux) ?
                 X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length)
                 : X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
+            CasErrorHandler.ThrowIfError(result.error_code, "X25519 Diffie-Hellman");
             byte[] sharedSecret = new byte[result.shared_secret_length];
             Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
             FreeMemoryHelper.FreeBytesMemory(result.shared_secret);

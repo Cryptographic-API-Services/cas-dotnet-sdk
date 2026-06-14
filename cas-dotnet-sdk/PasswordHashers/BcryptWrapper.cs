@@ -1,5 +1,6 @@
 ﻿
 using CasDotnetSdk.Helpers;
+using CasDotnetSdk.Helpers.Types;
 using CasDotnetSdk.PasswordHashers.Linux;
 using CasDotnetSdk.PasswordHashers.Windows;
 using System;
@@ -29,11 +30,12 @@ namespace CasDotnetSdk.PasswordHashers
         {
 
 
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_hash(passwordToHash) :
                 BcryptWindowsWrapper.bcrypt_hash(passwordToHash);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "BCrypt hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
             return hashed;
         }
         /// <summary>
@@ -47,11 +49,12 @@ namespace CasDotnetSdk.PasswordHashers
 
         public string HashPasswordWithParameters(string passToHash, uint cost = 12)
         {
-            IntPtr hashedPtr = (this._platform == OSPlatform.Linux) ?
+            CasStringResult hashResult = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_hash_with_parameters(passToHash, cost) :
                 BcryptWindowsWrapper.bcrypt_hash_with_parameters(passToHash, cost);
-            string hashed = Marshal.PtrToStringAnsi(hashedPtr);
-            FreeMemoryHelper.FreeCStringMemory(hashedPtr);
+            CasErrorHandler.ThrowIfError(hashResult.error_code, "BCrypt hash");
+            string hashed = Marshal.PtrToStringAnsi(hashResult.value);
+            FreeMemoryHelper.FreeCStringMemory(hashResult.value);
             return hashed;
         }
 
@@ -66,12 +69,13 @@ namespace CasDotnetSdk.PasswordHashers
         public bool Verify(string hashedPassword, string unhashed)
         {
 
-            bool result = (this._platform == OSPlatform.Linux) ?
+            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
                 BcryptLinuxWrapper.bcrypt_verify(unhashed, hashedPassword) :
                 BcryptWindowsWrapper.bcrypt_verify(unhashed, hashedPassword); ;
+            CasErrorHandler.ThrowIfError(result.error_code, "BCrypt verify");
 
 
-            return result;
+            return result.is_valid;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Hashers.Types;
+using CasDotnetSdk.Helpers.Types;
 using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers.Windows
@@ -9,7 +10,6 @@ namespace CasDotnetSdk.Hashers.Windows
         public static extern HmacSignByteResult hmac_sign_bytes(byte[] key, int keyLength, byte[] message, int messageLength);
 
         [DllImport("cas_core_lib.dll")]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool hmac_verify_bytes(byte[] key, int keyLength, byte[] message, int messageLength, byte[] signature, int signatureLength);
+        public static extern CasVerifyResult hmac_verify_bytes(byte[] key, int keyLength, byte[] message, int messageLength, byte[] signature, int signatureLength);
     }
 }
