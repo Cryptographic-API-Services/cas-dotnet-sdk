@@ -25,7 +25,7 @@ namespace CasDotnetSdk.Sponges
 
             Ascon128KeyStruct keyPtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_key() : AsconWindowsWrapper.ascon_128_key();
             byte[] key = new byte[keyPtr.length];
-            Marshal.Copy(keyPtr.key, key, 0, keyPtr.length);
+            Marshal.Copy(keyPtr.key, key, 0, (int)keyPtr.length);
             FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
 
 
@@ -43,7 +43,7 @@ namespace CasDotnetSdk.Sponges
 
             Ascon128NonceStruct noncePtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_nonce() : AsconWindowsWrapper.ascon_128_nonce();
             byte[] nonce = new byte[noncePtr.length];
-            Marshal.Copy(noncePtr.nonce, nonce, 0, noncePtr.length);
+            Marshal.Copy(noncePtr.nonce, nonce, 0, (int)noncePtr.length);
             FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
 
 
@@ -81,7 +81,7 @@ namespace CasDotnetSdk.Sponges
                 AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
             CasErrorHandler.ThrowIfError(encryptResult.error_code, "Ascon-128 encrypt");
             byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
 
 
@@ -119,7 +119,7 @@ namespace CasDotnetSdk.Sponges
                 AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
             CasErrorHandler.ThrowIfError(decryptResult.error_code, "Ascon-128 decrypt");
             byte[] result = new byte[decryptResult.length];
-            Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
+            Marshal.Copy(decryptResult.plaintext, result, 0, (int)decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
 
 

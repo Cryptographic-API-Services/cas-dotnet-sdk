@@ -46,7 +46,7 @@ namespace CasDotnetSdk.Hashers
                 HmacWindowsWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
             CasErrorHandler.ThrowIfError(signed.error_code, "HMAC sign");
             byte[] result = new byte[signed.length];
-            Marshal.Copy(signed.result_bytes_ptr, result, 0, signed.length);
+            Marshal.Copy(signed.result_bytes_ptr, result, 0, (int)signed.length);
             FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
 
 

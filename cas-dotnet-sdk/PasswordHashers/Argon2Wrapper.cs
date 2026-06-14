@@ -119,7 +119,7 @@ namespace CasDotnetSdk.PasswordHashers
                 Argon2WindowsWrapper.argon2_derive_aes_256_key(password);
             CasErrorHandler.ThrowIfError(kdfResult.error_code, "Argon2 derive AES-256 key");
             byte[] result = new byte[kdfResult.length];
-            Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
+            Marshal.Copy(kdfResult.key, result, 0, (int)kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
 
 
@@ -141,7 +141,7 @@ namespace CasDotnetSdk.PasswordHashers
                 Argon2WindowsWrapper.argon2_derive_aes_128_key(password);
             CasErrorHandler.ThrowIfError(kdfResult.error_code, "Argon2 derive AES-128 key");
             byte[] result = new byte[kdfResult.length];
-            Marshal.Copy(kdfResult.key, result, 0, kdfResult.length);
+            Marshal.Copy(kdfResult.key, result, 0, (int)kdfResult.length);
             FreeMemoryHelper.FreeBytesMemory(kdfResult.key);
 
 

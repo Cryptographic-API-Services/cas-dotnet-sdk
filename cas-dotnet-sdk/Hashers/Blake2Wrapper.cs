@@ -39,7 +39,7 @@ namespace CasDotnetSdk.Hashers
                 Blake2LinuxWrapper.blake2_512_bytes(toHash, toHash.Length) :
                 Blake2WindowsWrapper.blake2_512_bytes(toHash, toHash.Length);
             byte[] result = new byte[hashResult.length];
-            Marshal.Copy(hashResult.result_bytes_ptr, result, 0, hashResult.length);
+            Marshal.Copy(hashResult.result_bytes_ptr, result, 0, (int)hashResult.length);
             FreeMemoryHelper.FreeBytesMemory(hashResult.result_bytes_ptr);
 
 

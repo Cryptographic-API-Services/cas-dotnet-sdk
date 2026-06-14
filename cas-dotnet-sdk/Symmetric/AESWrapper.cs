@@ -30,7 +30,7 @@ namespace CasDotnetSdk.Symmetric
 
             AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_128_key() : AESWindowsWrapper.aes_128_key();
             byte[] key = new byte[keyResult.length];
-            Marshal.Copy(keyResult.key, key, 0, keyResult.length);
+            Marshal.Copy(keyResult.key, key, 0, (int)keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
 
             return key;
@@ -47,7 +47,7 @@ namespace CasDotnetSdk.Symmetric
 
             AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_256_key() : AESWindowsWrapper.aes_256_key();
             byte[] key = new byte[keyResult.length];
-            Marshal.Copy(keyResult.key, key, 0, keyResult.length);
+            Marshal.Copy(keyResult.key, key, 0, (int)keyResult.length);
             FreeMemoryHelper.FreeBytesMemory(keyResult.key);
 
 
@@ -74,7 +74,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             CasErrorHandler.ThrowIfError(result.error_code, "AES-256 key from X25519 shared secret");
             byte[] aesKey = new byte[result.aes_key_ptr_length];
-            Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
+            Marshal.Copy(result.aes_key_ptr, aesKey, 0, (int)result.aes_key_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
 
 
@@ -102,7 +102,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
             CasErrorHandler.ThrowIfError(result.error_code, "AES-128 key from X25519 shared secret");
             byte[] aesKey = new byte[result.aes_key_ptr_length];
-            Marshal.Copy(result.aes_key_ptr, aesKey, 0, result.aes_key_ptr_length);
+            Marshal.Copy(result.aes_key_ptr, aesKey, 0, (int)result.aes_key_ptr_length);
             FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
 
 
@@ -127,7 +127,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
             CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-256 encrypt");
             byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
 
 
@@ -153,7 +153,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
             CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-256 decrypt");
             byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.plaintext, result, 0, encryptResult.length);
+            Marshal.Copy(encryptResult.plaintext, result, 0, (int)encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
 
 
@@ -176,7 +176,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
             CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-128 encrypt");
             byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, encryptResult.length);
+            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
 
 
@@ -200,7 +200,7 @@ namespace CasDotnetSdk.Symmetric
                 AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
             CasErrorHandler.ThrowIfError(decryptResult.error_code, "AES-128 decrypt");
             byte[] result = new byte[decryptResult.length];
-            Marshal.Copy(decryptResult.plaintext, result, 0, decryptResult.length);
+            Marshal.Copy(decryptResult.plaintext, result, 0, (int)decryptResult.length);
             FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
 
 
@@ -218,7 +218,7 @@ namespace CasDotnetSdk.Symmetric
 
             AesNonceResult nonceResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_nonce() : AESWindowsWrapper.aes_nonce();
             byte[] result = new byte[nonceResult.length];
-            Marshal.Copy(nonceResult.nonce, result, 0, nonceResult.length);
+            Marshal.Copy(nonceResult.nonce, result, 0, (int)nonceResult.length);
             FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
 
 

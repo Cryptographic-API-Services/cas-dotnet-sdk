@@ -41,7 +41,7 @@ namespace CasDotnetSdk.Asymmetric
                 RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
             CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
             byte[] result = new byte[signResult.length];
-            Marshal.Copy(signResult.signature_raw_ptr, result, 0, signResult.length);
+            Marshal.Copy(signResult.signature_raw_ptr, result, 0, (int)signResult.length);
             FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
 
 

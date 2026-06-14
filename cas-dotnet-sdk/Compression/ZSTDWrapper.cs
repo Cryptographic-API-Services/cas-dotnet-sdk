@@ -42,7 +42,7 @@ namespace CasDotnetSdk.Compression
                 ZSTDWindowsWrapper.compress(data, data.Length, level);
             CasErrorHandler.ThrowIfError(compressResult.error_code, "ZSTD compress");
             byte[] result = new byte[compressResult.length];
-            Marshal.Copy(compressResult.data, result, 0, compressResult.length);
+            Marshal.Copy(compressResult.data, result, 0, (int)compressResult.length);
             FreeMemoryHelper.FreeBytesMemory(compressResult.data);
 
 
@@ -70,7 +70,7 @@ namespace CasDotnetSdk.Compression
                 ZSTDWindowsWrapper.decompress(data, data.Length);
             CasErrorHandler.ThrowIfError(decompressResult.error_code, "ZSTD decompress");
             byte[] result = new byte[decompressResult.length];
-            Marshal.Copy(decompressResult.data, result, 0, decompressResult.length);
+            Marshal.Copy(decompressResult.data, result, 0, (int)decompressResult.length);
             FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
 
 

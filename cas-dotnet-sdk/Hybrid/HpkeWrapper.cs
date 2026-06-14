@@ -30,9 +30,9 @@ namespace CasDotnetSdk.Hybrid
             byte[] privateKeyResult = new byte[keyPair.private_key_ptr_length];
             byte[] publicKeyResult = new byte[keyPair.public_key_ptr_length];
             byte[] infoStrResult = new byte[keyPair.info_str_ptr_length];
-            Marshal.Copy(keyPair.private_key_ptr, privateKeyResult, 0, keyPair.private_key_ptr_length);
-            Marshal.Copy(keyPair.public_key_ptr, publicKeyResult, 0, keyPair.public_key_ptr_length);
-            Marshal.Copy(keyPair.info_str_ptr, infoStrResult, 0, keyPair.info_str_ptr_length);
+            Marshal.Copy(keyPair.private_key_ptr, privateKeyResult, 0, (int)keyPair.private_key_ptr_length);
+            Marshal.Copy(keyPair.public_key_ptr, publicKeyResult, 0, (int)keyPair.public_key_ptr_length);
+            Marshal.Copy(keyPair.info_str_ptr, infoStrResult, 0, (int)keyPair.info_str_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(keyPair.public_key_ptr);
             FreeMemoryHelper.FreeBytesMemory(keyPair.private_key_ptr);
             FreeMemoryHelper.FreeBytesMemory(keyPair.info_str_ptr);
@@ -73,9 +73,9 @@ namespace CasDotnetSdk.Hybrid
             byte[] encappedKeyResult = new byte[encrypt.encapped_key_ptr_length];
             byte[] cipherTextResult = new byte[encrypt.ciphertext_ptr_length];
             byte[] tagResult = new byte[encrypt.tag_ptr_length];
-            Marshal.Copy(encrypt.encapped_key_ptr, encappedKeyResult, 0, encrypt.encapped_key_ptr_length);
-            Marshal.Copy(encrypt.ciphertext_ptr, cipherTextResult, 0, encrypt.ciphertext_ptr_length);
-            Marshal.Copy(encrypt.tag_ptr, tagResult, 0, encrypt.tag_ptr_length);
+            Marshal.Copy(encrypt.encapped_key_ptr, encappedKeyResult, 0, (int)encrypt.encapped_key_ptr_length);
+            Marshal.Copy(encrypt.ciphertext_ptr, cipherTextResult, 0, (int)encrypt.ciphertext_ptr_length);
+            Marshal.Copy(encrypt.tag_ptr, tagResult, 0, (int)encrypt.tag_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(encrypt.ciphertext_ptr);
             FreeMemoryHelper.FreeBytesMemory(encrypt.encapped_key_ptr);
             FreeMemoryHelper.FreeBytesMemory(encrypt.tag_ptr);
@@ -124,7 +124,7 @@ namespace CasDotnetSdk.Hybrid
                 HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
             CasErrorHandler.ThrowIfError(decrypt.error_code, "HPKE decrypt");
             byte[] result = new byte[decrypt.plaintext_ptr_length];
-            Marshal.Copy(decrypt.plaintext_ptr, result, 0, decrypt.plaintext_ptr_length);
+            Marshal.Copy(decrypt.plaintext_ptr, result, 0, (int)decrypt.plaintext_ptr_length);
             FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
 
             return result;

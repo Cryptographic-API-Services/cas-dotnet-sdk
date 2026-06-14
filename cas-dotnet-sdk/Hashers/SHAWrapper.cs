@@ -32,7 +32,7 @@ namespace CasDotnetSdk.Hashers
                 SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
-            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, (int)hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
 
 
@@ -53,7 +53,7 @@ namespace CasDotnetSdk.Hashers
                 SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length) :
                 SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
             byte[] result = new byte[hashedPtr.length];
-            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, hashedPtr.length);
+            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, (int)hashedPtr.length);
             FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
             return result;
         }
