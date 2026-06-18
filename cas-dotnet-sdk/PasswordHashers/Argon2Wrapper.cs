@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public unsafe class Argon2Wrapper : BaseWrapper, IPasswordHasherBase
+    public unsafe class Argon2Wrapper : IPasswordHasherBase
     {
         /// <summary>
         /// A wrapper class for the Argon2 password hashing algorithm.

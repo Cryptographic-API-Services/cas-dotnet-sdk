@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public unsafe class SCryptWrapper : BaseWrapper, IPasswordHasherBase
+    public unsafe class SCryptWrapper : IPasswordHasherBase
     {
         /// <summary>
         /// A wrapper class that uses the SCrypt algorithm to hash passwords.

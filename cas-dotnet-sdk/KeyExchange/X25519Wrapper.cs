@@ -5,7 +5,7 @@ using System;
 
 namespace CasDotnetSdk.KeyExchange
 {
-    public unsafe class X25519Wrapper : BaseWrapper
+    public unsafe class X25519Wrapper 
     {
         /// <summary>
         /// A wrapper class for working with X25519 key exchange algorithm.

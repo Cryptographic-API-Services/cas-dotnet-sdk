@@ -5,7 +5,7 @@ using System;
 
 namespace CasDotnetSdk.Asymmetric
 {
-    public unsafe class RSAWrapper : BaseWrapper
+    public unsafe class RSAWrapper 
     {
         /// <summary>
         /// A wrapper class for RSA key creation, encryption, decryption, signing, and verification.

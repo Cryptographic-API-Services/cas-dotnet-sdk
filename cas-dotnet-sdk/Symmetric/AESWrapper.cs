@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Symmetric
 {
-    public unsafe class AESWrapper : BaseWrapper
+    public unsafe class AESWrapper 
     {
         /// <summary>
         /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
