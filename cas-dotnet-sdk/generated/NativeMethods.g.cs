@@ -18,19 +18,44 @@ namespace CasCoreLib
 
 
 
-        [DllImport(__DllName, EntryPoint = "sha512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern SHAHashByteResult sha512_bytes(byte* data_to_hash, nuint data_len);
+        [DllImport(__DllName, EntryPoint = "aes_256_key_from_x25519_diffie_hellman_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_256_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length);
 
-        [DllImport(__DllName, EntryPoint = "sha512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        [DllImport(__DllName, EntryPoint = "aes_128_key_from_x25519_diffie_hellman_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_128_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length);
 
-        [DllImport(__DllName, EntryPoint = "sha256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern SHAHashByteResult sha256_bytes(byte* data_to_hash, nuint data_len);
+        [DllImport(__DllName, EntryPoint = "aes_nonce", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesNonce aes_nonce();
 
-        [DllImport(__DllName, EntryPoint = "sha256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        [DllImport(__DllName, EntryPoint = "aes_256_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesKeyResult aes_256_key();
+
+        [DllImport(__DllName, EntryPoint = "aes_128_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesKeyResult aes_128_key();
+
+        [DllImport(__DllName, EntryPoint = "aes_128_encrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_128_encrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        [DllImport(__DllName, EntryPoint = "aes_256_encrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_256_encrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        [DllImport(__DllName, EntryPoint = "aes_128_decrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_128_decrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
+
+        [DllImport(__DllName, EntryPoint = "aes_256_decrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_256_decrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
+
+        [DllImport(__DllName, EntryPoint = "ascon_128_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128Key ascon_128_key();
+
+        [DllImport(__DllName, EntryPoint = "ascon_128_nonce", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128Nonce ascon_128_nonce();
+
+        [DllImport(__DllName, EntryPoint = "ascon_128_encrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128EncryptResult ascon_128_encrypt(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        [DllImport(__DllName, EntryPoint = "ascon_128_decrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128DecryptResult ascon_128_decrypt(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
 
         [DllImport(__DllName, EntryPoint = "blake2_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Blake2HashByteResult blake2_512_bytes(byte* data, nuint data_length);
@@ -46,13 +71,319 @@ namespace CasCoreLib
         [return: MarshalAs(UnmanagedType.U1)]
         internal static extern bool blake2_256_bytes_verify(byte* hashed_data, nuint hashed_data_length, byte* to_compare, nuint to_compare_length);
 
+        [DllImport(__DllName, EntryPoint = "get_ed25519_key_pair_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ed25519KeyPairBytesResult get_ed25519_key_pair_bytes();
+
+        [DllImport(__DllName, EntryPoint = "sign_with_key_pair_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ed25519ByteSignatureResult sign_with_key_pair_bytes(byte* key_pair, nuint key_pair_length, byte* message_to_sign, nuint message_to_sign_length);
+
+        [DllImport(__DllName, EntryPoint = "verify_with_key_pair_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult verify_with_key_pair_bytes(byte* key_pair, nuint key_pair_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
+
+        [DllImport(__DllName, EntryPoint = "verify_with_public_key_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult verify_with_public_key_bytes(byte* public_key, nuint public_key_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
+
         [DllImport(__DllName, EntryPoint = "free_cstring", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void free_cstring(byte* s);
 
         [DllImport(__DllName, EntryPoint = "free_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void free_bytes(byte* ptr);
 
+        [DllImport(__DllName, EntryPoint = "hmac_sign_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern HmacSignByteResult hmac_sign_bytes(byte* key, nuint key_length, byte* message, nuint message_length);
 
+        [DllImport(__DllName, EntryPoint = "hmac_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult hmac_verify_bytes(byte* key, nuint key_length, byte* message, nuint message_length, byte* signature, nuint signature_length);
+
+        [DllImport(__DllName, EntryPoint = "hpke_generate_keypair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern HpkeKeyPair hpke_generate_keypair();
+
+        [DllImport(__DllName, EntryPoint = "hpke_encrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern HpkeEncrypt hpke_encrypt(byte* plaintext, nuint plaintext_length, byte* public_key, nuint public_keylength, byte* info_str, nuint info_str_length);
+
+        [DllImport(__DllName, EntryPoint = "hpke_decrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern HpkeDecrypt hpke_decrypt(byte* ciphertext, nuint ciphertext_length, byte* private_key, nuint private_keylength, byte* encapped_key, nuint encapped_key_length, byte* tag, nuint tag_length, byte* info_str, nuint info_str_length);
+
+        [DllImport(__DllName, EntryPoint = "argon2_hash_password_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult argon2_hash_password_parameters(uint memory_cost, uint iterations, uint parallelism, byte* password_to_hash);
+
+        [DllImport(__DllName, EntryPoint = "argon2_derive_aes_128_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Argon2KDFAes128 argon2_derive_aes_128_key(byte* hashed_password);
+
+        [DllImport(__DllName, EntryPoint = "argon2_derive_aes_256_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Argon2KDFAes128 argon2_derive_aes_256_key(byte* hashed_password);
+
+        [DllImport(__DllName, EntryPoint = "argon2_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult argon2_verify(byte* hashed_pass, byte* password);
+
+        [DllImport(__DllName, EntryPoint = "argon2_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult argon2_hash(byte* pass_to_hash);
+
+        [DllImport(__DllName, EntryPoint = "bcrypt_hash_with_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult bcrypt_hash_with_parameters(byte* pass_to_hash, uint cost);
+
+        [DllImport(__DllName, EntryPoint = "bcrypt_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult bcrypt_hash(byte* pass_to_hash);
+
+        [DllImport(__DllName, EntryPoint = "bcrypt_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult bcrypt_verify(byte* pass, byte* hash);
+
+        [DllImport(__DllName, EntryPoint = "scrypt_hash_with_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult scrypt_hash_with_parameters(byte* pass_to_hash, byte cpu_memory_cost, uint block_size, uint parallelism);
+
+        [DllImport(__DllName, EntryPoint = "scrypt_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult scrypt_hash(byte* pass_to_hash);
+
+        [DllImport(__DllName, EntryPoint = "scrypt_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult scrypt_verify(byte* hash_to_check, byte* pass_to_check);
+
+        [DllImport(__DllName, EntryPoint = "slh_dsa_generate_signing_and_verification_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SlhDsaKeyPairResult slh_dsa_generate_signing_and_verification_key();
+
+        [DllImport(__DllName, EntryPoint = "slh_dsa_sign_message", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SlhDsaSignature slh_dsa_sign_message(byte* signing_key, nuint signing_key_length, byte* message, nuint message_length);
+
+        [DllImport(__DllName, EntryPoint = "slh_dsa_verify_signature", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult slh_dsa_verify_signature(byte* verification_key, nuint verification_key_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
+
+        [DllImport(__DllName, EntryPoint = "get_key_pair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern RsaKeyPair get_key_pair(nuint key_size);
+
+        [DllImport(__DllName, EntryPoint = "rsa_sign_with_key_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern RsaSignBytesResults rsa_sign_with_key_bytes(byte* private_key, byte* data_to_sign, nuint data_to_sign_length);
+
+        [DllImport(__DllName, EntryPoint = "rsa_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult rsa_verify_bytes(byte* public_key, byte* data_to_verify, nuint data_to_verify_length, byte* signature, nuint signature_length);
+
+        [DllImport(__DllName, EntryPoint = "sha512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha512_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
+        [DllImport(__DllName, EntryPoint = "sha256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha256_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
+        [DllImport(__DllName, EntryPoint = "generate_secret_and_public_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern x25519SecretPublicKeyResult generate_secret_and_public_key();
+
+        [DllImport(__DllName, EntryPoint = "diffie_hellman", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern x25519SharedSecretResult diffie_hellman(byte* secret_key, nuint secret_key_length, byte* other_user_public_key, nuint other_user_public_key_length);
+
+        [DllImport(__DllName, EntryPoint = "decompress", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ZstdCompressResult decompress(byte* data_to_decompress, nuint data_to_decompress_length);
+
+        [DllImport(__DllName, EntryPoint = "compress", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ZstdCompressResult compress(byte* data_to_compress, nuint data_to_compress_length, nuint level);
+
+
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesNonce
+    {
+        public byte* nonce;
+        public nuint length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesKeyResult
+    {
+        public byte* key;
+        public nuint length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesBytesEncrypt
+    {
+        public byte* ciphertext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesBytesDecrypt
+    {
+        public byte* plaintext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesNonceAndKeyFromX25519DiffieHellman
+    {
+        public byte* aes_key_ptr;
+        public nuint aes_key_ptr_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ascon128EncryptResult
+    {
+        public byte* ciphertext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ascon128DecryptResult
+    {
+        public byte* plaintext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ascon128Key
+    {
+        public byte* key;
+        public nuint length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ascon128Nonce
+    {
+        public byte* nonce;
+        public nuint length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Blake2HashByteResult
+    {
+        public byte* result_bytes_ptr;
+        public nuint length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ed25519KeyPairBytesResult
+    {
+        public byte* signing_key;
+        public nuint signing_key_length;
+        public byte* verifying_key;
+        public nuint verifying_key_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Ed25519ByteSignatureResult
+    {
+        public byte* signature_byte_ptr;
+        public nuint signature_length;
+        public byte* public_key;
+        public nuint public_key_length;
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  Result of a verification (`verify`-style) FFI call.
+    ///
+    ///  cas-lib's verify operations now return `CasResult&lt;bool&gt;`, so a plain `bool`
+    ///  can no longer distinguish "signature did not match" (`is_valid == false`,
+    ///  `error_code == 0`) from "the inputs were malformed" (`is_valid == false`,
+    ///  `error_code != 0`). This struct carries both across the boundary.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct CasVerifyResult
+    {
+        [MarshalAs(UnmanagedType.U1)] public bool is_valid;
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  Result of an FFI call that hands back a C string (e.g. a password hash).
+    ///
+    ///  `value` is null when `error_code` is non-zero. The caller still frees a
+    ///  non-null `value` with [`free_cstring`].
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct CasStringResult
+    {
+        public byte* value;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct HmacSignByteResult
+    {
+        public byte* result_bytes_ptr;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct HpkeKeyPair
+    {
+        public byte* private_key_ptr;
+        public nuint private_key_ptr_length;
+        public byte* public_key_ptr;
+        public nuint public_key_ptr_length;
+        public byte* info_str_ptr;
+        public nuint info_str_ptr_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct HpkeEncrypt
+    {
+        public byte* encapped_key_ptr;
+        public nuint encapped_key_ptr_length;
+        public byte* ciphertext_ptr;
+        public nuint ciphertext_ptr_length;
+        public byte* tag_ptr;
+        public nuint tag_ptr_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct HpkeDecrypt
+    {
+        public byte* plaintext_ptr;
+        public nuint plaintext_ptr_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Argon2KDFAes128
+    {
+        public byte* key;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct SlhDsaKeyPairResult
+    {
+        public byte* signing_key_ptr;
+        public nuint signing_key_length;
+        public byte* verification_key_ptr;
+        public nuint verification_key_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct SlhDsaSignature
+    {
+        public byte* signature_ptr;
+        public nuint signature_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct RsaKeyPair
+    {
+        public byte* pub_key;
+        public byte* priv_key;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct RsaSignBytesResults
+    {
+        public byte* signature_raw_ptr;
+        public nuint length;
+        public int error_code;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -63,10 +394,28 @@ namespace CasCoreLib
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal unsafe partial struct Blake2HashByteResult
+    internal unsafe partial struct x25519SecretPublicKeyResult
     {
-        public byte* result_bytes_ptr;
+        public byte* secret_key;
+        public nuint secret_key_length;
+        public byte* public_key;
+        public nuint public_key_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct x25519SharedSecretResult
+    {
+        public byte* shared_secret;
+        public nuint shared_secret_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct ZstdCompressResult
+    {
+        public byte* data;
         public nuint length;
+        public int error_code;
     }
 
 

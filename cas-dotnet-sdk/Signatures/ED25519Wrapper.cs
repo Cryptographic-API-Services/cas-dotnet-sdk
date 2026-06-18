@@ -1,17 +1,17 @@
-﻿
+﻿using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Helpers.Types;
-using CasDotnetSdk.Signatures.Linux;
 using CasDotnetSdk.Signatures.Types;
-using CasDotnetSdk.Signatures.Windows;
 using System;
-using System.Runtime.InteropServices;
+
+// Both CasCoreLib (native) and CasDotnetSdk.Signatures.Types (public) define a
+// type named Ed25519ByteSignatureResult. Pin the unqualified name to the public
+// one; the native struct is referenced fully-qualified below.
+using Ed25519ByteSignatureResult = CasDotnetSdk.Signatures.Types.Ed25519ByteSignatureResult;
 
 namespace CasDotnetSdk.Signatures
 {
-    public class ED25519Wrapper : BaseWrapper
+    public unsafe class ED25519Wrapper : BaseWrapper
     {
-
         public ED25519Wrapper()
         {
         }
@@ -19,39 +19,19 @@ namespace CasDotnetSdk.Signatures
         /// <summary>
         /// Generates and public and private key pair non split in bytes for ED25519-Dalek.
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public Ed25519KeyPairResult GetKeyPair()
         {
-
-            Ed25519KeyPairBytesResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
-                ED25519LinuxWrapper.get_ed25519_key_pair_bytes() :
-                ED25519WindowsWrapper.get_ed25519_key_pair_bytes();
-            byte[] signingKey = new byte[resultStruct.signing_key_length];
-            Marshal.Copy(resultStruct.signing_key, signingKey, 0, (int)resultStruct.signing_key_length);
-            byte[] verifyingKey = new byte[resultStruct.verifying_key_length];
-            Marshal.Copy(resultStruct.verifying_key, verifyingKey, 0, (int)resultStruct.verifying_key_length);
-            FreeMemoryHelper.FreeBytesMemory(resultStruct.verifying_key);
-            FreeMemoryHelper.FreeBytesMemory(resultStruct.signing_key);
-
-
+            Ed25519KeyPairBytesResult result = NativeMethods.get_ed25519_key_pair_bytes();
             return new Ed25519KeyPairResult()
             {
-                SigningKey = signingKey,
-                VerifyingKey = verifyingKey
+                SigningKey = NativeByteBuffer.CopyAndFree(result.signing_key, result.signing_key_length),
+                VerifyingKey = NativeByteBuffer.CopyAndFree(result.verifying_key, result.verifying_key_length)
             };
         }
 
         /// <summary>
         /// Signs data with a key pair in bytes for ED25519-Dalek.
         /// </summary>
-        /// <param name="keyBytes"></param>
-        /// <param name="dataToSign"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public Ed25519ByteSignatureResult SignBytes(byte[] keyBytes, byte[] dataToSign)
         {
             if (keyBytes == null || keyBytes.Length == 0)
@@ -63,36 +43,22 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide an array allocated with data to Sign with ED25519-Dalek");
             }
 
-
-            Ed25519ByteSignatureResultStruct resultStruct = (this._platform == OSPlatform.Linux) ?
-                ED25519LinuxWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length) :
-                ED25519WindowsWrapper.sign_with_key_pair_bytes(keyBytes, keyBytes.Length, dataToSign, dataToSign.Length);
-            CasErrorHandler.ThrowIfError(resultStruct.error_code, "ED25519 sign");
-            byte[] publicKeyResult = new byte[resultStruct.public_key_length];
-            Marshal.Copy(resultStruct.public_key, publicKeyResult, 0, (int)resultStruct.public_key_length);
-            FreeMemoryHelper.FreeBytesMemory(resultStruct.public_key);
-            byte[] signatureResult = new byte[resultStruct.signature_length];
-            Marshal.Copy(resultStruct.signature_byte_ptr, signatureResult, 0, (int)resultStruct.signature_length);
-            FreeMemoryHelper.FreeBytesMemory(resultStruct.signature_byte_ptr);
-
-
-            return new Ed25519ByteSignatureResult()
+            fixed (byte* keyPtr = NativePin.Of(keyBytes))
+            fixed (byte* dataPtr = NativePin.Of(dataToSign))
             {
-                PublicKey = publicKeyResult,
-                Signature = signatureResult
-            };
+                CasCoreLib.Ed25519ByteSignatureResult result = NativeMethods.sign_with_key_pair_bytes(keyPtr, (nuint)keyBytes.Length, dataPtr, (nuint)dataToSign.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "ED25519 sign");
+                return new CasDotnetSdk.Signatures.Types.Ed25519ByteSignatureResult()
+                {
+                    PublicKey = NativeByteBuffer.CopyAndFree(result.public_key, result.public_key_length),
+                    Signature = NativeByteBuffer.CopyAndFree(result.signature_byte_ptr, result.signature_length)
+                };
+            }
         }
 
         /// <summary>
         /// Verifys data with a key pair in bytes for ED25519-Dalek.
         /// </summary>
-        /// <param name="keyPair"></param>
-        /// <param name="signature"></param>
-        /// <param name="dataToVerify"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool VerifyBytes(byte[] keyPair, byte[] signature, byte[] dataToVerify)
         {
             if (keyPair?.Length == 0)
@@ -108,26 +74,19 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide allocated data to Verify with ED25519-Dalek");
             }
 
-
-            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
-                ED25519LinuxWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
-                ED25519WindowsWrapper.verify_with_key_pair_bytes(keyPair, keyPair.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "ED25519 verify");
-
-
-            return result.is_valid;
+            fixed (byte* keyPtr = NativePin.Of(keyPair))
+            fixed (byte* signaturePtr = NativePin.Of(signature))
+            fixed (byte* dataPtr = NativePin.Of(dataToVerify))
+            {
+                CasVerifyResult result = NativeMethods.verify_with_key_pair_bytes(keyPtr, (nuint)keyPair.Length, signaturePtr, (nuint)signature.Length, dataPtr, (nuint)dataToVerify.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "ED25519 verify");
+                return result.is_valid;
+            }
         }
 
         /// <summary>
         /// Verifies with a public key in bytes for ED25519-Dalek.
         /// </summary>
-        /// <param name="publicKey"></param>
-        /// <param name="signature"></param>
-        /// <param name="dataToVerify"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool VerifyWithPublicKeyBytes(byte[] publicKey, byte[] signature, byte[] dataToVerify)
         {
             if (publicKey?.Length == 0)
@@ -143,13 +102,14 @@ namespace CasDotnetSdk.Signatures
                 throw new Exception("You must provide allocated data to verify for the signature to verify with ED25519-Dalek");
             }
 
-            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
-                ED25519LinuxWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length) :
-                ED25519WindowsWrapper.verify_with_public_key_bytes(publicKey, publicKey.Length, signature, signature.Length, dataToVerify, dataToVerify.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "ED25519 verify");
-
-
-            return result.is_valid;
+            fixed (byte* publicPtr = NativePin.Of(publicKey))
+            fixed (byte* signaturePtr = NativePin.Of(signature))
+            fixed (byte* dataPtr = NativePin.Of(dataToVerify))
+            {
+                CasVerifyResult result = NativeMethods.verify_with_public_key_bytes(publicPtr, (nuint)publicKey.Length, signaturePtr, (nuint)signature.Length, dataPtr, (nuint)dataToVerify.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "ED25519 verify");
+                return result.is_valid;
+            }
         }
     }
 }

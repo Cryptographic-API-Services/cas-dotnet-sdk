@@ -1,55 +1,46 @@
-﻿
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Helpers.Types;
-using CasDotnetSdk.PQC.Linux;
 using CasDotnetSdk.PQC.Types;
-using CasDotnetSdk.PQC.Windows;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.PQC
 {
-    public class SLHDSAWrapper : BaseWrapper
+    public unsafe class SLHDSAWrapper : BaseWrapper
     {
         public SLHDSAWrapper()
         {
-
         }
-
 
         public SLHDSAKeyPair GenerateSigningAndVerificationKey()
         {
-            SLHDSAKeyPairStruct result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_generate_signing_and_verification_key() : SLHDSAWindowsWrapper.slh_dsa_generate_signing_and_verification_key();
-            byte[] signingKey = new byte[result.signing_key_length];
-            Marshal.Copy(result.signing_key_ptr, signingKey, 0, (int)result.signing_key_length);
-            FreeMemoryHelper.FreeBytesMemory(result.signing_key_ptr);
-
-            byte[] verificationKey = new byte[result.verification_key_length];
-            Marshal.Copy(result.verification_key_ptr, verificationKey, 0, (int)result.verification_key_length);
-            FreeMemoryHelper.FreeBytesMemory(result.verification_key_ptr);
+            SlhDsaKeyPairResult result = NativeMethods.slh_dsa_generate_signing_and_verification_key();
             return new SLHDSAKeyPair
             {
-                SigningKey = signingKey,
-                VerificationKey = verificationKey
+                SigningKey = NativeByteBuffer.CopyAndFree(result.signing_key_ptr, result.signing_key_length),
+                VerificationKey = NativeByteBuffer.CopyAndFree(result.verification_key_ptr, result.verification_key_length)
             };
         }
 
-
         public byte[] Sign(byte[] signingKey, byte[] message)
         {
-            SLHDSASignatureStruct result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_sign_message(signingKey, signingKey.Length, message, message.Length) : SLHDSAWindowsWrapper.slh_dsa_sign_message(signingKey, signingKey.Length, message, message.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "SLH-DSA sign");
-            byte[] signature = new byte[result.signature_length];
-            Marshal.Copy(result.signature_ptr, signature, 0, (int)result.signature_length);
-            FreeMemoryHelper.FreeBytesMemory(result.signature_ptr);
-            return signature;
+            fixed (byte* signingKeyPtr = NativePin.Of(signingKey))
+            fixed (byte* messagePtr = NativePin.Of(message))
+            {
+                SlhDsaSignature result = NativeMethods.slh_dsa_sign_message(signingKeyPtr, (nuint)signingKey.Length, messagePtr, (nuint)message.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "SLH-DSA sign");
+                return NativeByteBuffer.CopyAndFree(result.signature_ptr, result.signature_length);
+            }
         }
-
 
         public bool Verify(byte[] verificationKey, byte[] signature, byte[] message)
         {
-            CasVerifyResult result = (this._platform == OSPlatform.Linux) ? SLHDSALinuxWrapper.slh_dsa_verify_signature(verificationKey, verificationKey.Length, signature, signature.Length, message, message.Length) : SLHDSAWindowsWrapper.slh_dsa_verify_signature(verificationKey, verificationKey.Length, signature, signature.Length, message, message.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "SLH-DSA verify");
-            return result.is_valid;
+            fixed (byte* verificationKeyPtr = NativePin.Of(verificationKey))
+            fixed (byte* signaturePtr = NativePin.Of(signature))
+            fixed (byte* messagePtr = NativePin.Of(message))
+            {
+                CasVerifyResult result = NativeMethods.slh_dsa_verify_signature(verificationKeyPtr, (nuint)verificationKey.Length, signaturePtr, (nuint)signature.Length, messagePtr, (nuint)message.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "SLH-DSA verify");
+                return result.is_valid;
+            }
         }
     }
 }

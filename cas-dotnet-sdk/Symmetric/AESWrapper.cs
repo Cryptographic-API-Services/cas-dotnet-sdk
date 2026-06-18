@@ -1,66 +1,39 @@
-﻿
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Symmetric.Linux;
-using CasDotnetSdk.Symmetric.Types;
-using CasDotnetSdk.Symmetric.Windows;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Symmetric
 {
-    public class AESWrapper : BaseWrapper
+    public unsafe class AESWrapper : BaseWrapper
     {
-
         /// <summary>
         /// A wrapper class for AES-GCM 128 and 256 bit encryption and decryption.
         /// </summary>
         public AESWrapper()
         {
-
         }
 
         /// <summary>
         /// Generates an AES 128 bit key.
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public byte[] Aes128Key()
         {
-
-            AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_128_key() : AESWindowsWrapper.aes_128_key();
-            byte[] key = new byte[keyResult.length];
-            Marshal.Copy(keyResult.key, key, 0, (int)keyResult.length);
-            FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-
-            return key;
+            AesKeyResult keyResult = NativeMethods.aes_128_key();
+            return NativeByteBuffer.CopyAndFree(keyResult.key, keyResult.length);
         }
 
         /// <summary>
         /// Generates an AES 256 bit key.
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public byte[] Aes256Key()
         {
-
-            AesKeyResult keyResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_256_key() : AESWindowsWrapper.aes_256_key();
-            byte[] key = new byte[keyResult.length];
-            Marshal.Copy(keyResult.key, key, 0, (int)keyResult.length);
-            FreeMemoryHelper.FreeBytesMemory(keyResult.key);
-
-
-            return key;
+            AesKeyResult keyResult = NativeMethods.aes_256_key();
+            return NativeByteBuffer.CopyAndFree(keyResult.key, keyResult.length);
         }
 
         /// <summary>
         /// Generates an AES 256 bit key and nonce based off a X25519 Diffie Hellman shared secret.
         /// </summary>
-        /// <param name="sharedSecret"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-
         public byte[] Aes256KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
@@ -68,27 +41,17 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-
-            AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
-                AESWindowsWrapper.aes_256_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "AES-256 key from X25519 shared secret");
-            byte[] aesKey = new byte[result.aes_key_ptr_length];
-            Marshal.Copy(result.aes_key_ptr, aesKey, 0, (int)result.aes_key_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(result.aes_key_ptr);
-
-
-            return aesKey;
+            fixed (byte* secretPtr = NativePin.Of(sharedSecret))
+            {
+                AesNonceAndKeyFromX25519DiffieHellman result = NativeMethods.aes_256_key_from_x25519_diffie_hellman_shared_secret(secretPtr, (nuint)sharedSecret.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "AES-256 key from X25519 shared secret");
+                return NativeByteBuffer.CopyAndFree(result.aes_key_ptr, result.aes_key_ptr_length);
+            }
         }
 
         /// <summary>
         /// Generates an AES 128 bit key and nonce based off a X25519 Diffie Hellman shared secret.
         /// </summary>
-        /// <param name="sharedSecret"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Aes128KeyNonceX25519DiffieHellman(byte[] sharedSecret)
         {
             if (sharedSecret == null || sharedSecret.Length == 0)
@@ -96,133 +59,81 @@ namespace CasDotnetSdk.Symmetric
                 throw new Exception("You must provide allocated data for X25519 shared secret to generate an AES Key");
             }
 
-
-            AesKeyX25519DiffieHellmanStruct result = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length) :
-                AESWindowsWrapper.aes_128_key_from_x25519_diffie_hellman_shared_secret(sharedSecret, sharedSecret.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "AES-128 key from X25519 shared secret");
-            byte[] aesKey = new byte[result.aes_key_ptr_length];
-            Marshal.Copy(result.aes_key_ptr, aesKey, 0, (int)result.aes_key_ptr_length);
-            FreeMemoryHelper.FreeCStringMemory(result.aes_key_ptr);
-
-
-            return aesKey;
+            fixed (byte* secretPtr = NativePin.Of(sharedSecret))
+            {
+                AesNonceAndKeyFromX25519DiffieHellman result = NativeMethods.aes_128_key_from_x25519_diffie_hellman_shared_secret(secretPtr, (nuint)sharedSecret.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "AES-128 key from X25519 shared secret");
+                return NativeByteBuffer.CopyAndFree(result.aes_key_ptr, result.aes_key_ptr_length);
+            }
         }
 
         /// <summary>
         /// Encrypts with AES-256-GCM.
         /// </summary>
-        /// <param name="nonceKey"></param>
-        /// <param name="key"></param>
-        /// <param name="toEncrypt"></param>
-        /// <param name="sendBenchmark"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
-            AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
-                AESWindowsWrapper.aes_256_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toEncrypt, toEncrypt.Length);
-            CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-256 encrypt");
-            byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonceKey))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(toEncrypt))
+            {
+                AesBytesEncrypt encryptResult = NativeMethods.aes_256_encrypt_bytes_with_key(noncePtr, (nuint)nonceKey.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)toEncrypt.Length);
+                CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-256 encrypt");
+                return NativeByteBuffer.CopyAndFree(encryptResult.ciphertext, encryptResult.length);
+            }
         }
-
-
 
         /// <summary>
         /// Decrypts with AES-256-GCM.
         /// </summary>
-        /// <param name="nonceKey"></param>
-        /// <param name="key"></param>
-        /// <param name="toDecrypt"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Aes256Decrypt(byte[] nonceKey, byte[] key, byte[] toDecrypt)
         {
-            AesBytesDecrypt encryptResult = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
-                AESWindowsWrapper.aes_256_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, toDecrypt, toDecrypt.Length);
-            CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-256 decrypt");
-            byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.plaintext, result, 0, (int)encryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(encryptResult.plaintext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonceKey))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(toDecrypt))
+            {
+                AesBytesDecrypt decryptResult = NativeMethods.aes_256_decrypt_bytes_with_key(noncePtr, (nuint)nonceKey.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)toDecrypt.Length);
+                CasErrorHandler.ThrowIfError(decryptResult.error_code, "AES-256 decrypt");
+                return NativeByteBuffer.CopyAndFree(decryptResult.plaintext, decryptResult.length);
+            }
         }
 
         /// <summary>
         /// Encrypts with AES-128-GCM.
         /// </summary>
-        /// <param name="nonceKey"></param>
-        /// <param name="key"></param>
-        /// <param name="dataToEncrypt"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
         public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
-            AesBytesEncrypt encryptResult = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length) :
-                AESWindowsWrapper.aes_128_encrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToEncrypt, dataToEncrypt.Length);
-            CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-128 encrypt");
-            byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonceKey))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(dataToEncrypt))
+            {
+                AesBytesEncrypt encryptResult = NativeMethods.aes_128_encrypt_bytes_with_key(noncePtr, (nuint)nonceKey.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)dataToEncrypt.Length);
+                CasErrorHandler.ThrowIfError(encryptResult.error_code, "AES-128 encrypt");
+                return NativeByteBuffer.CopyAndFree(encryptResult.ciphertext, encryptResult.length);
+            }
         }
 
         /// <summary>
         /// Decrypts with AES-128-GCM.
         /// </summary>
-        /// <param name="nonceKey"></param>
-        /// <param name="key"></param>
-        /// <param name="dataToDecrypt"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Aes128Decrypt(byte[] nonceKey, byte[] key, byte[] dataToDecrypt)
         {
-            AesBytesDecrypt decryptResult = (this._platform == OSPlatform.Linux) ?
-                AESLinuxWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length) :
-                AESWindowsWrapper.aes_128_decrypt_bytes_with_key(nonceKey, nonceKey.Length, key, key.Length, dataToDecrypt, dataToDecrypt.Length);
-            CasErrorHandler.ThrowIfError(decryptResult.error_code, "AES-128 decrypt");
-            byte[] result = new byte[decryptResult.length];
-            Marshal.Copy(decryptResult.plaintext, result, 0, (int)decryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonceKey))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(dataToDecrypt))
+            {
+                AesBytesDecrypt decryptResult = NativeMethods.aes_128_decrypt_bytes_with_key(noncePtr, (nuint)nonceKey.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)dataToDecrypt.Length);
+                CasErrorHandler.ThrowIfError(decryptResult.error_code, "AES-128 decrypt");
+                return NativeByteBuffer.CopyAndFree(decryptResult.plaintext, decryptResult.length);
+            }
         }
 
         /// <summary>
         /// Generates a AES Nonce usuable for AES-128-GCM and AES-256-GCM.
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public byte[] GenerateAESNonce()
         {
-
-            AesNonceResult nonceResult = (this._platform == OSPlatform.Linux) ? AESLinuxWrapper.aes_nonce() : AESWindowsWrapper.aes_nonce();
-            byte[] result = new byte[nonceResult.length];
-            Marshal.Copy(nonceResult.nonce, result, 0, (int)nonceResult.length);
-            FreeMemoryHelper.FreeBytesMemory(nonceResult.nonce);
-
-
-            return result;
+            AesNonce nonceResult = NativeMethods.aes_nonce();
+            return NativeByteBuffer.CopyAndFree(nonceResult.nonce, nonceResult.length);
         }
     }
 }
