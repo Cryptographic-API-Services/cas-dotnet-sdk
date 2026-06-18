@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Sponges
 {
-    public unsafe class AsconWrapper : BaseWrapper
+    public unsafe class AsconWrapper 
     {
         public AsconWrapper()
         {

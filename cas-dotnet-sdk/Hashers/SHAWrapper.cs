@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Hashers
 {
-    public unsafe class SHAWrapper : BaseWrapper, IHasherBase
+    public unsafe class SHAWrapper : IHasherBase
     {
         /// <summary>
         /// A wrapper class for the SHA3 256 and 512 hashing algorithms.

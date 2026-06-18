@@ -5,7 +5,7 @@ using System;
 
 namespace CasDotnetSdk.Hybrid
 {
-    public unsafe class HpkeWrapper : BaseWrapper
+    public unsafe class HpkeWrapper 
     {
         public HpkeWrapper()
         {

@@ -4,7 +4,7 @@ using CasDotnetSdk.PQC.Types;
 
 namespace CasDotnetSdk.PQC
 {
-    public unsafe class SLHDSAWrapper : BaseWrapper
+    public unsafe class SLHDSAWrapper 
     {
         public SLHDSAWrapper()
         {

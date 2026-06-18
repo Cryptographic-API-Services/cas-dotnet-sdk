@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Hashers
 {
-    public unsafe class HmacWrapper : BaseWrapper
+    public unsafe class HmacWrapper 
     {
         /// <summary>
         /// A wrapper class for the HMAC hashing algorithm.

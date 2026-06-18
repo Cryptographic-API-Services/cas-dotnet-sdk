@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Hashers
 {
-    public unsafe class Blake2Wrapper : BaseWrapper, IHasherBase
+    public unsafe class Blake2Wrapper : IHasherBase
     {
         /// <summary>
         /// A wrapper class for the Blake2 hashing algorithm.
