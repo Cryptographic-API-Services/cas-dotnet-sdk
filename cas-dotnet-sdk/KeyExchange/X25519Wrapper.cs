@@ -1,14 +1,11 @@
-﻿
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.KeyExchange.Linux;
 using CasDotnetSdk.KeyExchange.Types;
-using CasDotnetSdk.KeyExchange.Windows;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.KeyExchange
 {
-    public class X25519Wrapper : BaseWrapper
+    public unsafe class X25519Wrapper : BaseWrapper
     {
         /// <summary>
         /// A wrapper class for working with X25519 key exchange algorithm.
@@ -20,39 +17,19 @@ namespace CasDotnetSdk.KeyExchange
         /// <summary>
         /// Generates a secret key and a public key using the X25519 algorithm.
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
-
-            X25519SecretPublicKeyResult result = (this._platform == OSPlatform.Linux) ?
-                X25519LinuxWrapper.generate_secret_and_public_key() :
-                X25519WindowsWrapper.generate_secret_and_public_key();
-            byte[] secretKeyResult = new byte[result.secret_key_length];
-            Marshal.Copy(result.secret_key, secretKeyResult, 0, secretKeyResult.Length);
-            byte[] publicKeyResult = new byte[result.public_key_length];
-            Marshal.Copy(result.public_key, publicKeyResult, 0, publicKeyResult.Length);
-            FreeMemoryHelper.FreeBytesMemory(result.public_key);
-            FreeMemoryHelper.FreeBytesMemory(result.secret_key);
-            X25519SecretPublicKey res = new X25519SecretPublicKey()
+            x25519SecretPublicKeyResult result = NativeMethods.generate_secret_and_public_key();
+            return new X25519SecretPublicKey()
             {
-                PublicKey = publicKeyResult,
-                SecretKey = secretKeyResult
+                SecretKey = NativeByteBuffer.CopyAndFree(result.secret_key, result.secret_key_length),
+                PublicKey = NativeByteBuffer.CopyAndFree(result.public_key, result.public_key_length)
             };
-
-            return res;
         }
 
         /// <summary>
         /// Generates a shared secret using the X25519 algorithm Diffie Hellman.
         /// </summary>
-        /// <param name="secretKey"></param>
-        /// <param name="otherUserPublicKey"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public X25519SharedSecret GenerateSharedSecret(byte[] secretKey, byte[] otherUserPublicKey)
         {
             if (secretKey == null || secretKey.Length == 0)
@@ -64,21 +41,16 @@ namespace CasDotnetSdk.KeyExchange
                 throw new Exception("You must provide an allocated data array");
             }
 
-
-            X25519SharedSecretResult result = (this._platform == OSPlatform.Linux) ?
-                X25519LinuxWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length)
-                : X25519WindowsWrapper.diffie_hellman(secretKey, secretKey.Length, otherUserPublicKey, otherUserPublicKey.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "X25519 Diffie-Hellman");
-            byte[] sharedSecret = new byte[result.shared_secret_length];
-            Marshal.Copy(result.shared_secret, sharedSecret, 0, sharedSecret.Length);
-            FreeMemoryHelper.FreeBytesMemory(result.shared_secret);
-            X25519SharedSecret res = new X25519SharedSecret()
+            fixed (byte* secretPtr = NativePin.Of(secretKey))
+            fixed (byte* publicPtr = NativePin.Of(otherUserPublicKey))
             {
-                SharedSecret = sharedSecret
-            };
-
-
-            return res;
+                x25519SharedSecretResult result = NativeMethods.diffie_hellman(secretPtr, (nuint)secretKey.Length, publicPtr, (nuint)otherUserPublicKey.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "X25519 Diffie-Hellman");
+                return new X25519SharedSecret()
+                {
+                    SharedSecret = NativeByteBuffer.CopyAndFree(result.shared_secret, result.shared_secret_length)
+                };
+            }
         }
     }
 }

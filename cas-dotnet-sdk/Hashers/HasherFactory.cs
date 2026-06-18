@@ -1,4 +1,6 @@
-﻿namespace CasDotnetSdk.Hashers
+﻿using System;
+
+namespace CasDotnetSdk.Hashers
 {
     public enum IHasherType
     {
@@ -14,17 +16,15 @@
         /// <returns></returns>
         public static IHasherBase Get(IHasherType type)
         {
-            IHasherBase result = null;
             switch (type)
             {
                 case IHasherType.SHA:
-                    result = new SHAWrapper();
-                    break;
+                    return new SHAWrapper();
                 case IHasherType.Blake2:
-                    result = new Blake2Wrapper();
-                    break;
+                    return new Blake2Wrapper();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown hasher type.");
             }
-            return result;
         }
     }
 }

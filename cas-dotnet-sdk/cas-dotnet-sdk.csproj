@@ -3,11 +3,13 @@
     <TargetFrameworks>net10.0;net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
     <RootNamespace>CasDotnetSdk</RootNamespace>
     <Nullable>enable</Nullable>
+    <!-- csbindgen-generated bindings use raw pointers; the migrated wrappers pin with `fixed`. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.9.73</Version>
+    <Version>1.9.74</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -18,13 +20,21 @@
     <RustProjectDir>..\cas-core-lib</RustProjectDir>
     <CasSdkDir>$(MSBuildProjectDirectory)</CasSdkDir>
     <NativeArtifactsDir>$(MSBuildProjectDirectory)\artifacts\native</NativeArtifactsDir>
+    <!-- csbindgen output location; cas-core-lib/build.rs writes here. -->
+    <GeneratedBindingsFile>$(MSBuildProjectDirectory)\generated\NativeMethods.g.cs</GeneratedBindingsFile>
   </PropertyGroup>
 
   <PropertyGroup>
     <BuildNativeRust Condition="'$(BuildNativeRust)'==''">true</BuildNativeRust>
   </PropertyGroup>
 
-  <Target Name="BuildRust" BeforeTargets="Build"
+  <!--
+    Build the Rust crate before compiling C#. cargo runs build.rs, which (via
+    csbindgen) emits $(GeneratedBindingsFile). This must run before CoreCompile,
+    not before Build: CoreCompile is pulled in as a Build dependency and would
+    otherwise run first, before the bindings exist.
+  -->
+  <Target Name="BuildRust" BeforeTargets="CoreCompile"
           Condition="'$(BuildNativeRust)'=='true'">
     <Exec Command="cargo build --release" WorkingDirectory="$(RustProjectDir)" />
   </Target>
@@ -62,6 +72,27 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+
+  <!--
+    csbindgen-generated P/Invoke bindings (see issue #190). cas-core-lib/build.rs
+    writes $(GeneratedBindingsFile) during the BuildRust target.
+
+    The file lives under the project directory, so the default glob would try to
+    include it at evaluation time — before it has been generated on a clean build.
+    We therefore (1) remove it from the default glob and (2) add it explicitly in
+    a target that runs after generation but before CoreCompile.
+  -->
+  <ItemGroup>
+    <Compile Remove="generated\**\*.cs" />
+  </ItemGroup>
+
+  <Target Name="IncludeGeneratedBindings" AfterTargets="BuildRust" BeforeTargets="CoreCompile">
+    <Error Condition="!Exists('$(GeneratedBindingsFile)')"
+           Text="Generated bindings not found at $(GeneratedBindingsFile). Run a Rust build (cargo build --release in cas-core-lib) or build with -p:BuildNativeRust=true." />
+    <ItemGroup>
+      <Compile Include="$(GeneratedBindingsFile)" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <Content Include="..\LICENSE">

@@ -1,35 +1,21 @@
-﻿
-using CasDotnetSdk.Hashers.Linux;
-using CasDotnetSdk.Hashers.Types;
-using CasDotnetSdk.Hashers.Windows;
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Helpers.Types;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
-    public class HmacWrapper : BaseWrapper
+    public unsafe class HmacWrapper : BaseWrapper
     {
-
-
         /// <summary>
         /// A wrapper class for the HMAC hashing algorithm.
         /// </summary>
         public HmacWrapper()
         {
-
         }
 
         /// <summary>
         /// Signs a message using the HMAC algorithm.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] HmacSignBytes(byte[] key, byte[] message)
         {
             if (key == null || key.Length == 0)
@@ -41,28 +27,18 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide a message to sign with HMAC");
             }
 
-            HmacSignByteResult signed = (this._platform == OSPlatform.Linux) ?
-                HmacLinuxWrapper.hmac_sign_bytes(key, key.Length, message, message.Length) :
-                HmacWindowsWrapper.hmac_sign_bytes(key, key.Length, message, message.Length);
-            CasErrorHandler.ThrowIfError(signed.error_code, "HMAC sign");
-            byte[] result = new byte[signed.length];
-            Marshal.Copy(signed.result_bytes_ptr, result, 0, (int)signed.length);
-            FreeMemoryHelper.FreeBytesMemory(signed.result_bytes_ptr);
-
-
-            return result;
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* messagePtr = NativePin.Of(message))
+            {
+                HmacSignByteResult signed = NativeMethods.hmac_sign_bytes(keyPtr, (nuint)key.Length, messagePtr, (nuint)message.Length);
+                CasErrorHandler.ThrowIfError(signed.error_code, "HMAC sign");
+                return NativeByteBuffer.CopyAndFree(signed.result_bytes_ptr, signed.length);
+            }
         }
 
         /// <summary>
         /// Verifies a message using the HMAC algorithm.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="message"></param>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool HmacVerifyBytes(byte[] key, byte[] message, byte[] signature)
         {
             if (key == null || key.Length == 0)
@@ -78,13 +54,14 @@ namespace CasDotnetSdk.Hashers
                 throw new Exception("You must provide a signature to verify with HMAC");
             }
 
-            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
-                HmacLinuxWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length) :
-                HmacWindowsWrapper.hmac_verify_bytes(key, key.Length, message, message.Length, signature, signature.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "HMAC verify");
-
-
-            return result.is_valid;
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* messagePtr = NativePin.Of(message))
+            fixed (byte* signaturePtr = NativePin.Of(signature))
+            {
+                CasVerifyResult result = NativeMethods.hmac_verify_bytes(keyPtr, (nuint)key.Length, messagePtr, (nuint)message.Length, signaturePtr, (nuint)signature.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "HMAC verify");
+                return result.is_valid;
+            }
         }
     }
 }

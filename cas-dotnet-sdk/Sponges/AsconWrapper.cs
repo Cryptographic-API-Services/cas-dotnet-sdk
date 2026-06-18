@@ -1,14 +1,10 @@
-﻿
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Sponges.Linux;
-using CasDotnetSdk.Sponges.Types;
-using CasDotnetSdk.Sponges.Windows;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Sponges
 {
-    public class AsconWrapper : BaseWrapper
+    public unsafe class AsconWrapper : BaseWrapper
     {
         public AsconWrapper()
         {
@@ -17,49 +13,24 @@ namespace CasDotnetSdk.Sponges
         /// <summary>
         /// Generates a key for Ascon 128
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public byte[] Ascon128Key()
         {
-
-            Ascon128KeyStruct keyPtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_key() : AsconWindowsWrapper.ascon_128_key();
-            byte[] key = new byte[keyPtr.length];
-            Marshal.Copy(keyPtr.key, key, 0, (int)keyPtr.length);
-            FreeMemoryHelper.FreeBytesMemory(keyPtr.key);
-
-
-            return key;
+            CasCoreLib.Ascon128Key keyResult = NativeMethods.ascon_128_key();
+            return NativeByteBuffer.CopyAndFree(keyResult.key, keyResult.length);
         }
 
         /// <summary>
         /// Generates a nonce for Ascon 128
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public byte[] Ascon128Nonce()
         {
-
-            Ascon128NonceStruct noncePtr = (this._platform == OSPlatform.Linux) ? AsconLinuxWrapper.ascon_128_nonce() : AsconWindowsWrapper.ascon_128_nonce();
-            byte[] nonce = new byte[noncePtr.length];
-            Marshal.Copy(noncePtr.nonce, nonce, 0, (int)noncePtr.length);
-            FreeMemoryHelper.FreeBytesMemory(noncePtr.nonce);
-
-
-            return nonce;
+            CasCoreLib.Ascon128Nonce nonceResult = NativeMethods.ascon_128_nonce();
+            return NativeByteBuffer.CopyAndFree(nonceResult.nonce, nonceResult.length);
         }
 
         /// <summary>
         /// Encrypts with Ascond 128
         /// </summary>
-        /// <param name="nonce"></param>
-        /// <param name="key"></param>
-        /// <param name="toEncrypt"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Ascon128Encrypt(byte[] nonce, byte[] key, byte[] toEncrypt)
         {
             if (nonce?.Length == 0)
@@ -75,29 +46,19 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to encrypt with Ascon 128");
             }
 
-
-            Ascon128EncryptResultStruct encryptResult = (this._platform == OSPlatform.Linux) ?
-                AsconLinuxWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length) :
-                AsconWindowsWrapper.ascon_128_encrypt(nonce, nonce.Length, key, key.Length, toEncrypt, toEncrypt.Length);
-            CasErrorHandler.ThrowIfError(encryptResult.error_code, "Ascon-128 encrypt");
-            byte[] result = new byte[encryptResult.length];
-            Marshal.Copy(encryptResult.ciphertext, result, 0, (int)encryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(encryptResult.ciphertext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonce))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(toEncrypt))
+            {
+                Ascon128EncryptResult encryptResult = NativeMethods.ascon_128_encrypt(noncePtr, (nuint)nonce.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)toEncrypt.Length);
+                CasErrorHandler.ThrowIfError(encryptResult.error_code, "Ascon-128 encrypt");
+                return NativeByteBuffer.CopyAndFree(encryptResult.ciphertext, encryptResult.length);
+            }
         }
 
         /// <summary>
         /// Decrypts with Ascond 128
         /// </summary>
-        /// <param name="nonce"></param>
-        /// <param name="key"></param>
-        /// <param name="toDecrypt"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Ascon128Decrypt(byte[] nonce, byte[] key, byte[] toDecrypt)
         {
             if (nonce?.Length == 0)
@@ -113,17 +74,14 @@ namespace CasDotnetSdk.Sponges
                 throw new Exception("You must provide data to decrypt with Ascon 128");
             }
 
-
-            Ascon128DecryptResultStruct decryptResult = (this._platform == OSPlatform.Linux) ?
-                AsconLinuxWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length) :
-                AsconWindowsWrapper.ascon_128_decrypt(nonce, nonce.Length, key, key.Length, toDecrypt, toDecrypt.Length);
-            CasErrorHandler.ThrowIfError(decryptResult.error_code, "Ascon-128 decrypt");
-            byte[] result = new byte[decryptResult.length];
-            Marshal.Copy(decryptResult.plaintext, result, 0, (int)decryptResult.length);
-            FreeMemoryHelper.FreeBytesMemory(decryptResult.plaintext);
-
-
-            return result;
+            fixed (byte* noncePtr = NativePin.Of(nonce))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* dataPtr = NativePin.Of(toDecrypt))
+            {
+                Ascon128DecryptResult decryptResult = NativeMethods.ascon_128_decrypt(noncePtr, (nuint)nonce.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)toDecrypt.Length);
+                CasErrorHandler.ThrowIfError(decryptResult.error_code, "Ascon-128 decrypt");
+                return NativeByteBuffer.CopyAndFree(decryptResult.plaintext, decryptResult.length);
+            }
         }
     }
 }

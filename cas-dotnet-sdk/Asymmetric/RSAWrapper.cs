@@ -1,34 +1,22 @@
-﻿using CasDotnetSdk.Asymmetric.Linux;
+using CasCoreLib;
 using CasDotnetSdk.Asymmetric.Types;
-using CasDotnetSdk.Asymmetric.Windows;
-
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Helpers.Types;
-
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Asymmetric
 {
-    public class RSAWrapper : BaseWrapper
+    public unsafe class RSAWrapper : BaseWrapper
     {
         /// <summary>
         /// A wrapper class for RSA key creation, encryption, decryption, signing, and verification.
         /// </summary>
         public RSAWrapper()
         {
-
         }
 
         /// <summary>
         /// Signs data with an RSA private key.
         /// </summary>
-        /// <param name="privateKey"></param>
-        /// <param name="dataToSign"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Sign(string privateKey, byte[] dataToSign)
         {
             if (dataToSign == null || dataToSign.Length == 0)
@@ -36,29 +24,18 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide allocated data to sign with RSA");
             }
 
-            RsaSignBytesResults signResult = (this._platform == OSPlatform.Linux) ?
-                RSALinuxWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length) :
-                RSAWindowsWrapper.rsa_sign_with_key_bytes(privateKey, dataToSign, dataToSign.Length); ;
-            CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
-            byte[] result = new byte[signResult.length];
-            Marshal.Copy(signResult.signature_raw_ptr, result, 0, (int)signResult.length);
-            FreeMemoryHelper.FreeBytesMemory(signResult.signature_raw_ptr);
-
-
-            return result;
+            fixed (byte* privateKeyPtr = NativeString.ToCString(privateKey))
+            fixed (byte* dataPtr = NativePin.Of(dataToSign))
+            {
+                RsaSignBytesResults signResult = NativeMethods.rsa_sign_with_key_bytes(privateKeyPtr, dataPtr, (nuint)dataToSign.Length);
+                CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
+                return NativeByteBuffer.CopyAndFree(signResult.signature_raw_ptr, signResult.length);
+            }
         }
-
 
         /// <summary>
         /// Verifies data with an RSA public key.
         /// </summary>
-        /// <param name="publicKey"></param>
-        /// <param name="dataToVerify"></param>
-        /// <param name="signature"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool Verify(string publicKey, byte[] dataToVerify, byte[] signature)
         {
             if (dataToVerify == null || dataToVerify.Length == 0)
@@ -70,22 +47,19 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide an allocated signature to verify with RSA");
             }
 
-            CasVerifyResult result = (this._platform == OSPlatform.Linux) ?
-                RSALinuxWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length) :
-                 RSAWindowsWrapper.rsa_verify_bytes(publicKey, dataToVerify, dataToVerify.Length, signature, signature.Length);
-            CasErrorHandler.ThrowIfError(result.error_code, "RSA verify");
-
-
-            return result.is_valid;
+            fixed (byte* publicKeyPtr = NativeString.ToCString(publicKey))
+            fixed (byte* dataPtr = NativePin.Of(dataToVerify))
+            fixed (byte* signaturePtr = NativePin.Of(signature))
+            {
+                CasVerifyResult result = NativeMethods.rsa_verify_bytes(publicKeyPtr, dataPtr, (nuint)dataToVerify.Length, signaturePtr, (nuint)signature.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "RSA verify");
+                return result.is_valid;
+            }
         }
 
         /// <summary>
         /// Generates an RSA key based on the key size provided. (1024, 2048, 4096)
         /// </summary>
-        /// <param name="keySize"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-
         public RsaKeyPairResult GetKeyPair(int keySize)
         {
             if (keySize != 1024 && keySize != 2048 && keySize != 4096)
@@ -93,18 +67,13 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("Please pass in a valid key size.");
             }
 
-            RsaKeyPairStruct keyPairStruct = (this._platform == OSPlatform.Linux) ?
-                RSALinuxWrapper.get_key_pair(keySize) :
-                RSAWindowsWrapper.get_key_pair(keySize);
-            CasErrorHandler.ThrowIfError(keyPairStruct.error_code, "RSA key pair generation");
-            RsaKeyPairResult result = new RsaKeyPairResult()
+            RsaKeyPair keyPair = NativeMethods.get_key_pair((nuint)keySize);
+            CasErrorHandler.ThrowIfError(keyPair.error_code, "RSA key pair generation");
+            return new RsaKeyPairResult()
             {
-                PrivateKey = Marshal.PtrToStringAnsi(keyPairStruct.priv_key),
-                PublicKey = Marshal.PtrToStringAnsi(keyPairStruct.pub_key)
+                PrivateKey = NativeString.ReadAndFree(keyPair.priv_key),
+                PublicKey = NativeString.ReadAndFree(keyPair.pub_key)
             };
-            FreeMemoryHelper.FreeCStringMemory(keyPairStruct.pub_key);
-            FreeMemoryHelper.FreeCStringMemory(keyPairStruct.priv_key);
-            return result;
         }
     }
 }

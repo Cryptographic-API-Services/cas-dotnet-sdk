@@ -1,30 +1,20 @@
-﻿using CasDotnetSdk.Compression.Linux;
-using CasDotnetSdk.Compression.Types;
-using CasDotnetSdk.Compression.Windows;
-
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Compression
 {
-    public class ZSTDWrapper : BaseWrapper
+    public unsafe class ZSTDWrapper : BaseWrapper
     {
         public ZSTDWrapper()
         {
-
         }
 
         /// <summary>
         /// Datas to the byte array to compress and the level of encryption.
-        /// Zstandard (zstd) supports 22 compression levels, ranging from -22 to 22. Lower levels, such as 1–9, 
+        /// Zstandard (zstd) supports 22 compression levels, ranging from -22 to 22. Lower levels, such as 1–9,
         /// are faster but result in larger file sizes, while higher levels, such as 10–22, provide better compression ratios.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
-        /// 
-
         public byte[] Compress(byte[] data, int level)
         {
             if (data == null || data.Length == 0)
@@ -36,27 +26,18 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Please pass in a valid level for ZSTD Compression");
             }
 
-
-            ZSTDResult compressResult = (this._platform == OSPlatform.Linux) ?
-                ZSTDLinuxWrapper.compress(data, data.Length, level) :
-                ZSTDWindowsWrapper.compress(data, data.Length, level);
-            CasErrorHandler.ThrowIfError(compressResult.error_code, "ZSTD compress");
-            byte[] result = new byte[compressResult.length];
-            Marshal.Copy(compressResult.data, result, 0, (int)compressResult.length);
-            FreeMemoryHelper.FreeBytesMemory(compressResult.data);
-
-
-            return result;
+            fixed (byte* dataPtr = NativePin.Of(data))
+            {
+                ZstdCompressResult compressResult = NativeMethods.compress(dataPtr, (nuint)data.Length, (nuint)level);
+                CasErrorHandler.ThrowIfError(compressResult.error_code, "ZSTD compress");
+                return NativeByteBuffer.CopyAndFree(compressResult.data, compressResult.length);
+            }
         }
 
         /// <summary>
         /// Decompresses and previosuly compressed byte array with ZSTD.
         /// No level is required to decompress.
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        /// 
-
         public byte[] Decompress(byte[] data)
         {
             if (data == null || data.Length == 0)
@@ -64,17 +45,12 @@ namespace CasDotnetSdk.Compression
                 throw new Exception("Must pass in an allocated array of data to decompress");
             }
 
-
-            ZSTDResult decompressResult = (this._platform == OSPlatform.Linux) ?
-                ZSTDLinuxWrapper.decompress(data, data.Length) :
-                ZSTDWindowsWrapper.decompress(data, data.Length);
-            CasErrorHandler.ThrowIfError(decompressResult.error_code, "ZSTD decompress");
-            byte[] result = new byte[decompressResult.length];
-            Marshal.Copy(decompressResult.data, result, 0, (int)decompressResult.length);
-            FreeMemoryHelper.FreeBytesMemory(decompressResult.data);
-
-
-            return result;
+            fixed (byte* dataPtr = NativePin.Of(data))
+            {
+                ZstdCompressResult decompressResult = NativeMethods.decompress(dataPtr, (nuint)data.Length);
+                CasErrorHandler.ThrowIfError(decompressResult.error_code, "ZSTD decompress");
+                return NativeByteBuffer.CopyAndFree(decompressResult.data, decompressResult.length);
+            }
         }
     }
 }

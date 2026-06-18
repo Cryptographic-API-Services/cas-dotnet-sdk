@@ -1,52 +1,29 @@
-﻿
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
-using CasDotnetSdk.Hybrid.Linux;
 using CasDotnetSdk.Hybrid.Types;
-using CasDotnetSdk.Hybrid.Windows;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hybrid
 {
-    public class HpkeWrapper : BaseWrapper
+    public unsafe class HpkeWrapper : BaseWrapper
     {
         public HpkeWrapper()
         {
-
         }
 
         /// <summary>
         /// Generates a Private Key, Public Key, and InfoStr for usage with HPKE
         /// </summary>
-        /// <returns></returns>
-        /// 
-
         public HpkeKeyPairResult GenerateKeyPair()
         {
-
-            HpkeKeyPairResultStruct keyPair = (this._platform == OSPlatform.Linux) ?
-                HpkeLinuxWrapper.hpke_generate_keypair() :
-                HpkeWindowsWrapper.hpke_generate_keypair();
-            byte[] privateKeyResult = new byte[keyPair.private_key_ptr_length];
-            byte[] publicKeyResult = new byte[keyPair.public_key_ptr_length];
-            byte[] infoStrResult = new byte[keyPair.info_str_ptr_length];
-            Marshal.Copy(keyPair.private_key_ptr, privateKeyResult, 0, (int)keyPair.private_key_ptr_length);
-            Marshal.Copy(keyPair.public_key_ptr, publicKeyResult, 0, (int)keyPair.public_key_ptr_length);
-            Marshal.Copy(keyPair.info_str_ptr, infoStrResult, 0, (int)keyPair.info_str_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(keyPair.public_key_ptr);
-            FreeMemoryHelper.FreeBytesMemory(keyPair.private_key_ptr);
-            FreeMemoryHelper.FreeBytesMemory(keyPair.info_str_ptr);
-            HpkeKeyPairResult result = new HpkeKeyPairResult()
+            HpkeKeyPair keyPair = NativeMethods.hpke_generate_keypair();
+            return new HpkeKeyPairResult()
             {
-                PrivateKey = privateKeyResult,
-                PublicKey = publicKeyResult,
-                InfoStr = infoStrResult
+                PrivateKey = NativeByteBuffer.CopyAndFree(keyPair.private_key_ptr, keyPair.private_key_ptr_length),
+                PublicKey = NativeByteBuffer.CopyAndFree(keyPair.public_key_ptr, keyPair.public_key_ptr_length),
+                InfoStr = NativeByteBuffer.CopyAndFree(keyPair.info_str_ptr, keyPair.info_str_ptr_length)
             };
-
-
-            return result;
         }
-
 
         public HpkeEncryptResult Encrypt(byte[] plaintText, byte[] publicKey, byte[] infoStr)
         {
@@ -54,42 +31,29 @@ namespace CasDotnetSdk.Hybrid
             {
                 throw new Exception("Must provide plaint text to encrypt with HPKE");
             }
-
             if (publicKey == null || publicKey.Length == 0)
             {
                 throw new Exception("Must a public key to encrypt with HPKE");
             }
-
             if (infoStr == null || infoStr.Length == 0)
             {
                 throw new Exception("Must a info str to encrypt with HPKE");
             }
 
-
-            HpkeEncryptResultStruct encrypt = (this._platform == OSPlatform.Linux) ?
-                HpkeLinuxWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length) :
-                HpkeWindowsWrapper.hpke_encrypt(plaintText, plaintText.Length, publicKey, publicKey.Length, infoStr, infoStr.Length);
-            CasErrorHandler.ThrowIfError(encrypt.error_code, "HPKE encrypt");
-            byte[] encappedKeyResult = new byte[encrypt.encapped_key_ptr_length];
-            byte[] cipherTextResult = new byte[encrypt.ciphertext_ptr_length];
-            byte[] tagResult = new byte[encrypt.tag_ptr_length];
-            Marshal.Copy(encrypt.encapped_key_ptr, encappedKeyResult, 0, (int)encrypt.encapped_key_ptr_length);
-            Marshal.Copy(encrypt.ciphertext_ptr, cipherTextResult, 0, (int)encrypt.ciphertext_ptr_length);
-            Marshal.Copy(encrypt.tag_ptr, tagResult, 0, (int)encrypt.tag_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(encrypt.ciphertext_ptr);
-            FreeMemoryHelper.FreeBytesMemory(encrypt.encapped_key_ptr);
-            FreeMemoryHelper.FreeBytesMemory(encrypt.tag_ptr);
-            HpkeEncryptResult result = new HpkeEncryptResult()
+            fixed (byte* plaintextPtr = NativePin.Of(plaintText))
+            fixed (byte* publicKeyPtr = NativePin.Of(publicKey))
+            fixed (byte* infoStrPtr = NativePin.Of(infoStr))
             {
-                Ciphertext = cipherTextResult,
-                Tag = tagResult,
-                EncappedKey = encappedKeyResult,
-            };
-
-
-            return result;
+                HpkeEncrypt encrypt = NativeMethods.hpke_encrypt(plaintextPtr, (nuint)plaintText.Length, publicKeyPtr, (nuint)publicKey.Length, infoStrPtr, (nuint)infoStr.Length);
+                CasErrorHandler.ThrowIfError(encrypt.error_code, "HPKE encrypt");
+                return new HpkeEncryptResult()
+                {
+                    EncappedKey = NativeByteBuffer.CopyAndFree(encrypt.encapped_key_ptr, encrypt.encapped_key_ptr_length),
+                    Ciphertext = NativeByteBuffer.CopyAndFree(encrypt.ciphertext_ptr, encrypt.ciphertext_ptr_length),
+                    Tag = NativeByteBuffer.CopyAndFree(encrypt.tag_ptr, encrypt.tag_ptr_length)
+                };
+            }
         }
-
 
         public byte[] Decrypt(byte[] cipherText, byte[] privateKey, byte[] encappedKey, byte[] tag, byte[] infoStr)
         {
@@ -97,37 +61,33 @@ namespace CasDotnetSdk.Hybrid
             {
                 throw new Exception("Must provide ciphertext to decrypt with HPKE");
             }
-
             if (privateKey == null || privateKey.Length == 0)
             {
                 throw new Exception("Must a private key to decrypt with HPKE");
             }
-
             if (encappedKey == null || encappedKey.Length == 0)
             {
                 throw new Exception("Must provide an encapped key to decrypt with HPKE");
             }
-
             if (tag == null || tag.Length == 0)
             {
                 throw new Exception("Must provide a tag to decrypt with HPKE");
             }
-
             if (infoStr == null || infoStr.Length == 0)
             {
                 throw new Exception("Must a info str to decrypt with HPKE");
             }
 
-
-            HpkeDecryptResultStruct decrypt = (this._platform == OSPlatform.Linux) ?
-                HpkeLinuxWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length) :
-                HpkeWindowsWrapper.hpke_decrypt(cipherText, cipherText.Length, privateKey, privateKey.Length, encappedKey, encappedKey.Length, tag, tag.Length, infoStr, infoStr.Length);
-            CasErrorHandler.ThrowIfError(decrypt.error_code, "HPKE decrypt");
-            byte[] result = new byte[decrypt.plaintext_ptr_length];
-            Marshal.Copy(decrypt.plaintext_ptr, result, 0, (int)decrypt.plaintext_ptr_length);
-            FreeMemoryHelper.FreeBytesMemory(decrypt.plaintext_ptr);
-
-            return result;
+            fixed (byte* cipherTextPtr = NativePin.Of(cipherText))
+            fixed (byte* privateKeyPtr = NativePin.Of(privateKey))
+            fixed (byte* encappedKeyPtr = NativePin.Of(encappedKey))
+            fixed (byte* tagPtr = NativePin.Of(tag))
+            fixed (byte* infoStrPtr = NativePin.Of(infoStr))
+            {
+                HpkeDecrypt decrypt = NativeMethods.hpke_decrypt(cipherTextPtr, (nuint)cipherText.Length, privateKeyPtr, (nuint)privateKey.Length, encappedKeyPtr, (nuint)encappedKey.Length, tagPtr, (nuint)tag.Length, infoStrPtr, (nuint)infoStr.Length);
+                CasErrorHandler.ThrowIfError(decrypt.error_code, "HPKE decrypt");
+                return NativeByteBuffer.CopyAndFree(decrypt.plaintext_ptr, decrypt.plaintext_ptr_length);
+            }
         }
     }
 }
