@@ -1,16 +1,11 @@
-﻿
-using CasDotnetSdk.Hashers.Linux;
-using CasDotnetSdk.Hashers.Types;
-using CasDotnetSdk.Hashers.Windows;
+using CasCoreLib;
 using CasDotnetSdk.Helpers;
 using System;
-using System.Runtime.InteropServices;
 
 namespace CasDotnetSdk.Hashers
 {
-    public class SHAWrapper : BaseWrapper, IHasherBase
+    public unsafe class SHAWrapper : BaseWrapper, IHasherBase
     {
-
         /// <summary>
         /// A wrapper class for the SHA3 256 and 512 hashing algorithms.
         /// </summary>
@@ -21,77 +16,68 @@ namespace CasDotnetSdk.Hashers
         /// <summary>
         /// Hashes data using the SHA3 512 algorithm.
         /// </summary>
-        /// <param name="dataToHash"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Hash512(byte[] dataToHash)
         {
-            SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
-                SHALinuxWrapper.sha512_bytes(dataToHash, dataToHash.Length) :
-                SHAWindowsWrapper.sha512_bytes(dataToHash, dataToHash.Length);
-            byte[] result = new byte[hashedPtr.length];
-            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, (int)hashedPtr.length);
-            FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-
-
-            return result;
+            ThrowIfNull(dataToHash, nameof(dataToHash));
+            return Hash(dataToHash, NativeMethods.sha512_bytes);
         }
 
         /// <summary>
         /// Hashes data using the SHA3 256 algorithm.
         /// </summary>
-        /// <param name="dataToHash"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public byte[] Hash256(byte[] dataToHash)
         {
-            SHAHashByteResult hashedPtr = (this._platform == OSPlatform.Linux) ?
-                SHALinuxWrapper.sha256_bytes(dataToHash, dataToHash.Length) :
-                SHAWindowsWrapper.sha256_bytes(dataToHash, dataToHash.Length);
-            byte[] result = new byte[hashedPtr.length];
-            Marshal.Copy(hashedPtr.result_bytes_ptr, result, 0, (int)hashedPtr.length);
-            FreeMemoryHelper.FreeBytesMemory(hashedPtr.result_bytes_ptr);
-            return result;
+            ThrowIfNull(dataToHash, nameof(dataToHash));
+            return Hash(dataToHash, NativeMethods.sha256_bytes);
         }
 
         /// <summary>
         /// Verifies data using the SHA3 512 algorithm.
         /// </summary>
-        /// <param name="dataToVerify"></param>
-        /// <param name="hashedData"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool Verify512(byte[] dataToVerify, byte[] hashedData)
         {
-            bool result = (this._platform == OSPlatform.Linux) ?
-                SHALinuxWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
-                SHAWindowsWrapper.sha512_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
-            return result;
+            ThrowIfNull(dataToVerify, nameof(dataToVerify));
+            ThrowIfNull(hashedData, nameof(hashedData));
+            return Verify(dataToVerify, hashedData, NativeMethods.sha512_bytes_verify);
         }
 
         /// <summary>
         /// Verifies data using the SHA3 256 algorithm.
         /// </summary>
-        /// <param name="dataToVerify"></param>
-        /// <param name="hashedData"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// 
-
         public bool Verify256(byte[] dataToVerify, byte[] hashedData)
         {
-            bool result = (this._platform == OSPlatform.Linux) ?
-                SHALinuxWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length) :
-                SHAWindowsWrapper.sha256_bytes_verify(dataToVerify, dataToVerify.Length, hashedData, hashedData.Length);
+            ThrowIfNull(dataToVerify, nameof(dataToVerify));
+            ThrowIfNull(hashedData, nameof(hashedData));
+            return Verify(dataToVerify, hashedData, NativeMethods.sha256_bytes_verify);
+        }
 
+        private unsafe delegate SHAHashByteResult HashFn(byte* data, nuint length);
+        private unsafe delegate bool VerifyFn(byte* data, nuint dataLength, byte* hash, nuint hashLength);
 
-            return result;
+        private static unsafe byte[] Hash(byte[] data, HashFn nativeHash)
+        {
+            fixed (byte* dataPtr = NativePin.Of(data))
+            {
+                SHAHashByteResult result = nativeHash(dataPtr, (nuint)data.Length);
+                return NativeByteBuffer.CopyAndFree(result.result_bytes_ptr, result.length);
+            }
+        }
+
+        private static unsafe bool Verify(byte[] data, byte[] hash, VerifyFn nativeVerify)
+        {
+            fixed (byte* dataPtr = NativePin.Of(data))
+            fixed (byte* hashPtr = NativePin.Of(hash))
+            {
+                return nativeVerify(dataPtr, (nuint)data.Length, hashPtr, (nuint)hash.Length);
+            }
+        }
+
+        private static void ThrowIfNull(byte[] value, string paramName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(paramName);
+            }
         }
     }
 }
