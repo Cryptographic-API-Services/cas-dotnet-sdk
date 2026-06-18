@@ -67,4 +67,6 @@ Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFact
 
 ## Cross-platform constraint
 
-Only **Windows x64** and **Linux x64** are supported (no macOS). All wrappers must keep Windows and Linux paths in sync — a function added to one platform wrapper without the other will throw `DllNotFoundException` / `EntryPointNotFoundException` on the missing platform. Tests run against .NET 6–10 on both OSes in CI on every PR.
+Supported targets: **Windows x64**, **Linux x64**, and **macOS** (both `osx-arm64` Apple Silicon and `osx-x64` Intel). Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR (`pr-tests-windows`, `pr-tests-linux`, `pr-tests-macos`). The `OperatingSystemDeterminator` resolves Windows, Linux, and OSX and throws on anything else.
+
+Note: this is desktop **macOS / Darwin**, not iOS. Real iOS (`aarch64-apple-ios`) would need a cross-compiled native lib and a simulator/device to run tests, neither of which the current CI provides.

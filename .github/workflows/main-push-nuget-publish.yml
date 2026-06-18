@@ -54,9 +54,55 @@ jobs:
           name: native-linux
           path: cas-dotnet-sdk/artifacts/native/linux-x64
 
+  native-macos-arm64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust (macOS arm64)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native
+        run: |
+          mkdir -p cas-dotnet-sdk/artifacts/native/osx-arm64
+          cp cas-core-lib/target/release/libcas_core_lib.dylib cas-dotnet-sdk/artifacts/native/osx-arm64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-osx-arm64
+          path: cas-dotnet-sdk/artifacts/native/osx-arm64
+
+  native-macos-x64:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust (macOS x64)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native
+        run: |
+          mkdir -p cas-dotnet-sdk/artifacts/native/osx-x64
+          cp cas-core-lib/target/release/libcas_core_lib.dylib cas-dotnet-sdk/artifacts/native/osx-x64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-osx-x64
+          path: cas-dotnet-sdk/artifacts/native/osx-x64
+
   pack-and-publish:
     runs-on: ubuntu-latest
-    needs: [native-windows, native-linux]
+    needs: [native-windows, native-linux, native-macos-arm64, native-macos-x64]
 
     steps:
       - uses: actions/checkout@v4
@@ -71,11 +117,23 @@ jobs:
           name: native-linux
           path: cas-dotnet-sdk/artifacts/native/linux-x64
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-osx-arm64
+          path: cas-dotnet-sdk/artifacts/native/osx-arm64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-osx-x64
+          path: cas-dotnet-sdk/artifacts/native/osx-x64
+
       - name: Verify staged natives
         run: |
           ls -R cas-dotnet-sdk/artifacts/native
           test -f cas-dotnet-sdk/artifacts/native/linux-x64/libcas_core_lib.so
           test -f cas-dotnet-sdk/artifacts/native/win-x64/cas_core_lib.dll
+          test -f cas-dotnet-sdk/artifacts/native/osx-arm64/libcas_core_lib.dylib
+          test -f cas-dotnet-sdk/artifacts/native/osx-x64/libcas_core_lib.dylib
 
       - uses: actions/setup-dotnet@v4
         with:
