@@ -3,7 +3,7 @@ using CasDotnetSdk.Helpers;
 
 namespace CasDotnetSdk.PasswordHashers
 {
-    public unsafe class BcryptWrapper : BaseWrapper, IPasswordHasherBase
+    public unsafe class BcryptWrapper : IPasswordHasherBase
     {
         /// <summary>
         /// A wrapper class that uses the BCrypt algorithm to hash passwords.

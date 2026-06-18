@@ -4,7 +4,7 @@ using System;
 
 namespace CasDotnetSdk.Compression
 {
-    public unsafe class ZSTDWrapper : BaseWrapper
+    public unsafe class ZSTDWrapper 
     {
         public ZSTDWrapper()
         {

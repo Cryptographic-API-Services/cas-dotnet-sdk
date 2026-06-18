@@ -10,7 +10,7 @@ using Ed25519ByteSignatureResult = CasDotnetSdk.Signatures.Types.Ed25519ByteSign
 
 namespace CasDotnetSdk.Signatures
 {
-    public unsafe class ED25519Wrapper : BaseWrapper
+    public unsafe class ED25519Wrapper 
     {
         public ED25519Wrapper()
         {
