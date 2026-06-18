@@ -13,7 +13,7 @@ CAS .NET SDK is a comprehensive cryptographic toolkit for .NET, designed to prov
 - Seamless integration with [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib) Rust FFI layer for optimal performance
 - Unified interface: no need to manage multiple cryptography packages or surf disparate documentation
 - Built on trusted, open-source cryptography libraries
-- Cross-platform support: Windows x64, Linux x64
+- Cross-platform support: Windows x64, Linux x64, macOS (Apple Silicon arm64 & Intel x64)
 - Multi-framework support: .NET 6, 7, 8, 9, 10
 
 ## Documentation & References
@@ -26,7 +26,7 @@ We build on the work of leading cryptography projects. For in-depth algorithm de
 See practical usage and code samples in our [Examples](./docs/EXAMPLES.md).
 
 ## Supported Frameworks / Operating Systems
-We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-9 for Windows and Linux (Ubuntu) on each pull request and release to NuGet through GitHub Actions.
+We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-10 for Windows, Linux (Ubuntu), and macOS on each pull request and release to NuGet through GitHub Actions.
 - [X] .NET 6
 - [X] .NET 7
 - [X] .NET 8
@@ -34,6 +34,8 @@ We aim to provide cross-compatibility wherever possible. Test cases are run on .
 - [X] .NET 10
 - [X] Windows x64
 - [X] Linux x64
+- [X] macOS arm64 (Apple Silicon)
+- [X] macOS x64 (Intel)
 
 ## Disclaimer
 This SDK leverages several cryptographic crates via our core FFI [layer](https://github.com/Cryptographic-API-Services/cas-core-lib). Please note that many of these crates have not undergone formal security audits. Use this library at your own risk and always review the underlying cryptographic implementations for your security requirements.
