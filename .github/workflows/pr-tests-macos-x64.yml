@@ -1,0 +1,57 @@
+name: PR Tests - macOS x64
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # macos-13 is Intel (osx-x64).
+    runs-on: macos-13
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust native (macOS x64)
+        working-directory: cas-core-lib
+        run: cargo build --release
+
+      - name: Stage native lib for tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for tfm in net6.0 net7.0 net8.0 net9.0 net10.0; do
+            OUTDIR="cas-dotnet-sdk-tests/bin/Release/${tfm}"
+            mkdir -p "$OUTDIR"
+            cp "cas-core-lib/target/release/libcas_core_lib.dylib" "$OUTDIR/"
+          done
+          ls -la cas-dotnet-sdk-tests/bin/Release
+
+      - name: Run tests (all target frameworks)
+        run: |
+          echo "Running tests for all target frameworks on macos-13 (x64)"
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release --logger "trx"

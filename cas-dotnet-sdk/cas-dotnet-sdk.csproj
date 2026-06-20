@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.9.75</Version>
+    <Version>1.9.76</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -40,12 +40,25 @@
   </Target>
 
   <Target Name="StageRustArtifacts" AfterTargets="BuildRust" Condition="'$(BuildNativeRust)'=='true'">
+  <PropertyGroup>
+    <!-- $(OS) is 'Unix' on both Linux and macOS, so distinguish macOS explicitly. -->
+    <_IsOSX>$([MSBuild]::IsOSPlatform('OSX'))</_IsOSX>
+    <!-- Host arch -> RID suffix (Arm64 -> arm64, X64 -> x64) so a dev build on
+         Apple Silicon stages osx-arm64 and an Intel Mac stages osx-x64. -->
+    <_HostArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</_HostArch>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
     <_DestDir Include="$(NativeArtifactsDir)/win-x64/" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+  <ItemGroup Condition="'$(_IsOSX)' == 'true'">
+    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.dylib" />
+    <_DestDir Include="$(NativeArtifactsDir)/osx-$(_HostArch)/" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(_IsOSX)' != 'true'">
     <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.so" />
     <_DestDir Include="$(NativeArtifactsDir)/linux-x64/" />
   </ItemGroup>
@@ -69,6 +82,22 @@
         <Pack>true</Pack>
         <PackagePath>runtimes\linux-x64\native</PackagePath>
         <Link>libcas_core_lib.so</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+
+      <None Include="$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib"
+            Condition="Exists('$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib')">
+        <Pack>true</Pack>
+        <PackagePath>runtimes\osx-arm64\native</PackagePath>
+        <Link>libcas_core_lib.dylib</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+
+      <None Include="$(NativeArtifactsDir)\osx-x64\libcas_core_lib.dylib"
+            Condition="Exists('$(NativeArtifactsDir)\osx-x64\libcas_core_lib.dylib')">
+        <Pack>true</Pack>
+        <PackagePath>runtimes\osx-x64\native</PackagePath>
+        <Link>libcas_core_lib.dylib</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

@@ -10,7 +10,7 @@ CAS .NET SDK is a managed cryptographic toolkit published as the [`cas-dotnet-sd
 
 - `cas-dotnet-sdk/` — the SDK class library (NuGet package source). Multi-targets `net6.0`–`net10.0`.
 - `cas-dotnet-sdk-tests/` — xUnit test project, references the SDK directly.
-- `cas-core-lib/` — **git submodule** containing the Rust source compiled to `cas_core_lib.dll` (Windows) / `libcas_core_lib.so` (Linux). Clone with `--recursive` or run `git submodule update --init --recursive`.
+- `cas-core-lib/` — **git submodule** containing the Rust source compiled to `cas_core_lib.dll` (Windows) / `libcas_core_lib.so` (Linux) / `libcas_core_lib.dylib` (macOS). Clone with `--recursive` or run `git submodule update --init --recursive`.
 - `docs/EXAMPLES.md` — usage samples.
 
 ## Build & Test
@@ -34,6 +34,8 @@ dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f net
 dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 --filter "FullyQualifiedName~SHAWrapperTests"
 dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 --filter "DisplayName~Hash512"
 ```
+
+The same commands work for local development on macOS: a Rust toolchain on PATH builds `libcas_core_lib.dylib`, and the `StageRustArtifacts` MSBuild target detects the host (Apple Silicon vs Intel) and stages it into `artifacts/native/osx-arm64/` or `artifacts/native/osx-x64/` automatically — no extra flags needed.
 
 Note: CI (`.github/workflows/pr-tests-*.yml`) builds `cargo build --release` separately, then copies the native lib into the test `bin/Release/<tfm>` directory before running `dotnet test`. If you build the Rust lib by hand and the MSBuild target is skipped, the native artifact must end up next to the test assembly the same way.
 
@@ -67,4 +69,6 @@ Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFact
 
 ## Cross-platform constraint
 
-Only **Windows x64** and **Linux x64** are supported (no macOS). All wrappers must keep Windows and Linux paths in sync — a function added to one platform wrapper without the other will throw `DllNotFoundException` / `EntryPointNotFoundException` on the missing platform. Tests run against .NET 6–10 on both OSes in CI on every PR.
+Supported targets: **Windows x64**, **Linux x64**, and **macOS** (both `osx-arm64` Apple Silicon and `osx-x64` Intel). Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while macOS is split by architecture into two separate workflows — `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) and `pr-tests-macos-x64` (`macos-13`, Intel) — each running all five target frameworks in a single `dotnet test` invocation (no `-f`). The `OperatingSystemDeterminator` resolves Windows, Linux, and OSX and throws on anything else.
+
+Note: this is desktop **macOS / Darwin**, not iOS. Real iOS (`aarch64-apple-ios`) would need a cross-compiled native lib and a simulator/device to run tests, neither of which the current CI provides.
