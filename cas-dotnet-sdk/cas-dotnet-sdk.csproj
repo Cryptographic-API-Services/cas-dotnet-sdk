@@ -43,9 +43,6 @@
   <PropertyGroup>
     <!-- $(OS) is 'Unix' on both Linux and macOS, so distinguish macOS explicitly. -->
     <_IsOSX>$([MSBuild]::IsOSPlatform('OSX'))</_IsOSX>
-    <!-- Host arch -> RID suffix (Arm64 -> arm64, X64 -> x64) so a dev build on
-         Apple Silicon stages osx-arm64 and an Intel Mac stages osx-x64. -->
-    <_HostArch>$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</_HostArch>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
@@ -53,9 +50,10 @@
     <_DestDir Include="$(NativeArtifactsDir)/win-x64/" />
   </ItemGroup>
 
+  <!-- macOS support is Apple Silicon (osx-arm64) only. -->
   <ItemGroup Condition="'$(_IsOSX)' == 'true'">
     <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.dylib" />
-    <_DestDir Include="$(NativeArtifactsDir)/osx-$(_HostArch)/" />
+    <_DestDir Include="$(NativeArtifactsDir)/osx-arm64/" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(_IsOSX)' != 'true'">
@@ -89,14 +87,6 @@
             Condition="Exists('$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib')">
         <Pack>true</Pack>
         <PackagePath>runtimes\osx-arm64\native</PackagePath>
-        <Link>libcas_core_lib.dylib</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-
-      <None Include="$(NativeArtifactsDir)\osx-x64\libcas_core_lib.dylib"
-            Condition="Exists('$(NativeArtifactsDir)\osx-x64\libcas_core_lib.dylib')">
-        <Pack>true</Pack>
-        <PackagePath>runtimes\osx-x64\native</PackagePath>
         <Link>libcas_core_lib.dylib</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
