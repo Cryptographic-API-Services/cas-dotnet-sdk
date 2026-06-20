@@ -1,4 +1,6 @@
-﻿namespace CasDotnetSdk.PasswordHashers
+﻿using System;
+
+namespace CasDotnetSdk.PasswordHashers
 {
     public enum PasswordHasherType
     {
@@ -11,20 +13,13 @@
     {
         public static IPasswordHasherBase Get(PasswordHasherType type)
         {
-            IPasswordHasherBase hasher = null;
-            switch (type)
+            return type switch
             {
-                case PasswordHasherType.Argon2:
-                    hasher = new Argon2Wrapper();
-                    break;
-                case PasswordHasherType.BCrypt:
-                    hasher = new BcryptWrapper();
-                    break;
-                case PasswordHasherType.SCrypt:
-                    hasher = new SCryptWrapper();
-                    break;
-            }
-            return hasher;
+                PasswordHasherType.Argon2 => new Argon2Wrapper(),
+                PasswordHasherType.BCrypt => new BcryptWrapper(),
+                PasswordHasherType.SCrypt => new SCryptWrapper(),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported password hasher type.")
+            };
         }
     }
 }

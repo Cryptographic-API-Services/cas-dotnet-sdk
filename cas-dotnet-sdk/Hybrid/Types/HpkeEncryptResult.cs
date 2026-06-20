@@ -1,9 +1,11 @@
-﻿namespace CasDotnetSdk.Hybrid.Types
+﻿using System;
+
+namespace CasDotnetSdk.Hybrid.Types
 {
     public class HpkeEncryptResult
     {
-        public byte[] EncappedKey { get; set; }
-        public byte[] Ciphertext { get; set; }
-        public byte[] Tag { get; set; }
+        public byte[] EncappedKey { get; set; } = Array.Empty<byte>();
+        public byte[] Ciphertext { get; set; } = Array.Empty<byte>();
+        public byte[] Tag { get; set; } = Array.Empty<byte>();
     }
 }
