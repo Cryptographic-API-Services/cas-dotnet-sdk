@@ -18,9 +18,9 @@ namespace CasDotnetSdk.Helpers
         {
             if (ptr == null)
             {
-                return null;
+                return string.Empty;
             }
-            string value = Marshal.PtrToStringUTF8((IntPtr)ptr);
+            string value = Marshal.PtrToStringUTF8((IntPtr)ptr) ?? string.Empty;
             NativeMethods.free_cstring(ptr);
             return value;
         }

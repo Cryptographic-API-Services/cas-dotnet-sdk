@@ -61,15 +61,15 @@ namespace CasDotnetSdk.Signatures
         /// </summary>
         public bool VerifyBytes(byte[] keyPair, byte[] signature, byte[] dataToVerify)
         {
-            if (keyPair?.Length == 0)
+            if (keyPair == null || keyPair.Length == 0)
             {
                 throw new Exception("You must provide allocated key pair data to Verify Bytes with ED25519-Dalek");
             }
-            if (signature?.Length == 0)
+            if (signature == null || signature.Length == 0)
             {
                 throw new Exception("You must provide allocated signature data to Verify Bytes with ED25519-Dalek");
             }
-            if (dataToVerify?.Length == 0)
+            if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide allocated data to Verify with ED25519-Dalek");
             }
@@ -89,15 +89,15 @@ namespace CasDotnetSdk.Signatures
         /// </summary>
         public bool VerifyWithPublicKeyBytes(byte[] publicKey, byte[] signature, byte[] dataToVerify)
         {
-            if (publicKey?.Length == 0)
+            if (publicKey == null || publicKey.Length == 0)
             {
                 throw new Exception("You must provide allocated data for the public key to verify with ED25519-Dalek");
             }
-            if (signature?.Length == 0)
+            if (signature == null || signature.Length == 0)
             {
                 throw new Exception("You must provide allocated data for the signature to verify with ED25519-Dalek");
             }
-            if (dataToVerify?.Length == 0)
+            if (dataToVerify == null || dataToVerify.Length == 0)
             {
                 throw new Exception("You must provide allocated data to verify for the signature to verify with ED25519-Dalek");
             }

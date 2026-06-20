@@ -33,11 +33,11 @@ namespace CasDotnetSdk.Sponges
         /// </summary>
         public byte[] Ascon128Encrypt(byte[] nonce, byte[] key, byte[] toEncrypt)
         {
-            if (nonce?.Length == 0)
+            if (nonce == null || nonce.Length == 0)
             {
                 throw new Exception("You must provide a nonce to encrypt with Ascon 128");
             }
-            if (key?.Length == 0)
+            if (key == null || key.Length == 0)
             {
                 throw new Exception("You must provide a key to encrypt with Ascon 128");
             }
@@ -61,11 +61,11 @@ namespace CasDotnetSdk.Sponges
         /// </summary>
         public byte[] Ascon128Decrypt(byte[] nonce, byte[] key, byte[] toDecrypt)
         {
-            if (nonce?.Length == 0)
+            if (nonce == null || nonce.Length == 0)
             {
                 throw new Exception("You must provide a nonce to decrypt with Ascon 128");
             }
-            if (key?.Length == 0)
+            if (key == null || key.Length == 0)
             {
                 throw new Exception("You must provide a key to decrypt with Ascon 128");
             }

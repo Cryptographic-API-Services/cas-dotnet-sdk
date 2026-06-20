@@ -1,9 +1,11 @@
-﻿namespace CasDotnetSdk.Hybrid.Types
+﻿using System;
+
+namespace CasDotnetSdk.Hybrid.Types
 {
     public class HpkeKeyPairResult
     {
-        public byte[] PrivateKey { get; set; }
-        public byte[] PublicKey { get; set; }
-        public byte[] InfoStr { get; set; }
+        public byte[] PrivateKey { get; set; } = Array.Empty<byte>();
+        public byte[] PublicKey { get; set; } = Array.Empty<byte>();
+        public byte[] InfoStr { get; set; } = Array.Empty<byte>();
     }
 }
