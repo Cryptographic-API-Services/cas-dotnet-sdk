@@ -35,7 +35,6 @@ We aim to provide cross-compatibility wherever possible. Test cases are run on .
 - [X] Windows x64
 - [X] Linux x64
 - [X] macOS arm64 (Apple Silicon)
-- [X] macOS x64 (Intel)
 
 ## Disclaimer
 This SDK leverages several cryptographic crates via our core FFI [layer](https://github.com/Cryptographic-API-Services/cas-core-lib). Please note that many of these crates have not undergone formal security audits. Use this library at your own risk and always review the underlying cryptographic implementations for your security requirements.
