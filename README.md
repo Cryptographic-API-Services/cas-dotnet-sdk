@@ -24,7 +24,7 @@ We build on the work of leading cryptography projects. For in-depth algorithm de
 - [Rust Crypto](https://github.com/RustCrypto)
 
 ## Usage Examples
-See practical usage and code samples in our [Examples](./docs/EXAMPLES.md).
+See practical usage and code samples in our [Examples](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/docs/EXAMPLES.md).
 
 ## Supported Frameworks / Operating Systems
 We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-10 for Windows, Linux (Ubuntu), and macOS on each pull request and release to NuGet through GitHub Actions.
