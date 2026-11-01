@@ -31,6 +31,13 @@ namespace CasDotnetSdk.PasswordHashers
             }
         }
 
+        /// <summary>
+        /// Hashes a password using the SCrypt algorithm with specified parameters.
+        /// </summary>
+        /// <param name="passToHash">The password to hash.</param>
+        /// <param name="cpuCost">CPU/memory cost as log2(N); 17 means N = 131072.</param>
+        /// <param name="blockSize">Block size (r).</param>
+        /// <param name="parallelism">Parallelization (p).</param>
         public string HashPasswordWithParameters(string passToHash, int cpuCost = 17, int blockSize = 8, int parallelism = 1)
         {
             if (string.IsNullOrEmpty(passToHash))

@@ -11,7 +11,7 @@ CAS .NET SDK is a managed cryptographic toolkit published as the [`cas-dotnet-sd
 - `cas-dotnet-sdk/` — the SDK class library (NuGet package source). Multi-targets `net6.0`–`net10.0`.
 - `cas-dotnet-sdk-tests/` — xUnit test project, references the SDK directly.
 - `cas-core-lib/` — **git submodule** containing the Rust source compiled to `cas_core_lib.dll` (Windows) / `libcas_core_lib.so` (Linux) / `libcas_core_lib.dylib` (macOS). Clone with `--recursive` or run `git submodule update --init --recursive`.
-- `docs/EXAMPLES.md` — usage samples.
+- `docs/EXAMPLES.md` — user-facing usage samples. Must be kept current with the public API (see "Keeping examples in sync").
 
 ## Build & Test
 
@@ -39,36 +39,62 @@ The same commands work for local development on macOS (Apple Silicon): a Rust to
 
 Note: CI (`.github/workflows/pr-tests-*.yml`) builds `cargo build --release` separately, then copies the native lib into the test `bin/Release/<tfm>` directory before running `dotnet test`. If you build the Rust lib by hand and the MSBuild target is skipped, the native artifact must end up next to the test assembly the same way.
 
-## Architecture: the three-layer wrapper pattern
+## Architecture
 
-Every cryptographic capability is grouped into a top-level folder by category (`Hashers`, `Symmetric`, `Asymmetric`, `Signatures`, `PasswordHashers`, `KeyExchange`, `Hybrid`, `Compression`, `Sponges`, `PQC`). Within each category folder, the same three-part structure repeats — understand it once and it applies everywhere:
+Every cryptographic capability is grouped into a top-level folder by category (`Hashers`, `Symmetric`, `Asymmetric`, `Signatures`, `PasswordHashers`, `KeyExchange`, `Hybrid`, `Compression`, `Sponges`, `PQC`). Each category has the same structure:
 
-1. **Public wrapper** (e.g. `Hashers/SHAWrapper.cs`) — the user-facing class. Inherits `BaseWrapper` and implements a category interface (e.g. `IHasherBase`). It contains the real logic: choose the platform DLL import, call it, copy the returned bytes out of the native pointer with `Marshal.Copy`, then free the native memory.
+1. **Public wrapper** (e.g. `Hashers/SHAWrapper.cs`) — the user-facing `unsafe` class, implementing a category interface where one exists (e.g. `IHasherBase`, `IPasswordHasherBase`). Each method pins its inputs with `fixed`, calls the generated binding on `NativeMethods`, checks the result's `error_code`, then copies the output into managed memory and frees the native allocation.
 
-2. **Platform P/Invoke wrappers** (`<Category>/Windows/*.cs` and `<Category>/Linux/*.cs`) — `internal static` classes containing only `[DllImport]` declarations. Windows imports target `cas_core_lib.dll`, Linux imports target `libcas_core_lib.so`. The two files are otherwise identical signatures. The public wrapper dispatches between them with `this._platform == OSPlatform.Linux ? LinuxWrapper.fn(...) : WindowsWrapper.fn(...)`.
+2. **Generated bindings** (`generated/NativeMethods.g.cs`) — `[DllImport]` declarations and C ABI result structs (e.g. `CasStringResult`, `CasVerifyResult`) emitted by csbindgen from `cas-core-lib/build.rs` during the `BuildRust` target. Never edit this file by hand.
 
-3. **Types** (`<Category>/Types/*.cs`) — `internal struct`s mirroring the C ABI structs returned by the Rust FFI (e.g. `SHAHashByteResult { IntPtr result_bytes_ptr; int length; }`), plus category interfaces and enums.
+3. **Types** (`<Category>/Types/*.cs`) — public result classes returned to callers (e.g. `Ed25519KeyPairResult`, `HpkeEncryptResult`), plus category enums.
 
 ### Cross-cutting helpers (`Helpers/`)
 
-- `BaseWrapper` — base class for all public wrappers; resolves the current OS into `_platform` (`OSPlatform`) at construction via `OperatingSystemDeterminator`. Throws on any OS that is not Windows or Linux.
-- `FreeMemoryHelper` — frees native heap memory returned by the Rust layer. **Any FFI call that returns a pointer-bearing struct must have its pointer freed via `FreeMemoryHelper` after the bytes are marshaled out**, or memory leaks. This is the single most important invariant when adding new wrappers.
+- `CasErrorHandler.ThrowIfError` — turns a non-zero `error_code` into a `CasException` (carrying `CasErrorCode` and the raw code). **Call it before reading any pointer from a result**: the native layer leaves pointers null on failure.
+- `NativeByteBuffer.CopyAndFree` / `NativeString.ReadAndFree` — copy a native buffer or C string into managed memory and free it through the FFI. **Every pointer returned by the native layer must go through one of these**, or memory leaks. This is the single most important invariant when adding new wrappers.
+- `NativeString.ToCString` — encodes a managed string as a null-terminated UTF-8 buffer for pinning.
+- `NativePin.Of` — substitutes a non-empty sentinel for zero-length arrays so `fixed` yields a non-null pointer.
 
 ### Factories
 
-Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFactory.Get(IHasherType.SHA)`) returning the category interface. When adding a new algorithm to such a category, wire it into both the enum and the factory switch.
+Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFactory.Get(IHasherType.SHA)`, `PasswordHasherFactory.Get(...)`) returning the category interface. When adding a new algorithm to such a category, wire it into both the enum and the factory switch.
+
+### Tunable cost
+
+The password hashers expose `HashPasswordWithParameters` alongside the default `HashPassword`: Argon2 (`memoryCost` in MiB — cas-lib multiplies it by 1024, `iterations`, `parallelism`), SCrypt (`cpuCost` as log2(N), `blockSize`, `parallelism`) and BCrypt (`cost`, max 31).
 
 ## Adding a new algorithm
 
-1. Add the Rust FFI function in `cas-core-lib` (separate submodule/repo) and rebuild it.
-2. Add matching `[DllImport]` declarations in **both** the `Windows` and `Linux` P/Invoke files of the relevant category.
-3. Add any new return struct to `Types/`.
-4. Implement the public method on the wrapper: platform-dispatch the call, marshal out the result, free native memory.
-5. If the category has a factory/enum, register the new type there.
-6. Add an xUnit test. NIST test vectors live as `.rsp` files under the test project's `AES/Data` and `SHA/Data` folders (copied to output via `Content` items in the test `.csproj`).
+1. Add the Rust FFI function in `cas-core-lib` (separate submodule/repo), returning a result struct with an `error_code`, and rebuild — csbindgen regenerates `generated/NativeMethods.g.cs`.
+2. Implement the public method on the wrapper: pin inputs with `fixed`, call `NativeMethods`, `CasErrorHandler.ThrowIfError`, then marshal out with `NativeByteBuffer` / `NativeString`.
+3. Add any new public result class to `Types/`.
+4. If the category has a factory/enum, register the new type there.
+5. Add an xUnit test. NIST test vectors live as `.rsp` files under the test project's `AES/Data` and `SHA/Data` folders (copied to output via `Content` items in the test `.csproj`).
+6. Add a usage example to `docs/EXAMPLES.md` (see below).
+
+## Keeping examples in sync
+
+`docs/EXAMPLES.md` is the user-facing reference and must cover **every public method** in `cas-dotnet-sdk/`. **Whenever you add, rename, remove, or change the signature of a public method or result type, update `docs/EXAMPLES.md` in the same change, without being asked** — this is part of the task, not a follow-up. A change to the public API is not done until its example is.
+
+Before finishing any task that touches a public wrapper, run this coverage check from the repo root (Git Bash). It must print nothing; each `MISSING` line is a method without an example:
+
+```bash
+git grep -hoE "^\s+public [A-Za-z0-9<>\[\]]+ [A-Z][A-Za-z0-9]*\(" -- 'cas-dotnet-sdk/*.cs' ':!cas-dotnet-sdk/generated' ':!cas-dotnet-sdk/Helpers' \
+  | sed -E 's/.* ([A-Za-z0-9]+)\($/\1/' | sort -u \
+  | while read m; do grep -q "\.$m(" docs/EXAMPLES.md || echo "MISSING $m"; done
+```
+
+- **New method or algorithm:** add an example under its category heading (create the heading if needed), with the `using` lines and a round trip where one applies (encrypt + decrypt, sign + verify, hash + verify).
+- **Tunable parameters / cost:** show the parameterized overload next to the default one and list each parameter with its unit, default, and limits (as the Password Hashers section does).
+- **Argument order:** copy it from the wrapper's signature and the xUnit test, and run the snippet against the built native library when you can. Hash `Verify` methods differ: `SHAWrapper.Verify*(data, hash)` but `Blake2Wrapper.Verify*(hash, data)`.
+- **Renamed or removed APIs:** fix or delete every example that calls them; grep `docs/EXAMPLES.md` for the old name.
+- **New result types:** use the real property names from `Types/` in the example.
+- Also give the public method XML doc comments (`<summary>`, plus `<param>` for any tuning parameter).
+- Keep the doc example-only: no benchmark tables or performance claims.
 
 ## Cross-platform constraint
 
-Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`). The `OperatingSystemDeterminator` resolves Windows, Linux, and OSX and throws on anything else.
+Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`).
 
 Note: this is desktop **macOS / Darwin**, not iOS. Real iOS (`aarch64-apple-ios`) would need a cross-compiled native lib and a simulator/device to run tests, neither of which the current CI provides.
