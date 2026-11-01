@@ -17,7 +17,7 @@ namespace CasDotnetSdk.PasswordHashers
         /// Hashes the specified password using the Argon2 algorithm with the provided memory cost, iteration count, and
         /// parallelism parameters.
         /// </summary>
-        /// <param name="memoryCost">Memory to use, in KiB.</param>
+        /// <param name="memoryCost">Memory to use, in MiB.</param>
         /// <param name="iterations">Number of passes over memory (time cost).</param>
         /// <param name="parallelism">Number of threads (lanes).</param>
         /// <param name="passToHash">The password to hash.</param>

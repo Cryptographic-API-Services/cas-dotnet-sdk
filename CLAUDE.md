@@ -62,7 +62,7 @@ Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFact
 
 ### Tunable cost
 
-The password hashers expose `HashPasswordWithParameters` alongside the default `HashPassword`: Argon2 (`memoryCost` KiB, `iterations`, `parallelism`), SCrypt (`cpuCost` as log2(N), `blockSize`, `parallelism`) and BCrypt (`cost`, max 31).
+The password hashers expose `HashPasswordWithParameters` alongside the default `HashPassword`: Argon2 (`memoryCost` in MiB — cas-lib multiplies it by 1024, `iterations`, `parallelism`), SCrypt (`cpuCost` as log2(N), `blockSize`, `parallelism`) and BCrypt (`cost`, max 31).
 
 ## Adding a new algorithm
 
@@ -75,10 +75,19 @@ The password hashers expose `HashPasswordWithParameters` alongside the default `
 
 ## Keeping examples in sync
 
-`docs/EXAMPLES.md` is the user-facing reference and must match the public API. **Whenever you add, rename, remove, or change the signature of a public method or result type, update `docs/EXAMPLES.md` in the same change** — do not leave it for a follow-up.
+`docs/EXAMPLES.md` is the user-facing reference and must cover **every public method** in `cas-dotnet-sdk/`. **Whenever you add, rename, remove, or change the signature of a public method or result type, update `docs/EXAMPLES.md` in the same change, without being asked** — this is part of the task, not a follow-up. A change to the public API is not done until its example is.
+
+Before finishing any task that touches a public wrapper, run this coverage check from the repo root (Git Bash). It must print nothing; each `MISSING` line is a method without an example:
+
+```bash
+git grep -hoE "^\s+public [A-Za-z0-9<>\[\]]+ [A-Z][A-Za-z0-9]*\(" -- 'cas-dotnet-sdk/*.cs' ':!cas-dotnet-sdk/generated' ':!cas-dotnet-sdk/Helpers' \
+  | sed -E 's/.* ([A-Za-z0-9]+)\($/\1/' | sort -u \
+  | while read m; do grep -q "\.$m(" docs/EXAMPLES.md || echo "MISSING $m"; done
+```
 
 - **New method or algorithm:** add an example under its category heading (create the heading if needed), with the `using` lines and a round trip where one applies (encrypt + decrypt, sign + verify, hash + verify).
 - **Tunable parameters / cost:** show the parameterized overload next to the default one and list each parameter with its unit, default, and limits (as the Password Hashers section does).
+- **Argument order:** copy it from the wrapper's signature and the xUnit test, and run the snippet against the built native library when you can. Hash `Verify` methods differ: `SHAWrapper.Verify*(data, hash)` but `Blake2Wrapper.Verify*(hash, data)`.
 - **Renamed or removed APIs:** fix or delete every example that calls them; grep `docs/EXAMPLES.md` for the old name.
 - **New result types:** use the real property names from `Types/` in the example.
 - Also give the public method XML doc comments (`<summary>`, plus `<param>` for any tuning parameter).
@@ -86,6 +95,6 @@ The password hashers expose `HashPasswordWithParameters` alongside the default `
 
 ## Cross-platform constraint
 
-Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`). The `OperatingSystemDeterminator` resolves Windows, Linux, and OSX and throws on anything else.
+Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`).
 
 Note: this is desktop **macOS / Darwin**, not iOS. Real iOS (`aarch64-apple-ios`) would need a cross-compiled native lib and a simulator/device to run tests, neither of which the current CI provides.
