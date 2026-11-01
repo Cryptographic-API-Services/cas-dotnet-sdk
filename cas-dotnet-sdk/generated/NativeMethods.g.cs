@@ -137,6 +137,24 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "scrypt_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult scrypt_verify(byte* hash_to_check, byte* pass_to_check);
 
+        [DllImport(__DllName, EntryPoint = "ml_dsa_generate_signing_and_verification_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern MlDsaKeyPairResult ml_dsa_generate_signing_and_verification_key();
+
+        [DllImport(__DllName, EntryPoint = "ml_dsa_sign_message", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern MlDsaSignature ml_dsa_sign_message(byte* signing_key, nuint signing_key_length, byte* message, nuint message_length);
+
+        [DllImport(__DllName, EntryPoint = "ml_dsa_verify_signature", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult ml_dsa_verify_signature(byte* verification_key, nuint verification_key_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
+
+        [DllImport(__DllName, EntryPoint = "ml_kem_1024_generate_key_pair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern MlKemKeyPairResult ml_kem_1024_generate_key_pair();
+
+        [DllImport(__DllName, EntryPoint = "ml_kem_1024_encapsulate_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern MlKemEncapsulateResult ml_kem_1024_encapsulate_shared_secret(byte* public_key, nuint public_key_length);
+
+        [DllImport(__DllName, EntryPoint = "ml_kem_1024_decapsulate_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern MlKemDecapsulateResult ml_kem_1024_decapsulate_shared_secret(byte* secret_key, nuint secret_key_length, byte* ciphertext, nuint ciphertext_length);
+
         [DllImport(__DllName, EntryPoint = "slh_dsa_generate_signing_and_verification_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SlhDsaKeyPairResult slh_dsa_generate_signing_and_verification_key();
 
@@ -367,6 +385,50 @@ namespace CasCoreLib
     {
         public byte* signature_ptr;
         public nuint signature_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct MlDsaKeyPairResult
+    {
+        public byte* signing_key_ptr;
+        public nuint signing_key_length;
+        public byte* verification_key_ptr;
+        public nuint verification_key_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct MlDsaSignature
+    {
+        public byte* signature_ptr;
+        public nuint signature_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct MlKemKeyPairResult
+    {
+        public byte* secret_key_ptr;
+        public nuint secret_key_length;
+        public byte* public_key_ptr;
+        public nuint public_key_length;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct MlKemEncapsulateResult
+    {
+        public byte* ciphertext_ptr;
+        public nuint ciphertext_length;
+        public byte* shared_secret_ptr;
+        public nuint shared_secret_length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct MlKemDecapsulateResult
+    {
+        public byte* shared_secret_ptr;
+        public nuint shared_secret_length;
         public int error_code;
     }
 

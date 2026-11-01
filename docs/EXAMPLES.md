@@ -106,6 +106,7 @@ bool isValidPublic = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey
 
 ### Post-Quantum Signatures
 - SLH-DSA
+- ML-DSA (ML-DSA-65, FIPS 204)
 
 ```csharp
 using CasDotnetSdk.PQC;
@@ -116,6 +117,47 @@ SLHDSAKeyPair keyPair = slhdsa.GenerateSigningAndVerificationKey();
 byte[] message = Encoding.UTF8.GetBytes("Sign this with SLH-DSA");
 byte[] signature = slhdsa.Sign(keyPair.SigningKey, message);
 bool isValid = slhdsa.Verify(keyPair.VerificationKey, signature, message);
+```
+
+ML-DSA-65 signatures are deterministic and use an empty context. The signing key is the
+32-byte private seed; the verification key is 1952 bytes and the signature is 3309 bytes.
+
+```csharp
+using CasDotnetSdk.PQC;
+using CasDotnetSdk.PQC.Types;
+
+MLDSAWrapper mldsa = new MLDSAWrapper();
+MLDSAKeyPair keyPair = mldsa.GenerateSigningAndVerificationKey();
+byte[] message = Encoding.UTF8.GetBytes("Sign this with ML-DSA");
+
+// Sign with the signing (seed) key...
+byte[] signature = mldsa.Sign(keyPair.SigningKey, message);
+// ...and verify with the verification (public) key.
+bool isValid = mldsa.Verify(keyPair.VerificationKey, signature, message);
+```
+
+
+### Post-Quantum Key Encapsulation
+- ML-KEM (ML-KEM-1024, FIPS 203)
+
+The holder of the public key receives a ciphertext; both parties derive the same 32-byte
+shared secret. The secret (decapsulation) key is 3168 bytes, the public (encapsulation) key
+and the ciphertext are 1568 bytes each.
+
+```csharp
+using CasDotnetSdk.PQC;
+using CasDotnetSdk.PQC.Types;
+
+MLKEMWrapper mlkem = new MLKEMWrapper();
+MLKemKeyPair keyPair = mlkem.GenerateKeyPair();
+
+// Sender encapsulates to the recipient's public key.
+MLKemEncapsulateResult encapsulated = mlkem.Encapsulate(keyPair.PublicKey);
+byte[] senderSharedSecret = encapsulated.SharedSecret;
+
+// Recipient decapsulates the ciphertext with their secret key.
+byte[] recipientSharedSecret = mlkem.Decapsulate(keyPair.SecretKey, encapsulated.Ciphertext);
+// senderSharedSecret and recipientSharedSecret are equal.
 ```
 
 

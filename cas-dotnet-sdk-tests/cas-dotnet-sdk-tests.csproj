@@ -37,10 +37,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
     </Content>
+
+    <Content Include="PQC\Data\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>PQC\Data\%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="AES\Data\" />
     <Folder Include="SHA\Data\" />
+    <Folder Include="PQC\Data\" />
   </ItemGroup>
 </Project>
