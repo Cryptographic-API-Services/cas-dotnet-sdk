@@ -1,44 +1,28 @@
-**Note: Benchmarks were performed on an AMD Ryzen 7 5800H Processor @ 3.20 GHz with 16GB of DDR3** 
-
 ### Symmetric
-- [AES 256](./docs/PARALLEL.md)
+- AES 256
 
-| Library | 50 Encrypts in (s) |
-| --- | --- |
-| [CAS AES-256](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Symmetric/AESWrapper.cs) | 00.0068827 (s) |
-| [AES C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-8.0)| 00.0079577 (s) |
 ```csharp
 using CasDotnetSdk.Symmetric;
 
 AESWrapper aesWrapper = new AESWrapper();
 byte[] nonceKey = aesWrapper.GenerateAESNonce();
-byte[] key2 = aesWrapper.Aes256Key();
+byte[] key = aesWrapper.Aes256Key();
 byte[] data = System.Text.Encoding.UTF8.GetBytes("Hello World");
-byte[] encrypted = aesWrapper.Aes256Encrypt(nonceKey, key2, data);
+byte[] encrypted = aesWrapper.Aes256Encrypt(nonceKey, key, data);
+byte[] decrypted = aesWrapper.Aes256Decrypt(nonceKey, key, encrypted);
 ```
 
 
-### Signatures 
+### Signatures
 - ED25519
 
-| Library | 50 Signatures in (s) |
-| --- | --- |
-| [CAS ED25519](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Signatures/ED25519Wrapper.cs) | 00.0073306 (s) |
-| [NSec Ed25519](https://nsec.rocks/docs/api/nsec.cryptography.signaturealgorithm)| 00.0241969 (s) |
 ```csharp
-ED25519Wrapper ed25519Wrapper = new ED25519Wrapper();
-byte[] keyPair = ed25519Wrapper.GetKeyPairBytes();
-Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair, data);
-```
+using CasDotnetSdk.Signatures;
+using CasDotnetSdk.Signatures.Types;
 
-| Library | 50 Verifications in (s) |
-| --- | --- |
-| [CAS ED25519](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Signatures/ED25519Wrapper.cs) | 00.0091130 (s) |
-| [NSec Ed25519](https://nsec.rocks/docs/api/nsec.cryptography.signaturealgorithm)| 00.0273138 (s) |
-```csharp
 ED25519Wrapper ed25519Wrapper = new ED25519Wrapper();
-byte[] keyPair = ed25519Wrapper.GetKeyPairBytes();
-Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair, data);
+Ed25519KeyPairResult keyPair = ed25519Wrapper.GetKeyPair();
+Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair.SigningKey, data);
 bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, signature.Signature, data);
 ```
 
@@ -46,97 +30,127 @@ bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, sign
 ### Hashers
 - SHA256
 
-| Library | 50 Hashes in (s) |
-| --- | --- |
-| [CAS SHA256](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Hashers/SHAWrapper.cs) | 00.0061313 (s) |
-| [SHA256 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256managed?view=net-8.0) | 00.0039384 (s) |
 ```csharp
-string toHash = "newShaToHash";
-byte[] data = Encoding.UTF8.GetBytes(toHash);
+using CasDotnetSdk.Hashers;
+
+byte[] data = Encoding.UTF8.GetBytes("newShaToHash");
 SHAWrapper shaWrapper = new SHAWrapper();
 byte[] newSha = shaWrapper.Hash256(data);
 ```
 
 - SHA512
 
-| Library | 50 Hashes in (s) |
-| --- | --- |
-| [CAS SHA512](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Hashers/SHAWrapper.cs) | 00.0059154 (s) |
-| [SHA512 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha512managed?view=net-8.0) | 00.0042587 (s) |
 ```csharp
-string toHash = "newShaToHash";
-byte[] data = Encoding.UTF8.GetBytes(toHash);
+byte[] data = Encoding.UTF8.GetBytes("newShaToHash");
 SHAWrapper shaWrapper = new SHAWrapper();
 byte[] newSha = shaWrapper.Hash512(data);
 ```
 
 - HMAC
 
-| Library | 50 Hashes in (s) |
-| --- | --- |
-| [CAS HMAC](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/Hashers/HmacWrapper.cs) | 00.0060037 (s) |
-| [HMAC256 Managed C#](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-8.0) | 00.0042263 (s) |
 ```csharp
-string toHash = "C#IsASuperDuperLanguage";
-string key = "HmacKeyForSigning";
-byte[] data = Encoding.UTF8.GetBytes(toHash);
-byte[] message = Encoding.UTF8.GetBytes(key);
-
-DateTime start = DateTime.Now;
+byte[] key = Encoding.UTF8.GetBytes("HmacKeyForSigning");
+byte[] message = Encoding.UTF8.GetBytes("C#IsASuperDuperLanguage");
 HmacWrapper hmacWrapper = new HmacWrapper();
-byte[] hmacSigned = hmacWrapper.HmacSignBytes(data, message);
+byte[] hmacSigned = hmacWrapper.HmacSignBytes(key, message);
 ```
+
 
 ### Password Hashers
 - Argon2
 
-
-| Method           | Mean       | Error     | StdDev    |
-|----------------- |-----------:|----------:|----------:|
-| [CASHashArgon2](https://github.com/Crytographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/PasswordHashers/Argon2Wrappper.cs)    |   6.616 ms | 0.0587 ms | 0.0549 ms |
-| [IsopohHashArgon2](https://github.com/mheyman/Isopoh.Cryptography.Argon2) | 365.758 ms | 6.9638 ms | 6.1732 ms |
 ```csharp
-Argon2Wrappper argon2Wrapper = new Argon2Wrappper();
+using CasDotnetSdk.PasswordHashers;
+
+Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
 string password = "DoNotDoThisWithMe!@#";
 string hashed = argon2Wrapper.HashPassword(password);
+bool isValid = argon2Wrapper.Verify(hashed, password);
+```
+
+Set the cost with `HashPasswordWithParameters`. Higher values are slower and harder to brute force.
+- `memoryCost`: memory to use, in KiB
+- `iterations`: number of passes (time cost)
+- `parallelism`: number of threads (lanes)
+
+```csharp
+Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
+string password = "DoNotDoThisWithMe!@#";
+int memoryCost = 19456; // 19 MiB
+int iterations = 2;
+int parallelism = 1;
+string hashed = argon2Wrapper.HashPasswordWithParameters(memoryCost, iterations, parallelism, password);
+bool isValid = argon2Wrapper.Verify(hashed, password);
 ```
 
 - SCrypt
-  
-| Library | 50 Password Hashes in (s) |
-| --- | --- |
-| [CAS SCrypt](https://github.com/Crytographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/PasswordHashers/Argon2Wrappper.cs) | 03.5280257 (s) |
-| [SCrypt.NET](https://github.com/viniciuschiele/scrypt) | 02.4595297 (s) |
+
 ```csharp
 SCryptWrapper scrypt = new SCryptWrapper();
 string password = "SCryptPasswordHash!@#$";
 string hashed = scrypt.HashPassword(password);
+bool isValid = scrypt.Verify(hashed, password);
+```
+
+Set the cost with `HashPasswordWithParameters`. Every parameter has a default.
+- `cpuCost`: CPU/memory cost as log2(N), default `17` (N = 131072)
+- `blockSize`: block size (r), default `8`
+- `parallelism`: parallelization (p), default `1`
+
+```csharp
+SCryptWrapper scrypt = new SCryptWrapper();
+string password = "SCryptPasswordHash!@#$";
+string hashed = scrypt.HashPasswordWithParameters(password, cpuCost: 16, blockSize: 8, parallelism: 2);
+bool isValid = scrypt.Verify(hashed, password);
 ```
 
 - BCrypt
-  
-| Library | 50 Password Hashes in (s) |
-| --- | --- |
-| [CAS BCrypt](https://github.com/Crytographic-API-Services/cas-dotnet-sdk/blob/main/cas-dotnet-sdk/PasswordHashers/BcryptWrapper.cs) | 11.5030224 (s) |
-| [BCrypt.Net-Core](https://github.com/neoKushan/BCrypt.Net-Core) | 03.3583425 (s) |
+
 ```csharp
 BcryptWrapper bcrypt = new BcryptWrapper();
 string password = "BCryptPasswordHasher!@#$%";
 string hashed = bcrypt.HashPassword(password);
+bool isValid = bcrypt.Verify(hashed, password);
 ```
+
+Set the cost with `HashPasswordWithParameters`. `cost` is the log2 work factor, so each +1 doubles the hashing time. Default `12`, max `31`.
+
+```csharp
+BcryptWrapper bcrypt = new BcryptWrapper();
+string password = "BCryptPasswordHasher!@#$%";
+uint cost = 14;
+string hashed = bcrypt.HashPasswordWithParameters(password, cost);
+bool isValid = bcrypt.Verify(hashed, password);
+```
+
 
 ### Hybrid Encryption
-- AES / RSA
+- HPKE
 
-
-## We currently have no other libraries benchmark.
 ```csharp
-byte[] dataToEncrypt = Encoding.UTF8.GetBytes("What is that? A New Router that I see?");
-// Initializer creates our AES key, AES Nonce, and RSA Key Pair for us.
-AESRSAHybridInitializer initializer = new AESRSAHybridInitializer(256, 4096);
-AESRSAHybridEncryptResult result = this._hybridEncryptionWrapper.EncryptAESRSAHybrid(dataToEncrypt, initializer);
-byte[] plaintext = this._hybridEncryptionWrapper.DecryptAESRSAHybrid(initializer.RsaKeyPair.PrivateKey, result);
+using CasDotnetSdk.Hybrid;
+using CasDotnetSdk.Hybrid.Types;
+
+HpkeWrapper hpke = new HpkeWrapper();
+HpkeKeyPairResult keyPair = hpke.GenerateKeyPair();
+byte[] plaintext = Encoding.UTF8.GetBytes("What is that? A New Router that I see?");
+HpkeEncryptResult encrypted = hpke.Encrypt(plaintext, keyPair.PublicKey, keyPair.InfoStr);
+byte[] decrypted = hpke.Decrypt(encrypted.Ciphertext, keyPair.PrivateKey, encrypted.EncappedKey, encrypted.Tag, keyPair.InfoStr);
 ```
 
 
+### Error Handling
+A failure in the native library throws a `CasException`. `ErrorCode` gives the failure category, and `RawErrorCode` keeps the native code.
 
+```csharp
+using CasDotnetSdk.Helpers;
+
+try
+{
+    byte[] decrypted = aesWrapper.Aes256Decrypt(nonceKey, key, tamperedCiphertext);
+}
+catch (CasException ex)
+{
+    Console.WriteLine($"{ex.ErrorCode} ({ex.RawErrorCode}): {ex.Message}");
+}
+```
