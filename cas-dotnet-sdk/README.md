@@ -10,6 +10,7 @@ CAS .NET SDK is a comprehensive cryptographic toolkit for .NET, designed to prov
 
 ## Features
 - Modern cryptographic primitives: digital signatures (RSA, Ed25519), hashing, and more
+- Password hashing (Argon2, SCrypt, BCrypt) with configurable cost parameters
 - Seamless integration with [cas-lib](https://github.com/Cryptographic-API-Services/cas-lib) Rust FFI layer for optimal performance
 - Unified interface: no need to manage multiple cryptography packages or surf disparate documentation
 - Built on trusted, open-source cryptography libraries
@@ -23,7 +24,7 @@ We build on the work of leading cryptography projects. For in-depth algorithm de
 - [Rust Crypto](https://github.com/RustCrypto)
 
 ## Usage Examples
-See practical usage and code samples in our [Examples](./docs/EXAMPLES.md).
+See practical usage and code samples in our [Examples](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/docs/EXAMPLES.md).
 
 ## Supported Frameworks / Operating Systems
 We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-10 for Windows, Linux (Ubuntu), and macOS on each pull request and release to NuGet through GitHub Actions.

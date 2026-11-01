@@ -29,6 +29,8 @@ namespace CasDotnetSdk.PasswordHashers
         /// Hashes a password using the BCrypt algorithm with specified parameters.
         /// Max cost is 31.
         /// </summary>
+        /// <param name="passToHash">The password to hash.</param>
+        /// <param name="cost">Log2 work factor; each +1 doubles the hashing time.</param>
         public string HashPasswordWithParameters(string passToHash, uint cost = 12)
         {
             fixed (byte* passPtr = NativeString.ToCString(passToHash))
