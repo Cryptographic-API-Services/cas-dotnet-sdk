@@ -132,5 +132,89 @@ namespace CasDotnetSdkTests
             Assert.True(count > 0, "No Wycheproof ML-DSA vectors were loaded.");
             Assert.True(failures.Count == 0, $"{failures.Count}/{count} Wycheproof ML-DSA vectors mismatched: {string.Join("; ", failures)}");
         }
+
+        // Project Wycheproof ML-DSA-65 deterministic signing (seed) vectors.
+        // cas-lib signs deterministically with an empty context and takes the
+        // 32-byte seed as the signing key, so vectors that need a non-empty
+        // context, a hedged rnd, or a precomputed mu (Sign_internal, which carries
+        // no message) can't be expressed through the API and are skipped (counted).
+        [Fact]
+        public void WycheproofSigningVectors()
+        {
+            var root = PqcVectorData.Load("wycheproof_mldsa_65_sign.json");
+            int count = 0;
+            int skipped = 0;
+            var failures = new List<string>();
+            foreach (var group in root.GetProperty("testGroups").EnumerateArray())
+            {
+                byte[] signingKey = PqcVectorData.Hex(group.GetProperty("privateSeed").GetString()!);
+                byte[] verificationKey = PqcVectorData.Hex(group.GetProperty("publicKey").GetString()!);
+                foreach (var test in group.GetProperty("tests").EnumerateArray())
+                {
+                    int tcId = test.GetProperty("tcId").GetInt32();
+                    string result = test.GetProperty("result").GetString()!;
+
+                    // Unsupported: non-empty context, hedged rnd, or internal (no msg).
+                    if ((test.TryGetProperty("ctx", out var ctx) && ctx.GetString()!.Length > 0) ||
+                        (test.TryGetProperty("rnd", out var rnd) && rnd.GetString()!.Length > 0) ||
+                        !test.TryGetProperty("msg", out var msgElement))
+                    {
+                        skipped++;
+                        continue;
+                    }
+
+                    byte[] msg = PqcVectorData.Hex(msgElement.GetString()!);
+
+                    if (result == "valid")
+                    {
+                        byte[] signature;
+                        try
+                        {
+                            signature = this._wrapper.Sign(signingKey, msg);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            failures.Add($"tcId={tcId} signing threw {ex.GetType().Name}");
+                            count++;
+                            continue;
+                        }
+                        if (PqcVectorData.ToHex(signature) != test.GetProperty("sig").GetString())
+                        {
+                            failures.Add($"tcId={tcId} signature mismatch");
+                        }
+                        else if (!this._wrapper.Verify(verificationKey, signature, msg))
+                        {
+                            failures.Add($"tcId={tcId} own signature did not verify");
+                        }
+                        count++;
+                    }
+                    else if (result == "invalid")
+                    {
+                        // An invalid signing key must be rejected.
+                        bool threw = false;
+                        try
+                        {
+                            this._wrapper.Sign(signingKey, msg);
+                        }
+                        catch
+                        {
+                            threw = true;
+                        }
+                        if (!threw)
+                        {
+                            failures.Add($"tcId={tcId} signing accepted an invalid private key");
+                        }
+                        count++;
+                    }
+                    else
+                    {
+                        // "acceptable" may go either way.
+                        skipped++;
+                    }
+                }
+            }
+            Assert.True(count > 0, "No Wycheproof ML-DSA signing vectors were loaded.");
+            Assert.True(failures.Count == 0, $"{failures.Count}/{count} Wycheproof ML-DSA signing vectors failed (skipped={skipped}): {string.Join("; ", failures)}");
+        }
     }
 }
