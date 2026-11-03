@@ -15,7 +15,12 @@ namespace CasDotnetSdkTests.PQC
             string path = Path.Combine(AppContext.BaseDirectory, "PQC", "Data", fileName);
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException($"PQC test vector file not found: {path}");
+                // The Wycheproof vectors are downloaded at build time (see the
+                // FetchWycheproofVectors target in the test .csproj), not committed.
+                string hint = fileName.StartsWith("wycheproof_", StringComparison.Ordinal)
+                    ? " Wycheproof vectors are downloaded during the build: rebuild the test project with network access (and without -p:FetchWycheproofVectors=false)."
+                    : string.Empty;
+                throw new FileNotFoundException($"PQC test vector file not found: {path}.{hint}");
             }
             byte[] bytes = File.ReadAllBytes(path);
             return JsonDocument.Parse(bytes).RootElement.Clone();
@@ -34,6 +39,16 @@ namespace CasDotnetSdkTests.PQC
                 result[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
             }
             return result;
+        }
+
+        public static string ToHex(byte[] bytes)
+        {
+            var sb = new System.Text.StringBuilder(bytes.Length * 2);
+            foreach (byte b in bytes)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }

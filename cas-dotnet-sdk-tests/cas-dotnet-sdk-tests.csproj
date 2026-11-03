@@ -38,6 +38,8 @@
       <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
     </Content>
 
+    <!-- Committed NIST ACVP vectors. The Wycheproof vectors are downloaded by
+         the FetchWycheproofVectors target below and added to Content there. -->
     <Content Include="PQC\Data\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>PQC\Data\%(Filename)%(Extension)</TargetPath>
@@ -49,4 +51,111 @@
     <Folder Include="SHA\Data\" />
     <Folder Include="PQC\Data\" />
   </ItemGroup>
+
+  <!--
+    Project Wycheproof known-answer vectors are downloaded from C2SP/wycheproof
+    (testvectors_v1/) instead of being committed, so every build tests against the
+    latest upstream vectors (matching the cas-typescript-sdk approach). They are
+    copied next to the test assembly as PQC/Data/<local name>.
+
+    - Each target framework downloads into its own obj/<config>/<tfm>/wycheproof/
+      folder, so the parallel per-framework builds of a plain `dotnet test` never
+      write the same file.
+    - The ref (default 'main') is resolved to a commit SHA with `git ls-remote`,
+      logged, and used to skip re-downloading until upstream actually changes.
+    - Pin a ref for a reproducible run with -p:WycheproofRef=<sha-or-tag> (or the
+      WYCHEPROOF_REF environment variable).
+    - If the ref can't be resolved (e.g. offline) but vectors are already cached,
+      they are reused with a warning. -p:FetchWycheproofVectors=false skips the
+      network entirely and uses whatever is cached.
+
+    To add a file: add a WycheproofVector item (local name, Upstream metadata).
+  -->
+  <PropertyGroup>
+    <FetchWycheproofVectors Condition="'$(FetchWycheproofVectors)' == ''">true</FetchWycheproofVectors>
+    <WycheproofRef Condition="'$(WycheproofRef)' == ''">$(WYCHEPROOF_REF)</WycheproofRef>
+    <WycheproofRef Condition="'$(WycheproofRef)' == ''">main</WycheproofRef>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <WycheproofVector Include="wycheproof_aes_gcm.json" Upstream="aes_gcm_test.json" />
+    <WycheproofVector Include="wycheproof_ed25519.json" Upstream="ed25519_test.json" />
+    <WycheproofVector Include="wycheproof_x25519.json" Upstream="x25519_test.json" />
+    <WycheproofVector Include="wycheproof_hmac_sha256.json" Upstream="hmac_sha256_test.json" />
+    <WycheproofVector Include="wycheproof_mlkem_1024_decaps.json" Upstream="mlkem_1024_semi_expanded_decaps_test.json" />
+    <WycheproofVector Include="wycheproof_mldsa_65_sign.json" Upstream="mldsa_65_sign_seed_test.json" />
+    <WycheproofVector Include="wycheproof_mldsa_65_verify.json" Upstream="mldsa_65_verify_test.json" />
+  </ItemGroup>
+
+  <Target Name="FetchWycheproofVectors" BeforeTargets="AssignTargetPaths">
+    <PropertyGroup>
+      <_WycheproofDir>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'wycheproof'))</_WycheproofDir>
+      <_WycheproofMarker>$(_WycheproofDir).wycheproof-ref</_WycheproofMarker>
+      <_WycheproofCachedRef Condition="Exists('$(_WycheproofMarker)')">$([System.IO.File]::ReadAllText('$(_WycheproofMarker)').Trim())</_WycheproofCachedRef>
+      <_WycheproofRefIsSha>$([System.Text.RegularExpressions.Regex]::IsMatch('$(WycheproofRef)', '^[0-9a-fA-F]{40}$'))</_WycheproofRefIsSha>
+      <!-- Drop git's stderr: offline errors quote the URL, which would break the parsing below. -->
+      <_WycheproofNullDevice>/dev/null</_WycheproofNullDevice>
+      <_WycheproofNullDevice Condition="$([MSBuild]::IsOSPlatform('Windows'))">nul</_WycheproofNullDevice>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_WycheproofMissing Include="@(WycheproofVector)" Condition="!Exists('$(_WycheproofDir)%(Identity)')" />
+    </ItemGroup>
+
+    <!-- Branches and tags move, so resolve the ref to a commit SHA first. -->
+    <Exec Condition="'$(FetchWycheproofVectors)' == 'true' and '$(_WycheproofRefIsSha)' != 'True'"
+          Command="git ls-remote https://github.com/C2SP/wycheproof $(WycheproofRef) 2&gt;$(_WycheproofNullDevice)"
+          ConsoleToMSBuild="true"
+          EchoOff="true"
+          IgnoreExitCode="true"
+          IgnoreStandardErrorWarningFormat="true"
+          StandardOutputImportance="low"
+          StandardErrorImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_WycheproofLsRemote" />
+    </Exec>
+
+    <PropertyGroup>
+      <_WycheproofResolvedRef>$(WycheproofRef)</_WycheproofResolvedRef>
+      <_WycheproofResolvedRef Condition="'$(_WycheproofRefIsSha)' != 'True' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(_WycheproofLsRemote)', '[0-9a-fA-F]{40}'))">$([System.Text.RegularExpressions.Regex]::Match('$(_WycheproofLsRemote)', '[0-9a-fA-F]{40}').Value)</_WycheproofResolvedRef>
+      <_WycheproofResolvedIsSha>$([System.Text.RegularExpressions.Regex]::IsMatch('$(_WycheproofResolvedRef)', '^[0-9a-fA-F]{40}$'))</_WycheproofResolvedIsSha>
+      <_WycheproofCached Condition="'@(_WycheproofMissing)' == ''">true</_WycheproofCached>
+
+      <!-- Couldn't resolve the ref (offline, or git not on PATH) but have a full cache: reuse it. -->
+      <_WycheproofReuseStale Condition="'$(FetchWycheproofVectors)' == 'true' and '$(_WycheproofResolvedIsSha)' != 'True' and '$(_WycheproofCached)' == 'true'">true</_WycheproofReuseStale>
+
+      <_WycheproofDownload Condition="'$(FetchWycheproofVectors)' == 'true' and '$(_WycheproofReuseStale)' != 'true' and ('$(_WycheproofCached)' != 'true' or '$(_WycheproofCachedRef)' != '$(_WycheproofResolvedRef)')">true</_WycheproofDownload>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_WycheproofReuseStale)' == 'true'"
+             Text="Could not resolve C2SP/wycheproof@$(WycheproofRef) (offline, or git not on PATH); reusing cached Wycheproof vectors from $(_WycheproofCachedRef)." />
+    <Warning Condition="'$(FetchWycheproofVectors)' != 'true' and '$(_WycheproofCached)' != 'true'"
+             Text="FetchWycheproofVectors=false and no cached Wycheproof vectors were found in $(_WycheproofDir); the Wycheproof tests will fail." />
+
+    <Message Condition="'$(_WycheproofDownload)' == 'true'" Importance="high"
+             Text="Fetching Wycheproof vectors from C2SP/wycheproof@$(_WycheproofResolvedRef) ($(WycheproofRef)) for $(TargetFramework)" />
+    <Message Condition="'$(_WycheproofDownload)' != 'true' and '$(_WycheproofReuseStale)' != 'true' and '$(_WycheproofCached)' == 'true'"
+             Text="Wycheproof vectors already at C2SP/wycheproof@$(_WycheproofCachedRef)" />
+
+    <MakeDir Condition="'$(_WycheproofDownload)' == 'true'" Directories="$(_WycheproofDir)" />
+    <DownloadFile Condition="'$(_WycheproofDownload)' == 'true'"
+                  SourceUrl="https://raw.githubusercontent.com/C2SP/wycheproof/$(_WycheproofResolvedRef)/testvectors_v1/%(WycheproofVector.Upstream)"
+                  DestinationFolder="$(_WycheproofDir)"
+                  DestinationFileName="%(WycheproofVector.Identity)"
+                  Retries="3"
+                  RetryDelayMilliseconds="1000" />
+
+    <!-- Only a commit SHA is safe to cache; a ref fetched by name re-downloads next build. -->
+    <WriteLinesToFile Condition="'$(_WycheproofDownload)' == 'true' and '$(_WycheproofResolvedIsSha)' == 'True'"
+                      File="$(_WycheproofMarker)" Lines="$(_WycheproofResolvedRef)" Overwrite="true" />
+    <Delete Condition="'$(_WycheproofDownload)' == 'true' and '$(_WycheproofResolvedIsSha)' != 'True'"
+            Files="$(_WycheproofMarker)" />
+
+    <ItemGroup>
+      <Content Include="$(_WycheproofDir)%(WycheproofVector.Identity)"
+               Condition="Exists('$(_WycheproofDir)%(WycheproofVector.Identity)')">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>PQC\Data\%(WycheproofVector.Identity)</TargetPath>
+      </Content>
+    </ItemGroup>
+  </Target>
 </Project>
