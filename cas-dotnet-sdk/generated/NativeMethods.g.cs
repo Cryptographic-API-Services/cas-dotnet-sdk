@@ -173,6 +173,34 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "rsa_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult rsa_verify_bytes(byte* public_key, byte* data_to_verify, nuint data_to_verify_length, byte* signature, nuint signature_length);
 
+        [DllImport(__DllName, EntryPoint = "sha2_256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha2_256_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha2_256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha2_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
+        [DllImport(__DllName, EntryPoint = "sha2_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha2_512_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha2_512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha2_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
+        [DllImport(__DllName, EntryPoint = "sha3_256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha3_256_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha3_256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha3_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
+        [DllImport(__DllName, EntryPoint = "sha3_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern SHAHashByteResult sha3_512_bytes(byte* data_to_hash, nuint data_len);
+
+        [DllImport(__DllName, EntryPoint = "sha3_512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool sha3_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+
         [DllImport(__DllName, EntryPoint = "sha512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha512_bytes(byte* data_to_hash, nuint data_len);
 

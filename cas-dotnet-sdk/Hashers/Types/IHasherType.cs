@@ -3,6 +3,7 @@
     public enum IHasherType
     {
         SHA = 0,
-        Blake2 = 1
+        Blake2 = 1,
+        SHA2 = 2
     }
 }

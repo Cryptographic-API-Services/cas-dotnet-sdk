@@ -195,6 +195,29 @@ bool isValid256 = shaWrapper.Verify256(data, sha256);
 bool isValid512 = shaWrapper.Verify512(data, sha512);
 ```
 
+`null` and an empty array are both hashed as the empty message (the NIST `Len = 0` digest), so they give the same result. The expected hash passed to `Verify256` / `Verify512` must not be `null`.
+
+```csharp
+byte[] emptySha256 = shaWrapper.Hash256(null);
+bool sameAsEmpty = emptySha256.SequenceEqual(shaWrapper.Hash256(Array.Empty<byte>())); // true
+bool isEmptyValid = shaWrapper.Verify256(null, emptySha256); // true
+```
+
+- SHA-2 256 / 512 (SHA-256 / SHA-512)
+
+`SHA2Wrapper` is FIPS 180-4 SHA-2; `SHAWrapper` above is SHA-3. The two give different digests for the same input. `null` input works the same way as in `SHAWrapper`.
+
+```csharp
+using CasDotnetSdk.Hashers;
+
+SHA2Wrapper sha2Wrapper = new SHA2Wrapper();
+byte[] data = Encoding.UTF8.GetBytes("newSha2ToHash");
+byte[] sha256 = sha2Wrapper.Hash256(data);
+byte[] sha512 = sha2Wrapper.Hash512(data);
+bool isValid256 = sha2Wrapper.Verify256(data, sha256);
+bool isValid512 = sha2Wrapper.Verify512(data, sha512);
+```
+
 - Blake2 256 / 512
 
 ```csharp
@@ -221,7 +244,7 @@ bool isValid = hmacWrapper.HmacVerifyBytes(key, message, signature);
 `HasherFactory` returns an `IHasherBase` so the algorithm can be picked at runtime.
 
 ```csharp
-IHasherBase hasher = HasherFactory.Get(IHasherType.Blake2); // or IHasherType.SHA
+IHasherBase hasher = HasherFactory.Get(IHasherType.Blake2); // or IHasherType.SHA (SHA-3), IHasherType.SHA2
 byte[] hashed = hasher.Hash512(Encoding.UTF8.GetBytes("Factory hashing"));
 ```
 
