@@ -33,6 +33,48 @@ namespace CasDotnetSdkTests.Tests
             Assert.True(this._wrapper.Verify512(message, expectedDigest));
         }
 
+        /// <summary>
+        /// A null input must hash as the empty message. The expected digest is NIST's
+        /// own Len = 0 vector, so this proves null, empty and the NIST answer agree, and
+        /// that null/empty are passed to the native layer as a null pointer with length 0.
+        /// </summary>
+        [Theory]
+        [MemberData(nameof(EmptyMessageNistVectors))]
+        public void NullAndEmptyInputMatchNistEmptyMessageVector(int bits, byte[] expectedDigest)
+        {
+            Func<byte[]?, byte[]> hash = bits == 256 ? this._wrapper.Hash256 : this._wrapper.Hash512;
+            Func<byte[]?, byte[], bool> verify = bits == 256 ? this._wrapper.Verify256 : this._wrapper.Verify512;
+
+            Assert.Equal(expectedDigest, hash(null));
+            Assert.Equal(expectedDigest, hash(Array.Empty<byte>()));
+            Assert.True(verify(null, expectedDigest));
+            Assert.True(verify(Array.Empty<byte>(), expectedDigest));
+
+            byte[] tampered = (byte[])expectedDigest.Clone();
+            tampered[0] ^= 0x01;
+            Assert.False(verify(null, tampered));
+            Assert.False(verify(null, Array.Empty<byte>()));
+        }
+
+        [Fact]
+        public void VerifyRejectsNullHash()
+        {
+            Assert.Throws<ArgumentNullException>(() => this._wrapper.Verify256(null, null!));
+            Assert.Throws<ArgumentNullException>(() => this._wrapper.Verify512(null, null!));
+        }
+
+        public static IEnumerable<object[]> EmptyMessageNistVectors()
+        {
+            yield return new object[] { 256, EmptyMessageDigest("SHA3_256ShortMsg.rsp") };
+            yield return new object[] { 512, EmptyMessageDigest("SHA3_512ShortMsg.rsp") };
+        }
+
+        internal static byte[] EmptyMessageDigest(string fileName)
+        {
+            object[] vector = LoadRspVectors(fileName).Single(v => ((byte[])v[0]).Length == 0);
+            return (byte[])vector[1];
+        }
+
         public static IEnumerable<object[]> SHA256NistVectors()
         {
             return LoadRspVectors("SHA3_256ShortMsg.rsp")
@@ -45,7 +87,7 @@ namespace CasDotnetSdkTests.Tests
                 .Concat(LoadRspVectors("SHA3_512LongMsg.rsp"));
         }
 
-        private static IEnumerable<object[]> LoadRspVectors(string fileName)
+        internal static IEnumerable<object[]> LoadRspVectors(string fileName)
         {
             string path = ResolveVectorPath(fileName);
 
