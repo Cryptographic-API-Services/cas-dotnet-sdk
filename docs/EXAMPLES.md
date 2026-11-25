@@ -86,7 +86,11 @@ byte[] decrypted = ascon.Ascon128Decrypt(nonce, key, encrypted);
 
 `GetKeyPair` accepts a key size of `2048`, `3072` or `4096` bits; anything else throws `ArgumentOutOfRangeException`. Keys are returned as PEM strings.
 
-`Sign` and `Verify` use RSASSA-PKCS1-v1_5 with SHA-256 (RS256). Pass the message itself: it is hashed inside the library. The signatures interoperate with standard RS256 verifiers, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)`.
+`SignPss` and `VerifyPss` use RSASSA-PSS with SHA-256, MGF1-SHA-256 and a 32-byte random salt (PS256). **Prefer them for new code.** PSS signatures are randomized, so signing the same message twice gives two different signatures that both verify. They interoperate with standard PS256 implementations, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss)`.
+
+`Sign` and `Verify` use RSASSA-PKCS1-v1_5 with SHA-256 (RS256), for interoperating with RS256 systems. The signatures verify with standard RS256 verifiers, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)`.
+
+All four take the message itself: it is hashed inside the library. A PSS signature doesn't verify with `Verify`, and an RS256 signature doesn't verify with `VerifyPss`.
 
 ```csharp
 using CasDotnetSdk.Asymmetric;
@@ -95,6 +99,12 @@ using CasDotnetSdk.Asymmetric.Types;
 RSAWrapper rsa = new RSAWrapper();
 RsaKeyPairResult keyPair = rsa.GetKeyPair(4096);
 byte[] data = Encoding.UTF8.GetBytes("Sign this with RSA");
+
+// RSASSA-PSS (PS256), recommended for new code.
+byte[] pssSignature = rsa.SignPss(keyPair.PrivateKey, data);
+bool isPssValid = rsa.VerifyPss(keyPair.PublicKey, data, pssSignature);
+
+// RSASSA-PKCS1-v1_5 (RS256), for RS256 interoperability.
 byte[] signature = rsa.Sign(keyPair.PrivateKey, data);
 bool isValid = rsa.Verify(keyPair.PublicKey, data, signature);
 ```
