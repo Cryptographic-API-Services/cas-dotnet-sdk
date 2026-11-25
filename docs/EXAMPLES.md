@@ -137,8 +137,11 @@ bool isValidWithSigningKey = ed25519Wrapper.VerifyBytes(keyPair.SigningKey, sign
 
 
 ### Post-Quantum Signatures
-- SLH-DSA
+- SLH-DSA (SLH-DSA-SHAKE-128f, FIPS 205)
 - ML-DSA (ML-DSA-65, FIPS 204)
+
+SLH-DSA-SHAKE-128f signatures are deterministic and use an empty context. The signing key is
+64 bytes, the verification key is 32 bytes and the signature is 17,088 bytes.
 
 ```csharp
 using CasDotnetSdk.PQC;
