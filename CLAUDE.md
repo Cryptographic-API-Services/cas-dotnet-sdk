@@ -67,7 +67,9 @@ Categories with interchangeable algorithms expose a `*Factory` (e.g. `HasherFact
 
 ### Tunable cost
 
-The password hashers expose `HashPasswordWithParameters` alongside the default `HashPassword`: Argon2 (`memoryCost` in MiB — cas-lib multiplies it by 1024, `iterations`, `parallelism`), SCrypt (`cpuCost` as log2(N), `blockSize`, `parallelism`) and BCrypt (`cost`, max 31).
+The password hashers expose `HashPasswordWithParameters` alongside the default `HashPassword`: Argon2 (`memoryCost` in MiB — cas-lib multiplies it by 1024 — 19–4096, `iterations` 1–10, `parallelism` 1–16), SCrypt (`cpuCost` as log2(N) 10–20 and below 16 × `blockSize`, `blockSize` 1–32, `parallelism` 1–16) and BCrypt (`cost` 10–16). These bounds mirror cas-lib 0.7.0's constants exactly; the wrappers check them (as public `Min*`/`Max*` constants) and throw `ArgumentOutOfRangeException` before any cast, and never narrow an `int` with an unchecked cast. If cas-lib changes a bound, change the wrapper constant, its XML docs, the tests and `docs/EXAMPLES.md` together.
+
+Passwords go to the native `*_bytes` exports as the full UTF-8 encoding plus its length (via `PasswordHashers/PasswordBytes`, which rejects null, empty and unpaired surrogates), so an embedded `'\0'` is hashed; clear the encoded buffer with `CryptographicOperations.ZeroMemory` in a `finally`. Don't call the deprecated C-string password exports. BCrypt also rejects passwords over 72 UTF-8 bytes. Argon2 key derivation takes a salt (`GenerateSalt`, at least 16 bytes); the salt-less `DeriveAES*Key(string)` overloads are `[Obsolete]`.
 
 ## Adding a new algorithm
 

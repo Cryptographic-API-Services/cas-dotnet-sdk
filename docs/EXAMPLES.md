@@ -265,6 +265,8 @@ byte[] hashed = hasher.Hash512(Encoding.UTF8.GetBytes("Factory hashing"));
 
 
 ### Password Hashers
+Every password hasher hashes the full UTF-8 encoding of the password, so a `'\0'` inside it is hashed too instead of ending the password. A `null` password throws `ArgumentNullException`, and an empty one (or a string with an unpaired surrogate) throws `ArgumentException`. A cost parameter outside its range throws `ArgumentOutOfRangeException` before anything is hashed; each wrapper exposes its limits as constants (for example `Argon2Wrapper.MaxMemoryCostMiB`).
+
 - Argon2
 
 ```csharp
@@ -272,48 +274,77 @@ using CasDotnetSdk.PasswordHashers;
 
 Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
 string password = "DoNotDoThisWithMe!@#";
-string hashed = argon2Wrapper.HashPassword(password);
+string hashed = argon2Wrapper.HashPassword(password); // Argon2id, 19 MiB, 2 iterations, parallelism 1
 bool isValid = argon2Wrapper.Verify(hashed, password);
 ```
 
 Set the cost with `HashPasswordWithParameters`. Higher values are slower and harder to brute force.
-- `memoryCost`: memory to use, in **MiB** (the native layer multiplies by 1024 to get KiB)
-- `iterations`: number of passes (time cost)
-- `parallelism`: number of threads (lanes)
+- `memoryCost`: memory to use, in **MiB** (the native layer multiplies by 1024 to get KiB). `HashPassword` uses `19`; from `19` to `4096` (4 GiB)
+- `iterations`: number of passes (time cost). `HashPassword` uses `2`; from `1` to `10`
+- `parallelism`: number of threads (lanes). `HashPassword` uses `1`; from `1` to `16`
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
 string password = "DoNotDoThisWithMe!@#";
-int memoryCost = 19; // 19 MiB
-int iterations = 2;
+int memoryCost = 64; // 64 MiB
+int iterations = 3;
 int parallelism = 1;
 string hashed = argon2Wrapper.HashPasswordWithParameters(memoryCost, iterations, parallelism, password);
 bool isValid = argon2Wrapper.Verify(hashed, password);
 ```
 
-Derive an AES key from a password with Argon2.
+Derive an AES key from a password and a salt with Argon2id (19 MiB, 2 iterations, parallelism 1). `GenerateSalt` returns 16 random bytes; the salt is not secret, so store it next to the ciphertext. The same password and salt always give the same key, so you can derive it again to decrypt. The salt must be at least 16 bytes (`Argon2Wrapper.MinSaltLength`); a shorter one throws `ArgumentException`.
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+using CasDotnetSdk.Symmetric;
+
 Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
-byte[] aes256Key = argon2Wrapper.DeriveAES256Key("DoNotDoThisWithMe!@#"); // 32 bytes
-byte[] aes128Key = argon2Wrapper.DeriveAES128Key("DoNotDoThisWithMe!@#"); // 16 bytes
+AESWrapper aesWrapper = new AESWrapper();
+string password = "DoNotDoThisWithMe!@#";
+byte[] salt = argon2Wrapper.GenerateSalt(); // store this with the ciphertext
+
+byte[] aes256Key = argon2Wrapper.DeriveAES256Key(password, salt); // 32 bytes
+byte[] nonce = aesWrapper.GenerateAESNonce();
+byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, aes256Key, Encoding.UTF8.GetBytes("Secret message"));
+
+// Later: derive the same key from the password and the stored salt.
+byte[] sameKey = argon2Wrapper.DeriveAES256Key(password, salt);
+byte[] decrypted = aesWrapper.Aes256Decrypt(nonce, sameKey, encrypted);
+
+byte[] aes128Key = argon2Wrapper.DeriveAES128Key(password, salt); // 16 bytes
+```
+
+`DeriveAES256Key(string)` and `DeriveAES128Key(string)` without a salt are `[Obsolete]`: they use a random salt and throw it away, so the key can never be derived again. Use the salted overloads above.
+
+```csharp
+#pragma warning disable CS0618
+byte[] oneTimeAes256Key = argon2Wrapper.DeriveAES256Key("DoNotDoThisWithMe!@#"); // 32 bytes, can't be re-derived
+byte[] oneTimeAes128Key = argon2Wrapper.DeriveAES128Key("DoNotDoThisWithMe!@#"); // 16 bytes, can't be re-derived
+#pragma warning restore CS0618
 ```
 
 - SCrypt
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 SCryptWrapper scrypt = new SCryptWrapper();
 string password = "SCryptPasswordHash!@#$";
 string hashed = scrypt.HashPassword(password);
 bool isValid = scrypt.Verify(hashed, password);
 ```
 
-Set the cost with `HashPasswordWithParameters`. Every parameter has a default.
-- `cpuCost`: CPU/memory cost as log2(N), default `17` (N = 131072)
-- `blockSize`: block size (r), default `8`
-- `parallelism`: parallelization (p), default `1`
+Set the cost with `HashPasswordWithParameters`. Every parameter has a default. Memory use is about 128 × `blockSize` × 2^`cpuCost` bytes.
+- `cpuCost`: CPU/memory cost as log2(N), default `17` (N = 131072); from `10` to `20`, and less than 16 × `blockSize` (so at most `15` when `blockSize` is `1`)
+- `blockSize`: block size (r), default `8`; from `1` to `32`
+- `parallelism`: parallelization (p), default `1`; from `1` to `16`
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 SCryptWrapper scrypt = new SCryptWrapper();
 string password = "SCryptPasswordHash!@#$";
 string hashed = scrypt.HashPasswordWithParameters(password, cpuCost: 16, blockSize: 8, parallelism: 2);
@@ -322,16 +353,22 @@ bool isValid = scrypt.Verify(hashed, password);
 
 - BCrypt
 
+bcrypt only uses the first 72 bytes of a password, so `BcryptWrapper` rejects a password longer than **72 UTF-8 bytes** (`BcryptWrapper.MaxPasswordBytes`) with `ArgumentException` instead of truncating it. The limit counts bytes, not characters: `"é"` is 2 bytes. Use Argon2 or SCrypt for longer passphrases.
+
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 BcryptWrapper bcrypt = new BcryptWrapper();
 string password = "BCryptPasswordHasher!@#$%";
 string hashed = bcrypt.HashPassword(password);
 bool isValid = bcrypt.Verify(hashed, password);
 ```
 
-Set the cost with `HashPasswordWithParameters`. `cost` is the log2 work factor, so each +1 doubles the hashing time. Default `12`, max `31`.
+Set the cost with `HashPasswordWithParameters`. `cost` is the log2 work factor, so each +1 doubles the hashing time. Default `12`, from `10` to `16`. `Verify` also refuses a stored hash whose cost is above `16`.
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 BcryptWrapper bcrypt = new BcryptWrapper();
 string password = "BCryptPasswordHasher!@#$%";
 uint cost = 14;
@@ -344,6 +381,8 @@ bool isValid = bcrypt.Verify(hashed, password);
 `PasswordHasherFactory` returns an `IPasswordHasherBase` (default cost) so the algorithm can be picked at runtime.
 
 ```csharp
+using CasDotnetSdk.PasswordHashers;
+
 IPasswordHasherBase hasher = PasswordHasherFactory.Get(PasswordHasherType.Argon2); // or BCrypt, SCrypt
 string hashed = hasher.HashPassword("FactoryPassword!@#");
 bool isValid = hasher.Verify(hashed, "FactoryPassword!@#");
