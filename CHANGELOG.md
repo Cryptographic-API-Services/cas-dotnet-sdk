@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.0.0](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/compare/v1.9.82...v2.0.0) (2026-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Aes256KeyNonceX25519DiffieHellman and Aes128KeyNonceX25519DiffieHellman are replaced by Aes256KeyFromX25519SharedSecret and Aes128KeyFromX25519SharedSecret(sharedSecret, publicKeyA, publicKeyB), which derive different keys, so peers must upgrade together. X25519Wrapper.GenerateSharedSecret throws InvalidKey for a low-order public key. RSAWrapper.Sign/Verify are RS256 over the message, so signatures from earlier versions don't verify, and GetKeyPair accepts 2048/3072/4096 only. HpkeWrapper.Encrypt/Decrypt gained an optional aad parameter (binary-breaking for compiled callers). ZSTDWrapper.Decompress throws DecompressionLimitExceeded past 64 MiB and Compress levels are 0..22. Unknown native error codes map to CasErrorCode.Unknown instead of Success.
+* **password-hashers:** out-of-range cost parameters throw ArgumentOutOfRangeException; BCrypt rejects passwords over 72 UTF-8 bytes; null/empty passwords and unpaired surrogates throw ArgumentNullException/ArgumentException instead of Exception; passwords containing '\0' now hash differently and no longer verify against their prefix. Argon2Wrapper.Verify's parameter is renamed hashedPassword, and the salt-less DeriveAES*Key(string) overloads are [Obsolete].
+* **signatures:** Ed25519 verification is strict everywhere, and ED25519Wrapper.VerifyBytes is [Obsolete] (CS0618).
+
+### Added
+
+* **aead:** add nonce-managing Seal/Open, associated data, AES-GCM-SIV and ChaCha20-Poly1305 ([#234](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/234)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+* bump cas-core-lib to v1.0.0 and regenerate the native bindings ([#231](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/231)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+* **password-hashers:** hash password bytes, enforce cost bounds and add salted Argon2 key derivation ([#237](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/237)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+* **signatures:** add RSA-PSS, use strict Ed25519 verification everywhere and expose the zstd output limit ([#235](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/235)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+
+
+### Fixed
+
+* **rsa:** wipe the UTF-8 private-key buffer after signing, and document ML-DSA hedged signing ([#238](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/238)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+
+
+### Other
+
+* add Dependabot and cargo audit, and test and pin the NuGet publish workflow ([#236](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/236)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+* run the PR test workflows on every pull request and pin actions to SHAs ([#230](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/230)) ([6124463](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/6124463196e7ed7c868aee0d477424a3a48be945))
+
+## Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
