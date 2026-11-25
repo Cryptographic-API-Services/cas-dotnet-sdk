@@ -38,5 +38,19 @@ namespace CasDotnetSdkTests
             bool isModifiedValid = this._wrapper.Verify(keyPair.VerificationKey, signature, modifiedMessage);
             Assert.False(isModifiedValid);
         }
+
+        [Fact]
+        public void SizesMatchSlhDsaShake128f()
+        {
+            // SLH-DSA-SHAKE-128f (FIPS 205): 64-byte signing key, 32-byte verification key,
+            // 17,088-byte signature. Signing is deterministic.
+            var keyPair = this._wrapper.GenerateSigningAndVerificationKey();
+            Assert.Equal(64, keyPair.SigningKey.Length);
+            Assert.Equal(32, keyPair.VerificationKey.Length);
+            byte[] message = System.Text.Encoding.UTF8.GetBytes("SLH-DSA-SHAKE-128f");
+            byte[] signature = this._wrapper.Sign(keyPair.SigningKey, message);
+            Assert.Equal(17088, signature.Length);
+            Assert.Equal(signature, this._wrapper.Sign(keyPair.SigningKey, message));
+        }
     }
 }

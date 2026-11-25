@@ -86,7 +86,11 @@ byte[] decrypted = ascon.Ascon128Decrypt(nonce, key, encrypted);
 
 `GetKeyPair` accepts a key size of `2048`, `3072` or `4096` bits; anything else throws `ArgumentOutOfRangeException`. Keys are returned as PEM strings.
 
-`Sign` and `Verify` use RSASSA-PKCS1-v1_5 with SHA-256 (RS256). Pass the message itself: it is hashed inside the library. The signatures interoperate with standard RS256 verifiers, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)`.
+`SignPss` and `VerifyPss` use RSASSA-PSS with SHA-256, MGF1-SHA-256 and a 32-byte random salt (PS256). **Prefer them for new code.** PSS signatures are randomized, so signing the same message twice gives two different signatures that both verify. They interoperate with standard PS256 implementations, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss)`.
+
+`Sign` and `Verify` use RSASSA-PKCS1-v1_5 with SHA-256 (RS256), for interoperating with RS256 systems. The signatures verify with standard RS256 verifiers, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)`.
+
+All four take the message itself: it is hashed inside the library. A PSS signature doesn't verify with `Verify`, and an RS256 signature doesn't verify with `VerifyPss`.
 
 ```csharp
 using CasDotnetSdk.Asymmetric;
@@ -95,6 +99,12 @@ using CasDotnetSdk.Asymmetric.Types;
 RSAWrapper rsa = new RSAWrapper();
 RsaKeyPairResult keyPair = rsa.GetKeyPair(4096);
 byte[] data = Encoding.UTF8.GetBytes("Sign this with RSA");
+
+// RSASSA-PSS (PS256), recommended for new code.
+byte[] pssSignature = rsa.SignPss(keyPair.PrivateKey, data);
+bool isPssValid = rsa.VerifyPss(keyPair.PublicKey, data, pssSignature);
+
+// RSASSA-PKCS1-v1_5 (RS256), for RS256 interoperability.
 byte[] signature = rsa.Sign(keyPair.PrivateKey, data);
 bool isValid = rsa.Verify(keyPair.PublicKey, data, signature);
 ```
@@ -102,6 +112,8 @@ bool isValid = rsa.Verify(keyPair.PublicKey, data, signature);
 
 ### Signatures
 - ED25519
+
+The signer keeps the 32-byte `SigningKey`; verifiers only need the 32-byte public key (`VerifyingKey`, also returned as `PublicKey` by `SignBytes`). Verify with `VerifyWithPublicKeyBytes`. Verification is strict: non-canonical signatures, small-order R components and small-order public keys are rejected.
 
 ```csharp
 using CasDotnetSdk.Signatures;
@@ -112,16 +124,24 @@ Ed25519KeyPairResult keyPair = ed25519Wrapper.GetKeyPair();
 byte[] data = Encoding.UTF8.GetBytes("Sign this with Ed25519");
 Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair.SigningKey, data);
 
-// Verify with the signing key pair you hold...
-bool isValid = ed25519Wrapper.VerifyBytes(keyPair.SigningKey, signature.Signature, data);
-// ...or with only the public key, as a recipient would.
-bool isValidPublic = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, signature.Signature, data);
+// Verify with the signer's public key.
+bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(keyPair.VerifyingKey, signature.Signature, data);
+```
+
+`VerifyBytes(signingKey, signature, data)` is obsolete: it takes the signing key, so a verifier would have to hold it. It gives the same (strict) result as `VerifyWithPublicKeyBytes` and will be removed in a future major version.
+
+```csharp
+// Obsolete (compiler warning CS0618): use VerifyWithPublicKeyBytes instead.
+bool isValidWithSigningKey = ed25519Wrapper.VerifyBytes(keyPair.SigningKey, signature.Signature, data);
 ```
 
 
 ### Post-Quantum Signatures
-- SLH-DSA
+- SLH-DSA (SLH-DSA-SHAKE-128f, FIPS 205)
 - ML-DSA (ML-DSA-65, FIPS 204)
+
+SLH-DSA-SHAKE-128f signatures are deterministic and use an empty context. The signing key is
+64 bytes, the verification key is 32 bytes and the signature is 17,088 bytes.
 
 ```csharp
 using CasDotnetSdk.PQC;
@@ -415,15 +435,33 @@ byte[] opened = hpke.Decrypt(bound.Ciphertext, keyPair.PrivateKey, bound.Encappe
 ### Compression
 - ZSTD
 
-`level` ranges from `0` to `22` (`0` selects zstd's default); anything else throws `ArgumentOutOfRangeException`. Lower levels are faster; higher levels compress better. Decompression needs no level. `Decompress` stops at 64 MiB of output and throws a `CasException` with `CasErrorCode.DecompressionLimitExceeded`, so a small malicious frame can't exhaust memory.
+`level` ranges from `0` to `22` (`0` selects zstd's default); anything else throws `ArgumentOutOfRangeException`. Lower levels are faster; higher levels compress better. Decompression needs no level.
+
+Decompression output is limited, so a small malicious frame can't exhaust memory. Output over the limit throws a `CasException` with `CasErrorCode.DecompressionLimitExceeded`.
+
+- `Decompress(data)` allows up to 64 MiB of output.
+- `Decompress(data, maxOutputSize)` allows up to `maxOutputSize` bytes. It must be greater than `0` (otherwise `ArgumentOutOfRangeException`) and can be above 64 MiB, up to `int.MaxValue`. Set it no higher than the largest output you expect from the data's source.
 
 ```csharp
 using CasDotnetSdk.Compression;
+using CasDotnetSdk.Helpers;
 
 ZSTDWrapper zstd = new ZSTDWrapper();
 byte[] data = Encoding.UTF8.GetBytes("Compress this text, compress this text, compress this text");
 byte[] compressed = zstd.Compress(data, 3);
+
+// Up to 64 MiB of output.
 byte[] decompressed = zstd.Decompress(compressed);
+
+// Up to a limit you choose, here 1 MiB.
+try
+{
+    byte[] limited = zstd.Decompress(compressed, 1024 * 1024);
+}
+catch (CasException ex) when (ex.ErrorCode == CasErrorCode.DecompressionLimitExceeded)
+{
+    // The data would decompress to more than 1 MiB.
+}
 ```
 
 

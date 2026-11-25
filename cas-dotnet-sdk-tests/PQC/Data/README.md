@@ -31,12 +31,14 @@ those builds collide ("the file is being used by another process").
 | Local file | Upstream file | Exercised by |
 | --- | --- | --- |
 | `wycheproof_aes_gcm.json` | `aes_gcm_test.json` | `Wycheproof/AesGcmWycheproofTests.cs` |
-| `wycheproof_ed25519.json` | `ed25519_test.json` | `Wycheproof/Ed25519WycheproofTests.cs` |
+| `wycheproof_ed25519.json` | `ed25519_test.json` | `Wycheproof/Ed25519WycheproofTests.cs` (`VerifyWithPublicKeyBytes` on every key; `VerifyBytes` too on the two keys with published seeds) |
 | `wycheproof_x25519.json` | `x25519_test.json` | `Wycheproof/X25519WycheproofTests.cs` |
 | `wycheproof_hmac_sha256.json` | `hmac_sha256_test.json` | `Wycheproof/HmacWycheproofTests.cs` |
 | `wycheproof_mlkem_1024_decaps.json` | `mlkem_1024_semi_expanded_decaps_test.json` | `MLKEMWrapperTests.WycheproofDecapsulationVectors` |
 | `wycheproof_mldsa_65_sign.json` | `mldsa_65_sign_seed_test.json` | `MLDSAWrapperTests.WycheproofSigningVectors` |
 | `wycheproof_mldsa_65_verify.json` | `mldsa_65_verify_test.json` | `MLDSAWrapperTests.WycheproofSignatureVerificationVectors` |
+| `wycheproof_rsa_pkcs1_{2048,3072,4096}_sha256.json` | `rsa_signature_{2048,3072,4096}_sha256_test.json` | `Wycheproof/RsaWycheproofTests.cs` (`RSAWrapper.Verify`, RS256) |
+| `wycheproof_rsa_pss_{2048,3072,4096}_sha256_mgf1_32.json` | `rsa_pss_{2048,3072,4096}_sha256_mgf1_32_test.json` | `Wycheproof/RsaWycheproofTests.cs` (`RSAWrapper.VerifyPss`, PS256) |
 
 - **Always latest:** by default the target resolves upstream `main` to its
   current commit SHA (logged as `Fetching Wycheproof vectors from
@@ -73,7 +75,7 @@ reported in the failure message.
 - **AES-GCM with AAD, non-96-bit IVs, non-128-bit tags, or AES-192 keys** — the
   API has no AAD parameter, takes a 96-bit nonce, appends a 128-bit tag, and
   exposes only AES-128/256.
-- **Ed25519 and HMAC vectors with an empty message (or empty HMAC key)** — the
+- **Ed25519, RSA and HMAC vectors with an empty message (or empty HMAC key)** — the
   public wrappers reject empty input up front.
 - **HMAC truncated-tag groups** — the SDK always returns the full 32-byte tag, so
   these groups compare the truncated tag and skip `HmacVerifyBytes`.
@@ -85,8 +87,9 @@ reported in the failure message.
 - **ChaCha20-Poly1305, AES-GCM-SIV, HMAC-SHA512** — not exposed by the .NET SDK.
 - **Ascon** — `cas-lib` implements NIST SP 800-232 Ascon-AEAD128; Wycheproof only
   ships vectors for the pre-standard Ascon v1.2 family.
-- **RSA signatures** — `cas-lib` signs with unprefixed PKCS#1 v1.5 over raw data
-  (no DigestInfo), so the `rsa_signature_*` vectors cannot match.
+- **RSA with other hashes, salt lengths or key sizes, and RSA encryption** — the SDK
+  signs only RS256 and PS256 (SHA-256, 32-byte salt) with 2048/3072/4096-bit keys
+  and has no RSA encryption.
 - **ML-KEM seed-form / encaps / keygen vectors** — decapsulation takes the
   expanded 3168-byte key and encapsulation is randomized.
 - **SLH-DSA** — no Wycheproof vectors exist yet.
