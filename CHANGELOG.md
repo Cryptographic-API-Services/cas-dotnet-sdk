@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/compare/v2.0.0...v2.0.1) (2026-11-25)
+
+
+### Other
+
+* **deps:** bump the test packages and keep net6.0/net7.0 on supported versions ([#247](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/247)) ([8a94915](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/8a94915f1e77e68056dda316dadce2b0923462f5))
+
 ## [2.0.0](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/compare/v1.9.82...v2.0.0) (2026-11-25)
 
 
