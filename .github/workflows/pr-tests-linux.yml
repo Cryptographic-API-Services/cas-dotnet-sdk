@@ -1,12 +1,12 @@
 name: PR Tests - Linux
 
+# Runs on every PR, whatever the base branch, so PRs into epic/** integration
+# branches get CI too (#228).
 on:
   pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,7 +16,10 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
+      fail-fast: false
       matrix:
         include:
           - dotnet-version: 6.0
@@ -32,12 +35,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           dotnet-version: |
             6.0.x
@@ -46,20 +50,29 @@ jobs:
             9.0.x
             10.0.x
 
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+
       - name: Build Rust native (Linux)
         working-directory: cas-core-lib
         run: cargo build --release
 
       - name: Stage native lib for tests
         shell: bash
+        env:
+          TFM: ${{ matrix.tfm }}
         run: |
           set -euo pipefail
-          OUTDIR="cas-dotnet-sdk-tests/bin/Release/${{ matrix.tfm }}"
+          OUTDIR="cas-dotnet-sdk-tests/bin/Release/${TFM}"
           mkdir -p "$OUTDIR"
           cp "cas-core-lib/target/release/libcas_core_lib.so" "$OUTDIR/"
           ls -la "$OUTDIR"
 
       - name: Run tests (override framework)
+        env:
+          TFM: ${{ matrix.tfm }}
         run: |
-          echo "Running tests for framework ${{ matrix.tfm }}"
-          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f ${{ matrix.tfm }} --logger "trx"
+          echo "Running tests for framework ${TFM}"
+          dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f "${TFM}" --logger "trx"
