@@ -22,7 +22,8 @@ which runs automatically on every `dotnet build` / `dotnet test` — locally and
 CI — into `obj/<config>/<tfm>/wycheproof/`, and is copied next to the test
 assembly as `PQC/Data/<local name>`. This matches the
 [cas-typescript-sdk](https://github.com/Cryptographic-API-Services/cas-typescript-sdk)
-approach, so the vectors never have to be manually re-committed.
+approach, so the vectors never have to be manually re-committed. They come
+from a pinned commit and are checked against pinned SHA-256 digests (below).
 
 Each target framework gets its own download folder because a plain
 `dotnet test` builds all five frameworks in parallel; a shared folder makes
@@ -40,26 +41,37 @@ those builds collide ("the file is being used by another process").
 | `wycheproof_rsa_pkcs1_{2048,3072,4096}_sha256.json` | `rsa_signature_{2048,3072,4096}_sha256_test.json` | `Wycheproof/RsaWycheproofTests.cs` (`RSAWrapper.Verify`, RS256) |
 | `wycheproof_rsa_pss_{2048,3072,4096}_sha256_mgf1_32.json` | `rsa_pss_{2048,3072,4096}_sha256_mgf1_32_test.json` | `Wycheproof/RsaWycheproofTests.cs` (`RSAWrapper.VerifyPss`, PS256) |
 
-- **Always latest:** by default the target resolves upstream `main` to its
-  current commit SHA (logged as `Fetching Wycheproof vectors from
-  C2SP/wycheproof@<sha> (main)`) and tests against it. Files are re-downloaded
-  only when that SHA changes; otherwise the build logs `Wycheproof vectors
-  already at ...`. To reproduce an old run, pin the SHA from its log.
-- **Pin a ref:** for a reproducible run, pass a commit SHA or tag:
+- **Pinned and checked:** the target downloads from a fixed commit,
+  `WycheproofCommit` in `cas-dotnet-sdk-tests.csproj` (logged as `Fetching
+  Wycheproof vectors from C2SP/wycheproof@<sha>`), and every build checks each
+  file against the SHA-256 in its `WycheproofVector` item's `Sha256` metadata. A
+  mismatch fails the build and deletes the cached copy. Files are re-downloaded
+  only when the ref changes; otherwise the build logs `Wycheproof vectors
+  already at ...`.
+- **Try another ref:** pass a branch, tag or commit SHA:
 
   ```bash
-  dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 -p:WycheproofRef=<sha-or-tag>
+  dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 -p:WycheproofRef=main
   ```
 
-  or set the `WYCHEPROOF_REF` environment variable.
+  or set the `WYCHEPROOF_REF` environment variable. A branch or tag is resolved
+  to a SHA with `git ls-remote`. Files from any commit other than
+  `WycheproofCommit` can't be checked: the build warns and logs each file's
+  digest as `<local name>: Sha256="<hex>"`.
+- **Refreshing the pin:** run the command above with `-p:WycheproofRef=main`,
+  review the upstream changes, and if the tests pass, set `WycheproofCommit` to
+  the logged SHA and copy the logged digests into the `Sha256` metadata (case
+  doesn't matter). Do it in its own PR.
 - **Offline:** if the ref can't be resolved (no network, or `git` not on PATH)
   and the vectors were downloaded before, they are reused with a build warning.
   `-p:FetchWycheproofVectors=false` skips the network entirely.
-- **New failures:** a Wycheproof test that fails without any SDK change usually
-  means upstream added a case the SDK (or the test) doesn't handle yet.
+- **New failures:** with the pin, upstream changes can't break the tests. A
+  Wycheproof test that fails only with a newer ref usually means upstream added
+  a case the SDK (or the test) doesn't handle yet.
 - **Adding a file:** add one `WycheproofVector` item to
   `cas-dotnet-sdk-tests.csproj` (local name as `Include`, upstream name as
-  `Upstream`), add a row above, and load it with `PqcVectorData.Load(...)`.
+  `Upstream`, its SHA-256 at `WycheproofCommit` as `Sha256`), add a row above,
+  and load it with `PqcVectorData.Load(...)`.
 - **Result semantics:** Wycheproof `result` is three-way. Tests assert `valid` and
   `invalid`; `acceptable` is allowed to go either way unless the algorithm
   defines a single correct output (X25519).
