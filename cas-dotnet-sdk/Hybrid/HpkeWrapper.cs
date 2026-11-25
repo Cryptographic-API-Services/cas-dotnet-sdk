@@ -12,8 +12,15 @@ namespace CasDotnetSdk.Hybrid
         }
 
         /// <summary>
-        /// Generates a Private Key, Public Key, and InfoStr for usage with HPKE
+        /// Generates an X25519 private and public key pair for HPKE (RFC 9180), plus a random
+        /// <see cref="HpkeKeyPairResult.InfoStr"/> for convenience.
         /// </summary>
+        /// <remarks>
+        /// <c>InfoStr</c> is not part of the key pair. It is the RFC 9180 <c>info</c> value:
+        /// application context that sender and recipient agree on (for example a protocol name
+        /// and version), passed to <see cref="Encrypt"/> and <see cref="Decrypt"/>. Any agreed
+        /// bytes work; the recipient must use the same bytes the sender used.
+        /// </remarks>
         public HpkeKeyPairResult GenerateKeyPair()
         {
             HpkeKeyPair keyPair = NativeMethods.hpke_generate_keypair();
