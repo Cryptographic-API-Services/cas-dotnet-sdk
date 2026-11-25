@@ -24,9 +24,11 @@ namespace CasDotnetSdk.Helpers
                 return;
             }
 
-            CasErrorCode mapped = Enum.IsDefined(typeof(CasErrorCode), errorCode)
+            // Success (0) is handled above, and Unknown (-1) is never a native code, so an
+            // unrecognized value can never be reported as Success.
+            CasErrorCode mapped = errorCode > 0 && Enum.IsDefined(typeof(CasErrorCode), errorCode)
                 ? (CasErrorCode)errorCode
-                : CasErrorCode.Success;
+                : CasErrorCode.Unknown;
             throw new CasException(mapped, errorCode, $"{operation} failed: {Describe(errorCode)}");
         }
 
@@ -58,6 +60,8 @@ namespace CasDotnetSdk.Helpers
                     return "password hashing failed.";
                 case (int)CasErrorCode.CompressionFailed:
                     return "compression failed.";
+                case (int)CasErrorCode.DecompressionLimitExceeded:
+                    return "the decompressed output would exceed the size limit.";
                 default:
                     return $"the native library returned an unknown error code ({errorCode}).";
             }

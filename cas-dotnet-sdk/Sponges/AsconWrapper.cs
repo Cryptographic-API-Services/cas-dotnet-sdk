@@ -16,6 +16,7 @@ namespace CasDotnetSdk.Sponges
         public byte[] Ascon128Key()
         {
             CasCoreLib.Ascon128Key keyResult = NativeMethods.ascon_128_key();
+            CasErrorHandler.ThrowIfError(keyResult.error_code, "Ascon-128 key generation");
             return NativeByteBuffer.CopyAndFree(keyResult.key, keyResult.length);
         }
 
@@ -25,6 +26,7 @@ namespace CasDotnetSdk.Sponges
         public byte[] Ascon128Nonce()
         {
             CasCoreLib.Ascon128Nonce nonceResult = NativeMethods.ascon_128_nonce();
+            CasErrorHandler.ThrowIfError(nonceResult.error_code, "Ascon-128 nonce generation");
             return NativeByteBuffer.CopyAndFree(nonceResult.nonce, nonceResult.length);
         }
 

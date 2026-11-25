@@ -52,13 +52,14 @@ namespace CasDotnetSdk.Hashers
         }
 
         private unsafe delegate Blake2HashByteResult HashFn(byte* data, nuint length);
-        private unsafe delegate bool VerifyFn(byte* data, nuint dataLength, byte* hash, nuint hashLength);
+        private unsafe delegate CasVerifyResult VerifyFn(byte* data, nuint dataLength, byte* hash, nuint hashLength);
 
         private static unsafe byte[] Hash(byte[] data, HashFn nativeHash)
         {
             fixed (byte* dataPtr = NativePin.Of(data))
             {
                 Blake2HashByteResult result = nativeHash(dataPtr, (nuint)data.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "BLAKE2 hash");
                 return NativeByteBuffer.CopyAndFree(result.result_bytes_ptr, result.length);
             }
         }
@@ -68,7 +69,10 @@ namespace CasDotnetSdk.Hashers
             fixed (byte* dataPtr = NativePin.Of(data))
             fixed (byte* hashPtr = NativePin.Of(hash))
             {
-                return nativeVerify(dataPtr, (nuint)data.Length, hashPtr, (nuint)hash.Length);
+                // The native comparison is constant-time.
+                CasVerifyResult result = nativeVerify(dataPtr, (nuint)data.Length, hashPtr, (nuint)hash.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "BLAKE2 verify");
+                return result.is_valid;
             }
         }
 

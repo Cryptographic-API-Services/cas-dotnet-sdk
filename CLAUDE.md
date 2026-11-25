@@ -15,7 +15,7 @@ CAS .NET SDK is a managed cryptographic toolkit published as the [`cas-dotnet-sd
 
 ## Build & Test
 
-The Rust native library must be built and present alongside the managed assemblies, or all P/Invoke calls fail at runtime. The SDK `.csproj` automates this via MSBuild targets (`BuildRust` / `StageRustArtifacts`) that run `cargo build --release` before each build — so a plain `dotnet build` builds Rust too. This requires a working Rust toolchain (`cargo`) on PATH.
+The Rust native library must be built and present alongside the managed assemblies, or all P/Invoke calls fail at runtime. The SDK `.csproj` automates this via MSBuild targets (`BuildRust` / `StageRustArtifacts`) that run `cargo build --release --locked` before each build — so a plain `dotnet build` builds Rust too. This requires a working Rust toolchain (`cargo`) on PATH; the version is pinned in `cas-core-lib/rust-toolchain.toml` (run `rustup toolchain install` in `cas-core-lib/` once). `--locked` builds the graph in the submodule's committed `Cargo.lock`. The target sets `CAS_DOTNET_BINDINGS_DIR` so cas-core-lib's `build.rs` writes the bindings into `cas-dotnet-sdk/generated/`; without it they go only to cargo's `OUT_DIR`.
 
 ```bash
 # Full build (also compiles the Rust submodule via the BuildRust target)
@@ -25,7 +25,7 @@ dotnet build cas-dotnet-sdk.sln
 dotnet build cas-dotnet-sdk.sln -p:BuildNativeRust=false
 
 # Build the Rust lib manually
-cd cas-core-lib && cargo build --release
+cd cas-core-lib && CAS_DOTNET_BINDINGS_DIR=../cas-dotnet-sdk/generated cargo build --release --locked
 
 # Run all tests for one framework (must specify -f; the project multi-targets)
 dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f net8.0
@@ -49,14 +49,15 @@ Every cryptographic capability is grouped into a top-level folder by category (`
 
 1. **Public wrapper** (e.g. `Hashers/SHAWrapper.cs`) — the user-facing `unsafe` class, implementing a category interface where one exists (e.g. `IHasherBase`, `IPasswordHasherBase`). Each method pins its inputs with `fixed`, calls the generated binding on `NativeMethods`, checks the result's `error_code`, then copies the output into managed memory and frees the native allocation.
 
-2. **Generated bindings** (`generated/NativeMethods.g.cs`) — `[DllImport]` declarations and C ABI result structs (e.g. `CasStringResult`, `CasVerifyResult`) emitted by csbindgen from `cas-core-lib/build.rs` during the `BuildRust` target. Never edit this file by hand.
+2. **Generated bindings** (`cas-dotnet-sdk/generated/NativeMethods.g.cs`) — `[DllImport]` declarations and C ABI result structs (e.g. `CasStringResult`, `CasVerifyResult`) emitted by csbindgen from `cas-core-lib/build.rs` during the `BuildRust` target. Never edit this file by hand.
 
 3. **Types** (`<Category>/Types/*.cs`) — public result classes returned to callers (e.g. `Ed25519KeyPairResult`, `HpkeEncryptResult`), plus category enums.
 
 ### Cross-cutting helpers (`Helpers/`)
 
 - `CasErrorHandler.ThrowIfError` — turns a non-zero `error_code` into a `CasException` (carrying `CasErrorCode` and the raw code). **Call it before reading any pointer from a result**: the native layer leaves pointers null on failure.
-- `NativeByteBuffer.CopyAndFree` / `NativeString.ReadAndFree` — copy a native buffer or C string into managed memory and free it through the FFI. **Every pointer returned by the native layer must go through one of these**, or memory leaks. This is the single most important invariant when adding new wrappers.
+- `NativeByteBuffer.CopyAndFree` / `NativeString.ReadAndFree` — copy a native buffer or C string into managed memory and free it through the FFI (in a `finally`, so a failed copy can't leak). **Every pointer returned by the native layer must be freed exactly once**, through the native allocator so cas-core-lib's zeroizing allocator wipes it. This is the single most important invariant when adding new wrappers.
+- **Multi-buffer results** (X25519/Ed25519/HPKE/RSA/PQC key pairs, Ed25519 signatures, HPKE encrypt, ML-KEM encapsulate) have a native `free_<struct>` function. Call `ThrowIfError` and read the fields with `NativeByteBuffer.Copy` / `NativeString.Read` inside a `try`, and call `NativeMethods.free_<struct>(&result)` in the `finally`. Never free their fields one by one.
 - `NativeString.ToCString` — encodes a managed string as a null-terminated UTF-8 buffer for pinning.
 - `NativePin.Of` — substitutes a non-empty sentinel for zero-length arrays so `fixed` yields a non-null pointer.
 
@@ -70,7 +71,7 @@ The password hashers expose `HashPasswordWithParameters` alongside the default `
 
 ## Adding a new algorithm
 
-1. Add the Rust FFI function in `cas-core-lib` (separate submodule/repo), returning a result struct with an `error_code`, and rebuild — csbindgen regenerates `generated/NativeMethods.g.cs`.
+1. Add the Rust FFI function in `cas-core-lib` (separate submodule/repo), returning a result struct with an `error_code`, bump the submodule, and rebuild — csbindgen regenerates `cas-dotnet-sdk/generated/NativeMethods.g.cs`. Commit the regenerated file with the submodule bump.
 2. Implement the public method on the wrapper: pin inputs with `fixed`, call `NativeMethods`, `CasErrorHandler.ThrowIfError`, then marshal out with `NativeByteBuffer` / `NativeString`.
 3. Add any new public result class to `Types/`.
 4. If the category has a factory/enum, register the new type there.
@@ -99,6 +100,6 @@ git grep -hoE "^\s+public [A-Za-z0-9<>\[\]]+ [A-Z][A-Za-z0-9]*\(" -- 'cas-dotnet
 
 ## Cross-platform constraint
 
-Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`).
+Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `cas-dotnet-sdk/generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release --locked`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`).
 
 Note: this is desktop **macOS / Darwin**, not iOS. Real iOS (`aarch64-apple-ios`) would need a cross-compiled native lib and a simulator/device to run tests, neither of which the current CI provides.

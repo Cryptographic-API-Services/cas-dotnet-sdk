@@ -11,19 +11,21 @@ namespace CasDotnetSdk.Compression
         }
 
         /// <summary>
-        /// Datas to the byte array to compress and the level of encryption.
-        /// Zstandard (zstd) supports 22 compression levels, ranging from -22 to 22. Lower levels, such as 1–9,
-        /// are faster but result in larger file sizes, while higher levels, such as 10–22, provide better compression ratios.
+        /// Compresses a byte array with Zstandard (zstd).
         /// </summary>
+        /// <param name="data">The data to compress.</param>
+        /// <param name="level">The compression level, 0 to 22 (0 selects zstd's default, 3). Lower levels, such as 1–9,
+        /// are faster but result in larger output, while higher levels, such as 10–22, compress better.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The level is outside 0 to 22.</exception>
         public byte[] Compress(byte[] data, int level)
         {
             if (data == null || data.Length == 0)
             {
                 throw new Exception("Must pass an allocated data array to ZSTD Compression");
             }
-            if (level < -22 || level > 22)
+            if (level < 0 || level > 22)
             {
-                throw new Exception("Please pass in a valid level for ZSTD Compression");
+                throw new ArgumentOutOfRangeException(nameof(level), level, "The ZSTD compression level must be between 0 and 22.");
             }
 
             fixed (byte* dataPtr = NativePin.Of(data))
@@ -35,9 +37,11 @@ namespace CasDotnetSdk.Compression
         }
 
         /// <summary>
-        /// Decompresses and previosuly compressed byte array with ZSTD.
-        /// No level is required to decompress.
+        /// Decompresses a previously compressed byte array with ZSTD.
+        /// No level is required to decompress. The output is capped at 64 MiB, so a small
+        /// malicious frame can't exhaust memory.
         /// </summary>
+        /// <exception cref="CasException"><see cref="CasErrorCode.DecompressionLimitExceeded"/> when the output would exceed 64 MiB.</exception>
         public byte[] Decompress(byte[] data)
         {
             if (data == null || data.Length == 0)

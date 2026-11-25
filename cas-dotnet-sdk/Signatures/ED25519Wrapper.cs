@@ -22,11 +22,19 @@ namespace CasDotnetSdk.Signatures
         public Ed25519KeyPairResult GetKeyPair()
         {
             Ed25519KeyPairBytesResult result = NativeMethods.get_ed25519_key_pair_bytes();
-            return new Ed25519KeyPairResult()
+            try
             {
-                SigningKey = NativeByteBuffer.CopyAndFree(result.signing_key, result.signing_key_length),
-                VerifyingKey = NativeByteBuffer.CopyAndFree(result.verifying_key, result.verifying_key_length)
-            };
+                CasErrorHandler.ThrowIfError(result.error_code, "ED25519 key generation");
+                return new Ed25519KeyPairResult()
+                {
+                    SigningKey = NativeByteBuffer.Copy(result.signing_key, result.signing_key_length),
+                    VerifyingKey = NativeByteBuffer.Copy(result.verifying_key, result.verifying_key_length)
+                };
+            }
+            finally
+            {
+                NativeMethods.free_ed25519_key_pair_bytes_result(&result);
+            }
         }
 
         /// <summary>
@@ -47,12 +55,19 @@ namespace CasDotnetSdk.Signatures
             fixed (byte* dataPtr = NativePin.Of(dataToSign))
             {
                 CasCoreLib.Ed25519ByteSignatureResult result = NativeMethods.sign_with_key_pair_bytes(keyPtr, (nuint)keyBytes.Length, dataPtr, (nuint)dataToSign.Length);
-                CasErrorHandler.ThrowIfError(result.error_code, "ED25519 sign");
-                return new CasDotnetSdk.Signatures.Types.Ed25519ByteSignatureResult()
+                try
                 {
-                    PublicKey = NativeByteBuffer.CopyAndFree(result.public_key, result.public_key_length),
-                    Signature = NativeByteBuffer.CopyAndFree(result.signature_byte_ptr, result.signature_length)
-                };
+                    CasErrorHandler.ThrowIfError(result.error_code, "ED25519 sign");
+                    return new CasDotnetSdk.Signatures.Types.Ed25519ByteSignatureResult()
+                    {
+                        PublicKey = NativeByteBuffer.Copy(result.public_key, result.public_key_length),
+                        Signature = NativeByteBuffer.Copy(result.signature_byte_ptr, result.signature_length)
+                    };
+                }
+                finally
+                {
+                    NativeMethods.free_ed25519_byte_signature_result(&result);
+                }
             }
         }
 
