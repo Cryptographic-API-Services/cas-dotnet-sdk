@@ -5,17 +5,40 @@ using System.Runtime.InteropServices;
 namespace CasDotnetSdk.Helpers
 {
     /// <summary>
-    /// Copies a byte buffer handed back by cas-core-lib into a managed array and
-    /// then releases the native allocation via the FFI <c>free_bytes</c>.
+    /// Copies byte buffers handed back by cas-core-lib into managed arrays.
     /// <para>
-    /// This centralizes the "marshal the bytes out, then free the pointer"
-    /// invariant that every pointer-returning native call must honor — the single
-    /// most common source of leaks in the hand-written wrappers.
+    /// Every pointer the native layer returns is owned by the caller and must be released
+    /// exactly once, through the native allocator, so that cas-core-lib's zeroizing allocator
+    /// wipes it. Single-buffer results go through <see cref="CopyAndFree"/>. Multi-buffer
+    /// results are read with <see cref="Copy"/> inside a <c>try</c> and released in a
+    /// <c>finally</c> with their <c>free_&lt;struct&gt;</c> function, so a copy that throws
+    /// can't leak the other buffers.
     /// </para>
     /// </summary>
     internal static unsafe class NativeByteBuffer
     {
+        /// <summary>
+        /// Copies <paramref name="length"/> bytes from <paramref name="ptr"/>, then frees the
+        /// native buffer with <c>free_bytes</c>, even if the copy throws.
+        /// </summary>
         public static byte[] CopyAndFree(byte* ptr, nuint length)
+        {
+            try
+            {
+                return Copy(ptr, length);
+            }
+            finally
+            {
+                // free_bytes ignores null.
+                NativeMethods.free_bytes(ptr);
+            }
+        }
+
+        /// <summary>
+        /// Copies <paramref name="length"/> bytes from <paramref name="ptr"/> without freeing it.
+        /// The caller frees the owning result struct.
+        /// </summary>
+        public static byte[] Copy(byte* ptr, nuint length)
         {
             if (ptr == null)
             {
@@ -28,7 +51,6 @@ namespace CasDotnetSdk.Helpers
             {
                 Marshal.Copy((IntPtr)ptr, managed, 0, len);
             }
-            NativeMethods.free_bytes(ptr);
             return managed;
         }
     }

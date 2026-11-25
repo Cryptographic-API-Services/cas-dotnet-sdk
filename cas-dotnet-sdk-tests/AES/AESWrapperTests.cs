@@ -1,3 +1,4 @@
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
@@ -41,29 +42,55 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void Aes256X25519DiffieHellmanKeyAndNonce()
+        public void Aes256X25519DiffieHellmanKey()
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
         }
 
         [Fact]
-        public void Aes128X25519DiffieHellmanKeyAndNonce()
+        public void Aes128X25519DiffieHellmanKey()
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
+        }
+
+        [Fact]
+        public void X25519DerivedKeysAreBoundToCipherAndKeySize()
+        {
+            X25519SecretPublicKey alice = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bob = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            byte[] sharedSecret = this._x25519Wrapper.GenerateSharedSecret(alice.SecretKey, bob.PublicKey).SharedSecret;
+
+            byte[] aes256Key = this._aESWrapper.Aes256KeyFromX25519SharedSecret(sharedSecret, alice.PublicKey, bob.PublicKey);
+            byte[] aes128Key = this._aESWrapper.Aes128KeyFromX25519SharedSecret(sharedSecret, alice.PublicKey, bob.PublicKey);
+
+            Assert.Equal(32, aes256Key.Length);
+            Assert.Equal(16, aes128Key.Length);
+            Assert.NotEqual(sharedSecret, aes256Key);
+            Assert.NotEqual(aes256Key[..16], aes128Key);
+        }
+
+        [Fact]
+        public void X25519DerivedKeyRejectsAllZeroSharedSecret()
+        {
+            X25519SecretPublicKey alice = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bob = this._x25519Wrapper.GenerateSecretAndPublicKey();
+
+            CasException ex = Assert.Throws<CasException>(() => this._aESWrapper.Aes256KeyFromX25519SharedSecret(new byte[32], alice.PublicKey, bob.PublicKey));
+            Assert.Equal(CasErrorCode.InvalidKey, ex.ErrorCode);
         }
 
         [Fact]
@@ -73,8 +100,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
             byte[] nonce = this._aESWrapper.GenerateAESNonce();
@@ -91,8 +118,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
             byte[] nonce = this._aESWrapper.GenerateAESNonce();

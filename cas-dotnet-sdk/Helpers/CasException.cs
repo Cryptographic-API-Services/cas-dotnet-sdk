@@ -10,8 +10,8 @@ namespace CasDotnetSdk.Helpers
     public class CasException : Exception
     {
         /// <summary>
-        /// The mapped error category. Falls back to <see cref="CasErrorCode.Success"/>
-        /// only when the raw code is unrecognized (see <see cref="RawErrorCode"/>).
+        /// The mapped error category, or <see cref="CasErrorCode.Unknown"/> when the raw code
+        /// is unrecognized (see <see cref="RawErrorCode"/>). Never <see cref="CasErrorCode.Success"/>.
         /// </summary>
         public CasErrorCode ErrorCode { get; }
 

@@ -13,11 +13,19 @@ namespace CasDotnetSdk.PQC
         public SLHDSAKeyPair GenerateSigningAndVerificationKey()
         {
             SlhDsaKeyPairResult result = NativeMethods.slh_dsa_generate_signing_and_verification_key();
-            return new SLHDSAKeyPair
+            try
             {
-                SigningKey = NativeByteBuffer.CopyAndFree(result.signing_key_ptr, result.signing_key_length),
-                VerificationKey = NativeByteBuffer.CopyAndFree(result.verification_key_ptr, result.verification_key_length)
-            };
+                CasErrorHandler.ThrowIfError(result.error_code, "SLH-DSA key generation");
+                return new SLHDSAKeyPair
+                {
+                    SigningKey = NativeByteBuffer.Copy(result.signing_key_ptr, result.signing_key_length),
+                    VerificationKey = NativeByteBuffer.Copy(result.verification_key_ptr, result.verification_key_length)
+                };
+            }
+            finally
+            {
+                NativeMethods.free_slh_dsa_key_pair_result(&result);
+            }
         }
 
         public byte[] Sign(byte[] signingKey, byte[] message)

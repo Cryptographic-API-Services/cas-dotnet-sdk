@@ -12,6 +12,11 @@ namespace CasDotnetSdk.Helpers
     /// </summary>
     public enum CasErrorCode
     {
+        /// <summary>
+        /// The native layer returned a code this version of the SDK doesn't know. The raw
+        /// value is in <see cref="CasException.RawErrorCode"/>.
+        /// </summary>
+        Unknown = -1,
         Success = 0,
         InvalidKey = 1,
         InvalidNonce = 2,
@@ -25,5 +30,10 @@ namespace CasDotnetSdk.Helpers
         KeyGenerationFailed = 10,
         PasswordHashingFailed = 11,
         CompressionFailed = 12,
+        /// <summary>
+        /// zstd decompression stopped because the output would exceed the size limit
+        /// (64 MiB by default).
+        /// </summary>
+        DecompressionLimitExceeded = 13,
     }
 }

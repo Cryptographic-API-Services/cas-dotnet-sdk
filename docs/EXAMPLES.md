@@ -42,14 +42,27 @@ byte[] decrypted = aesWrapper.Aes128Decrypt(nonce, key, encrypted);
 
 - AES key from an X25519 shared secret
 
-Both parties derive the same AES key from their X25519 shared secret (see [Key Exchange](#key-exchange)). The nonce is not secret and is sent along with the ciphertext.
+Both parties derive the same AES key from their X25519 shared secret (see [Key Exchange](#key-exchange)) and both public keys. The key is HKDF-SHA256 output bound to the cipher, the key size and both public keys, which can be passed in either order. A low-order peer public key is rejected with `CasErrorCode.InvalidKey`. These methods return only the key: the nonce comes from `GenerateAESNonce`, is not secret, and is sent along with the ciphertext.
 
 ```csharp
+using CasDotnetSdk.KeyExchange;
+using CasDotnetSdk.KeyExchange.Types;
+using CasDotnetSdk.Symmetric;
+
+X25519Wrapper x25519 = new X25519Wrapper();
+X25519SecretPublicKey alice = x25519.GenerateSecretAndPublicKey();
+X25519SecretPublicKey bob = x25519.GenerateSecretAndPublicKey();
+byte[] aliceSecret = x25519.GenerateSharedSecret(alice.SecretKey, bob.PublicKey).SharedSecret;
+byte[] bobSecret = x25519.GenerateSharedSecret(bob.SecretKey, alice.PublicKey).SharedSecret;
+
 AESWrapper aesWrapper = new AESWrapper();
-byte[] aes256Key = aesWrapper.Aes256KeyNonceX25519DiffieHellman(sharedSecret);
-byte[] aes128Key = aesWrapper.Aes128KeyNonceX25519DiffieHellman(sharedSecret);
+byte[] aliceKey = aesWrapper.Aes256KeyFromX25519SharedSecret(aliceSecret, alice.PublicKey, bob.PublicKey);
+byte[] bobKey = aesWrapper.Aes256KeyFromX25519SharedSecret(bobSecret, bob.PublicKey, alice.PublicKey); // same key as aliceKey
+byte[] aes128Key = aesWrapper.Aes128KeyFromX25519SharedSecret(aliceSecret, alice.PublicKey, bob.PublicKey);
+
 byte[] nonce = aesWrapper.GenerateAESNonce();
-byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, aes256Key, Encoding.UTF8.GetBytes("Hello World"));
+byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, aliceKey, Encoding.UTF8.GetBytes("Hello World"));
+byte[] decrypted = aesWrapper.Aes256Decrypt(nonce, bobKey, encrypted);
 ```
 
 
@@ -71,7 +84,9 @@ byte[] decrypted = ascon.Ascon128Decrypt(nonce, key, encrypted);
 ### Asymmetric
 - RSA
 
-`GetKeyPair` accepts a key size of `1024`, `2048` or `4096`. Keys are returned as strings.
+`GetKeyPair` accepts a key size of `2048`, `3072` or `4096` bits; anything else throws `ArgumentOutOfRangeException`. Keys are returned as PEM strings.
+
+`Sign` and `Verify` use RSASSA-PKCS1-v1_5 with SHA-256 (RS256). Pass the message itself: it is hashed inside the library. The signatures interoperate with standard RS256 verifiers, such as .NET's `RSA.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)`.
 
 ```csharp
 using CasDotnetSdk.Asymmetric;
@@ -349,11 +364,19 @@ HpkeEncryptResult encrypted = hpke.Encrypt(plaintext, keyPair.PublicKey, keyPair
 byte[] decrypted = hpke.Decrypt(encrypted.Ciphertext, keyPair.PrivateKey, encrypted.EncappedKey, encrypted.Tag, keyPair.InfoStr);
 ```
 
+`infoStr` is RFC 9180 application context that both sides agree on (at most 65,530 bytes). The optional `aad` argument binds the ciphertext to associated data, such as a record id or a header, that is authenticated but not encrypted. Decryption fails unless the recipient passes the same `aad`:
+
+```csharp
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+HpkeEncryptResult bound = hpke.Encrypt(plaintext, keyPair.PublicKey, keyPair.InfoStr, aad);
+byte[] opened = hpke.Decrypt(bound.Ciphertext, keyPair.PrivateKey, bound.EncappedKey, bound.Tag, keyPair.InfoStr, aad);
+```
+
 
 ### Compression
 - ZSTD
 
-`level` ranges from `-22` to `22`. Lower levels are faster; higher levels compress better. Decompression needs no level.
+`level` ranges from `0` to `22` (`0` selects zstd's default); anything else throws `ArgumentOutOfRangeException`. Lower levels are faster; higher levels compress better. Decompression needs no level. `Decompress` stops at 64 MiB of output and throws a `CasException` with `CasErrorCode.DecompressionLimitExceeded`, so a small malicious frame can't exhaust memory.
 
 ```csharp
 using CasDotnetSdk.Compression;
@@ -366,7 +389,7 @@ byte[] decompressed = zstd.Decompress(compressed);
 
 
 ### Error Handling
-A failure in the native library throws a `CasException`. `ErrorCode` gives the failure category, and `RawErrorCode` keeps the native code.
+A failure in the native library throws a `CasException`. `ErrorCode` gives the failure category, and `RawErrorCode` keeps the native code. A code this SDK version doesn't recognize maps to `CasErrorCode.Unknown`, never to `Success`.
 
 ```csharp
 using CasDotnetSdk.Helpers;

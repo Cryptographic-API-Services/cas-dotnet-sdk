@@ -49,14 +49,15 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: Setup Rust
-        run: |
-          rustup toolchain install stable --profile minimal
-          rustup default stable
+      # The submodule pins the compiler (rust-toolchain.toml) and the crate graph
+      # (Cargo.lock); --locked fails instead of re-resolving it (#205, #211).
+      - name: Install toolchain from cas-core-lib/rust-toolchain.toml
+        working-directory: cas-core-lib
+        run: rustup toolchain install
 
       - name: Build Rust native (Windows)
         working-directory: cas-core-lib
-        run: cargo build --release
+        run: cargo build --release --locked
 
       - name: Stage native lib for tests
         shell: pwsh
