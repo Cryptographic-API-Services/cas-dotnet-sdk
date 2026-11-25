@@ -1,0 +1,66 @@
+# Weekly dependency updates (#208), same policy as cas-lib, cas-core-lib and
+# cas-typescript-sdk. PR titles follow Conventional Commits so they pass
+# pr-title.yml: `chore(deps): ...` for NuGet packages and the cas-core-lib
+# submodule, and `ci(deps): ...` for actions.
+#
+# There is no Cargo manifest in this repo: the Rust crate graph lives in the
+# cas-core-lib submodule (its Cargo.lock), whose own Dependabot config updates
+# it. Here the `gitsubmodule` entry proposes new cas-core-lib commits, so the
+# native library only moves in a reviewed PR that also regenerates
+# cas-dotnet-sdk/generated/NativeMethods.g.cs (the PR workflows fail if it
+# doesn't). The cargo audit workflow checks the submodule's Cargo.lock.
+#
+# Security updates for vulnerable dependencies, including transitive ones, come
+# from Dependabot security updates (a repository setting), not from this file;
+# the weekly cargo audit workflow flags anything they miss.
+version: 2
+updates:
+  # Finds the SDK and test projects through cas-dotnet-sdk.sln at the root.
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # Wait a week after a release before proposing it, so a compromised or
+    # broken release has time to be unlisted. Security updates skip this.
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      # Patch releases in one PR a week. Minor and major releases stay separate
+      # PRs (for 0.x packages a minor release is a breaking change), so each
+      # gets its own review.
+      nuget-patch:
+        update-types:
+          - "patch"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      # All action bumps in one PR. Dependabot updates the SHA pins and keeps
+      # the `# vX.Y.Z` comment in step.
+      github-actions:
+        patterns:
+          - "*"
