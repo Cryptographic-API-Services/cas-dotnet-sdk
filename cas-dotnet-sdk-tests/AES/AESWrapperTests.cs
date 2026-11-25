@@ -147,6 +147,95 @@ namespace CasDotnetSdkTests.Tests
             Assert.Equal(expectedCiphertext, encrypted.Take(expectedCiphertext.Length).ToArray());
         }
 
+        [Theory]
+        [MemberData(nameof(AES128NistAadDecryptVectors))]
+        public void Aes128WithAadMatchesNistDecryptVectors(byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            AssertNistAadDecrypt(this._aESWrapper.Aes128Decrypt, this._aESWrapper.Aes128Encrypt, nonce, key, ciphertextAndTag, aad, expectedPlaintext, expectFailure);
+        }
+
+        [Theory]
+        [MemberData(nameof(AES256NistAadDecryptVectors))]
+        public void Aes256WithAadMatchesNistDecryptVectors(byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            AssertNistAadDecrypt(this._aESWrapper.Aes256Decrypt, this._aESWrapper.Aes256Encrypt, nonce, key, ciphertextAndTag, aad, expectedPlaintext, expectFailure);
+        }
+
+        private static void AssertNistAadDecrypt(
+            Func<byte[], byte[], byte[], byte[]?, byte[]> decrypt,
+            Func<byte[], byte[], byte[], byte[]?, byte[]> encrypt,
+            byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            if (expectFailure)
+            {
+                CasException ex = Assert.Throws<CasException>(() => decrypt(nonce, key, ciphertextAndTag, aad));
+                Assert.Equal(CasErrorCode.DecryptionFailed, ex.ErrorCode);
+                return;
+            }
+
+            Assert.Equal(expectedPlaintext, decrypt(nonce, key, ciphertextAndTag, aad));
+            Assert.Equal(ciphertextAndTag, encrypt(nonce, key, expectedPlaintext, aad));
+        }
+
+        public static IEnumerable<object[]> AES128NistAadDecryptVectors()
+        {
+            return LoadGcmAadDecryptVectors("gcmDecrypt128.rsp");
+        }
+
+        public static IEnumerable<object[]> AES256NistAadDecryptVectors()
+        {
+            return LoadGcmAadDecryptVectors("gcmDecrypt256.rsp");
+        }
+
+        // Yields the 96-bit IV, 128-bit tag cases (the only shape the SDK's AES-GCM takes) for
+        // every AAD length, including the FAIL cases, as (IV, key, CT || tag, AAD, PT, FAIL).
+        private static IEnumerable<object[]> LoadGcmAadDecryptVectors(string fileName)
+        {
+            Dictionary<string, string> header = new Dictionary<string, string>();
+            Dictionary<string, string> fields = new Dictionary<string, string>();
+
+            foreach (string rawLine in File.ReadLines(ResolveVectorPath(fileName)))
+            {
+                string line = rawLine.Trim();
+                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (line.StartsWith("[", StringComparison.Ordinal))
+                {
+                    string[] parts = line.Trim('[', ']').Split('=', 2);
+                    header[parts[0].Trim()] = parts[1].Trim();
+                    continue;
+                }
+
+                bool isFailure = line.Equals("FAIL", StringComparison.Ordinal);
+                if (!isFailure)
+                {
+                    string[] parts = line.Split('=', 2);
+                    fields[parts[0].Trim()] = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+                    if (parts[0].Trim() != "PT")
+                    {
+                        continue;
+                    }
+                }
+
+                if (header.GetValueOrDefault("IVlen") == "96" && header.GetValueOrDefault("Taglen") == "128")
+                {
+                    yield return new object[]
+                    {
+                        HexToBytes(fields["IV"]),
+                        HexToBytes(fields["Key"]),
+                        HexToBytes(fields["CT"] + fields["Tag"]),
+                        HexToBytes(fields["AAD"]),
+                        isFailure ? Array.Empty<byte>() : HexToBytes(fields["PT"]),
+                        isFailure
+                    };
+                }
+                fields.Clear();
+            }
+        }
+
         public static IEnumerable<object[]> AES128NistVectors()
         {
             return LoadGcmEncryptVectors("gcmDecrypt128.rsp");

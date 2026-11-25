@@ -16,7 +16,35 @@ Examples for every public method in the SDK, grouped by category. Snippets assum
 
 
 ### Symmetric
-- AES 256 (GCM)
+All the ciphers below are AEADs: decryption fails with a `CasException` (`CasErrorCode.DecryptionFailed`) if the ciphertext, the key, the nonce or the associated data is wrong.
+
+- AES-GCM: Seal / Open (recommended)
+
+`Aes256Seal` / `Aes128Seal` pick a fresh random 96-bit nonce for every message and return `nonce (12 bytes) || ciphertext || tag (16 bytes)`; `Aes256Open` / `Aes128Open` split it back apart. The caller never handles a nonce, so it can't reuse one. Random 96-bit nonces are safe for about 2^32 messages per key (NIST SP 800-38D): rotate the key before that.
+
+The optional `aad` argument is associated data, such as a record id or a header: it is authenticated but not encrypted, and it is not included in the output. `Open` fails unless it gets the same `aad`. `null` (the default) means empty.
+
+```csharp
+using CasDotnetSdk.Symmetric;
+
+AESWrapper aesWrapper = new AESWrapper();
+byte[] key = aesWrapper.Aes256Key();
+byte[] data = Encoding.UTF8.GetBytes("Hello World");
+byte[] sealedMessage = aesWrapper.Aes256Seal(key, data);
+byte[] opened = aesWrapper.Aes256Open(key, sealedMessage);
+
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+byte[] boundMessage = aesWrapper.Aes256Seal(key, data, aad);
+byte[] boundOpened = aesWrapper.Aes256Open(key, boundMessage, aad);
+
+byte[] key128 = aesWrapper.Aes128Key();
+byte[] sealed128 = aesWrapper.Aes128Seal(key128, data, aad);
+byte[] opened128 = aesWrapper.Aes128Open(key128, sealed128, aad);
+```
+
+- AES 256 (GCM) with a caller-supplied nonce
+
+Use these only when a format dictates the nonce. Never encrypt two messages with the same nonce and key: with AES-GCM that reveals the XOR of the plaintexts and lets an attacker forge messages. Generate a new nonce for every message and send it along with the ciphertext; it is not secret.
 
 ```csharp
 using CasDotnetSdk.Symmetric;
@@ -29,7 +57,7 @@ byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, key, data);
 byte[] decrypted = aesWrapper.Aes256Decrypt(nonce, key, encrypted);
 ```
 
-- AES 128 (GCM)
+- AES 128 (GCM) with a caller-supplied nonce
 
 ```csharp
 AESWrapper aesWrapper = new AESWrapper();
@@ -40,9 +68,29 @@ byte[] encrypted = aesWrapper.Aes128Encrypt(nonce, key, data);
 byte[] decrypted = aesWrapper.Aes128Decrypt(nonce, key, encrypted);
 ```
 
+- AES-GCM with associated data and a caller-supplied nonce
+
+The encrypt and decrypt methods take associated data as a fourth argument (`null` means empty). The result is `ciphertext || tag`, without the nonce.
+
+```csharp
+AESWrapper aesWrapper = new AESWrapper();
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+byte[] data = Encoding.UTF8.GetBytes("Hello World");
+
+byte[] key = aesWrapper.Aes256Key();
+byte[] nonce = aesWrapper.GenerateAESNonce();
+byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, key, data, aad);
+byte[] decrypted = aesWrapper.Aes256Decrypt(nonce, key, encrypted, aad);
+
+byte[] key128 = aesWrapper.Aes128Key();
+byte[] nonce128 = aesWrapper.GenerateAESNonce();
+byte[] encrypted128 = aesWrapper.Aes128Encrypt(nonce128, key128, data, aad);
+byte[] decrypted128 = aesWrapper.Aes128Decrypt(nonce128, key128, encrypted128, aad);
+```
+
 - AES key from an X25519 shared secret
 
-Both parties derive the same AES key from their X25519 shared secret (see [Key Exchange](#key-exchange)) and both public keys. The key is HKDF-SHA256 output bound to the cipher, the key size and both public keys, which can be passed in either order. A low-order peer public key is rejected with `CasErrorCode.InvalidKey`. These methods return only the key: the nonce comes from `GenerateAESNonce`, is not secret, and is sent along with the ciphertext.
+Both parties derive the same AES key from their X25519 shared secret (see [Key Exchange](#key-exchange)) and both public keys. The key is HKDF-SHA256 output bound to the cipher, the key size and both public keys, which can be passed in either order. A low-order peer public key is rejected with `CasErrorCode.InvalidKey`. These methods return only the key: `Aes256Seal` picks the nonce and puts it in front of the ciphertext.
 
 ```csharp
 using CasDotnetSdk.KeyExchange;
@@ -60,14 +108,92 @@ byte[] aliceKey = aesWrapper.Aes256KeyFromX25519SharedSecret(aliceSecret, alice.
 byte[] bobKey = aesWrapper.Aes256KeyFromX25519SharedSecret(bobSecret, bob.PublicKey, alice.PublicKey); // same key as aliceKey
 byte[] aes128Key = aesWrapper.Aes128KeyFromX25519SharedSecret(aliceSecret, alice.PublicKey, bob.PublicKey);
 
-byte[] nonce = aesWrapper.GenerateAESNonce();
-byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, aliceKey, Encoding.UTF8.GetBytes("Hello World"));
-byte[] decrypted = aesWrapper.Aes256Decrypt(nonce, bobKey, encrypted);
+byte[] sealedMessage = aesWrapper.Aes256Seal(aliceKey, Encoding.UTF8.GetBytes("Hello World"));
+byte[] opened = aesWrapper.Aes256Open(bobKey, sealedMessage);
+```
+
+- AES-GCM-SIV (nonce-misuse resistant)
+
+AES-GCM-SIV (RFC 8452) tolerates nonce reuse: encrypting two messages with the same key and nonce only reveals whether they were identical, instead of breaking confidentiality and authenticity as with AES-GCM. Use it when unique nonces can't be guaranteed. The Seal / Open methods still pick a fresh random 96-bit nonce per message and return `nonce (12 bytes) || ciphertext || tag (16 bytes)`; rotate the key before about 2^32 messages. Keys are 16 bytes (AES-128) or 32 bytes (AES-256).
+
+```csharp
+using CasDotnetSdk.Symmetric;
+
+AesGcmSivWrapper siv = new AesGcmSivWrapper();
+byte[] data = Encoding.UTF8.GetBytes("Hello World");
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+
+// Seal / Open (recommended)
+byte[] key = siv.Aes256GcmSivKey();
+byte[] sealedMessage = siv.Aes256GcmSivSeal(key, data, aad);
+byte[] opened = siv.Aes256GcmSivOpen(key, sealedMessage, aad);
+
+byte[] key128 = siv.Aes128GcmSivKey();
+byte[] sealed128 = siv.Aes128GcmSivSeal(key128, data);
+byte[] opened128 = siv.Aes128GcmSivOpen(key128, sealed128);
+
+// Caller-supplied nonce, without and with associated data
+byte[] nonce = siv.GenerateAesGcmSivNonce();
+byte[] encrypted = siv.Aes256GcmSivEncrypt(nonce, key, data);
+byte[] decrypted = siv.Aes256GcmSivDecrypt(nonce, key, encrypted);
+byte[] encryptedWithAad = siv.Aes256GcmSivEncrypt(nonce, key, data, aad);
+byte[] decryptedWithAad = siv.Aes256GcmSivDecrypt(nonce, key, encryptedWithAad, aad);
+
+byte[] encrypted128 = siv.Aes128GcmSivEncrypt(nonce, key128, data);
+byte[] decrypted128 = siv.Aes128GcmSivDecrypt(nonce, key128, encrypted128);
+byte[] encrypted128WithAad = siv.Aes128GcmSivEncrypt(nonce, key128, data, aad);
+byte[] decrypted128WithAad = siv.Aes128GcmSivDecrypt(nonce, key128, encrypted128WithAad, aad);
+```
+
+- ChaCha20-Poly1305
+
+ChaCha20-Poly1305 (RFC 8439) takes a 32-byte key and a 12-byte nonce. `ChaCha20Poly1305Seal` picks a fresh random nonce per message and returns `nonce (12 bytes) || ciphertext || tag (16 bytes)`. Random 96-bit nonces are safe for about 2^32 messages per key: rotate the key before that. With the caller-supplied nonce methods, never reuse a nonce under the same key.
+
+```csharp
+using CasDotnetSdk.Symmetric;
+
+ChaCha20Poly1305Wrapper chacha = new ChaCha20Poly1305Wrapper();
+byte[] key = chacha.ChaCha20Poly1305Key();
+byte[] data = Encoding.UTF8.GetBytes("Hello World");
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+
+// Seal / Open (recommended)
+byte[] sealedMessage = chacha.ChaCha20Poly1305Seal(key, data, aad);
+byte[] opened = chacha.ChaCha20Poly1305Open(key, sealedMessage, aad);
+
+// Caller-supplied nonce, without and with associated data: a new nonce for every message
+byte[] nonce = chacha.ChaCha20Poly1305Nonce();
+byte[] encrypted = chacha.ChaCha20Poly1305Encrypt(nonce, key, data);
+byte[] decrypted = chacha.ChaCha20Poly1305Decrypt(nonce, key, encrypted);
+
+byte[] nonce2 = chacha.ChaCha20Poly1305Nonce();
+byte[] encryptedWithAad = chacha.ChaCha20Poly1305Encrypt(nonce2, key, data, aad);
+byte[] decryptedWithAad = chacha.ChaCha20Poly1305Decrypt(nonce2, key, encryptedWithAad, aad);
 ```
 
 
 ### Sponges
-- Ascon 128
+- Ascon 128: Seal / Open (recommended)
+
+`Ascon128Seal` encrypts with Ascon-AEAD128 under a fresh random 128-bit nonce and returns `nonce (16 bytes) || ciphertext || tag (16 bytes)`; `Ascon128Open` splits it back apart. The optional `aad` argument is authenticated, not encrypted, and must match on `Open` (`null` means empty).
+
+```csharp
+using CasDotnetSdk.Sponges;
+
+AsconWrapper ascon = new AsconWrapper();
+byte[] key = ascon.Ascon128Key();
+byte[] data = Encoding.UTF8.GetBytes("Light weight encryption");
+byte[] sealedMessage = ascon.Ascon128Seal(key, data);
+byte[] opened = ascon.Ascon128Open(key, sealedMessage);
+
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+byte[] boundMessage = ascon.Ascon128Seal(key, data, aad);
+byte[] boundOpened = ascon.Ascon128Open(key, boundMessage, aad);
+```
+
+- Ascon 128 with a caller-supplied nonce
+
+Never reuse a nonce under the same key. The encrypt and decrypt methods take associated data as a fourth argument (`null` means empty).
 
 ```csharp
 using CasDotnetSdk.Sponges;
@@ -78,6 +204,11 @@ byte[] nonce = ascon.Ascon128Nonce();
 byte[] data = Encoding.UTF8.GetBytes("Light weight encryption");
 byte[] encrypted = ascon.Ascon128Encrypt(nonce, key, data);
 byte[] decrypted = ascon.Ascon128Decrypt(nonce, key, encrypted);
+
+byte[] aad = Encoding.UTF8.GetBytes("record-42");
+byte[] nonce2 = ascon.Ascon128Nonce();
+byte[] encryptedWithAad = ascon.Ascon128Encrypt(nonce2, key, data, aad);
+byte[] decryptedWithAad = ascon.Ascon128Decrypt(nonce2, key, encryptedWithAad, aad);
 ```
 
 

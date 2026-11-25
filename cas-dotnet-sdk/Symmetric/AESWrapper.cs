@@ -89,7 +89,98 @@ namespace CasDotnetSdk.Symmetric
         }
 
         /// <summary>
-        /// Encrypts with AES-256-GCM.
+        /// Encrypts with AES-256-GCM under a fresh random 96-bit nonce and returns
+        /// <c>nonce (12 bytes) || ciphertext || tag (16 bytes)</c>. This is the recommended way to
+        /// encrypt: the caller never handles a nonce, so it cannot reuse one. Random 96-bit nonces
+        /// are safe for about 2^32 messages per key (NIST SP 800-38D); rotate the key before that.
+        /// </summary>
+        /// <param name="key">A 32-byte key from <see cref="Aes256Key"/>.</param>
+        /// <param name="plaintext">The data to encrypt. May be empty.</param>
+        /// <param name="aad">Associated data: authenticated, not encrypted, and not included in the result. It must match on <see cref="Aes256Open"/>. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.InvalidKey"/> when the key is not 32 bytes.</exception>
+        public byte[] Aes256Seal(byte[] key, byte[] plaintext, byte[]? aad = null)
+        {
+            return Seal(key, plaintext, aad, NativeMethods.aes_256_seal, "AES-256 seal");
+        }
+
+        /// <summary>
+        /// Decrypts a <c>nonce || ciphertext || tag</c> message produced by <see cref="Aes256Seal"/>.
+        /// </summary>
+        /// <param name="key">The 32-byte key the message was sealed with.</param>
+        /// <param name="sealedMessage">The output of <see cref="Aes256Seal"/>.</param>
+        /// <param name="aad">The same associated data passed to <see cref="Aes256Seal"/>. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.DecryptionFailed"/> when the message was tampered with or the key or AAD is wrong; <see cref="CasErrorCode.InvalidInput"/> when it is shorter than a nonce plus a tag.</exception>
+        public byte[] Aes256Open(byte[] key, byte[] sealedMessage, byte[]? aad = null)
+        {
+            return Open(key, sealedMessage, aad, NativeMethods.aes_256_open, "AES-256 open");
+        }
+
+        /// <summary>
+        /// Encrypts with AES-128-GCM under a fresh random 96-bit nonce and returns
+        /// <c>nonce (12 bytes) || ciphertext || tag (16 bytes)</c>. This is the recommended way to
+        /// encrypt: the caller never handles a nonce, so it cannot reuse one. Random 96-bit nonces
+        /// are safe for about 2^32 messages per key (NIST SP 800-38D); rotate the key before that.
+        /// </summary>
+        /// <param name="key">A 16-byte key from <see cref="Aes128Key"/>.</param>
+        /// <param name="plaintext">The data to encrypt. May be empty.</param>
+        /// <param name="aad">Associated data: authenticated, not encrypted, and not included in the result. It must match on <see cref="Aes128Open"/>. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.InvalidKey"/> when the key is not 16 bytes.</exception>
+        public byte[] Aes128Seal(byte[] key, byte[] plaintext, byte[]? aad = null)
+        {
+            return Seal(key, plaintext, aad, NativeMethods.aes_128_seal, "AES-128 seal");
+        }
+
+        /// <summary>
+        /// Decrypts a <c>nonce || ciphertext || tag</c> message produced by <see cref="Aes128Seal"/>.
+        /// </summary>
+        /// <param name="key">The 16-byte key the message was sealed with.</param>
+        /// <param name="sealedMessage">The output of <see cref="Aes128Seal"/>.</param>
+        /// <param name="aad">The same associated data passed to <see cref="Aes128Seal"/>. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.DecryptionFailed"/> when the message was tampered with or the key or AAD is wrong; <see cref="CasErrorCode.InvalidInput"/> when it is shorter than a nonce plus a tag.</exception>
+        public byte[] Aes128Open(byte[] key, byte[] sealedMessage, byte[]? aad = null)
+        {
+            return Open(key, sealedMessage, aad, NativeMethods.aes_128_open, "AES-128 open");
+        }
+
+        private delegate AesBytesEncrypt SealFn(byte* key, nuint keyLength, byte* plaintext, nuint plaintextLength, byte* aad, nuint aadLength);
+
+        private delegate AesBytesDecrypt OpenFn(byte* key, nuint keyLength, byte* sealedMessage, nuint sealedMessageLength, byte* aad, nuint aadLength);
+
+        private static byte[] Seal(byte[] key, byte[] plaintext, byte[]? aad, SealFn nativeSeal, string operation)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(plaintext);
+
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* plaintextPtr = NativePin.Of(plaintext))
+            fixed (byte* aadPtr = aad)
+            {
+                // A null pointer with length 0 is an empty AAD.
+                AesBytesEncrypt result = nativeSeal(keyPtr, (nuint)key.Length, plaintextPtr, (nuint)plaintext.Length, aadPtr, (nuint)(aad?.Length ?? 0));
+                CasErrorHandler.ThrowIfError(result.error_code, operation);
+                return NativeByteBuffer.CopyAndFree(result.ciphertext, result.length);
+            }
+        }
+
+        private static byte[] Open(byte[] key, byte[] sealedMessage, byte[]? aad, OpenFn nativeOpen, string operation)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(sealedMessage);
+
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* sealedPtr = NativePin.Of(sealedMessage))
+            fixed (byte* aadPtr = aad)
+            {
+                AesBytesDecrypt result = nativeOpen(keyPtr, (nuint)key.Length, sealedPtr, (nuint)sealedMessage.Length, aadPtr, (nuint)(aad?.Length ?? 0));
+                CasErrorHandler.ThrowIfError(result.error_code, operation);
+                return NativeByteBuffer.CopyAndFree(result.plaintext, result.length);
+            }
+        }
+
+        /// <summary>
+        /// Encrypts with AES-256-GCM under a caller-supplied nonce and returns <c>ciphertext || tag</c>.
+        /// Never reuse a nonce under the same key: that reveals the XOR of the plaintexts and lets
+        /// an attacker forge messages. Prefer <see cref="Aes256Seal"/>, which manages the nonce.
         /// </summary>
         public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt)
         {
@@ -119,7 +210,9 @@ namespace CasDotnetSdk.Symmetric
         }
 
         /// <summary>
-        /// Encrypts with AES-128-GCM.
+        /// Encrypts with AES-128-GCM under a caller-supplied nonce and returns <c>ciphertext || tag</c>.
+        /// Never reuse a nonce under the same key: that reveals the XOR of the plaintexts and lets
+        /// an attacker forge messages. Prefer <see cref="Aes128Seal"/>, which manages the nonce.
         /// </summary>
         public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt)
         {
@@ -145,6 +238,98 @@ namespace CasDotnetSdk.Symmetric
                 AesBytesDecrypt decryptResult = NativeMethods.aes_128_decrypt_bytes_with_key(noncePtr, (nuint)nonceKey.Length, keyPtr, (nuint)key.Length, dataPtr, (nuint)dataToDecrypt.Length);
                 CasErrorHandler.ThrowIfError(decryptResult.error_code, "AES-128 decrypt");
                 return NativeByteBuffer.CopyAndFree(decryptResult.plaintext, decryptResult.length);
+            }
+        }
+
+        /// <summary>
+        /// Encrypts with AES-256-GCM and associated data under a caller-supplied 12-byte nonce, and
+        /// returns <c>ciphertext || tag</c>. Never reuse a nonce under the same key. Prefer
+        /// <see cref="Aes256Seal"/>, which manages the nonce and also takes associated data.
+        /// </summary>
+        /// <param name="nonceKey">A 12-byte nonce from <see cref="GenerateAESNonce"/>, used for this message only.</param>
+        /// <param name="key">A 32-byte key from <see cref="Aes256Key"/>.</param>
+        /// <param name="toEncrypt">The data to encrypt. May be empty.</param>
+        /// <param name="aad">Associated data: authenticated, not encrypted, and not included in the result. It must match on <see cref="Aes256Decrypt(byte[], byte[], byte[], byte[])"/>. <c>null</c> means empty.</param>
+        public byte[] Aes256Encrypt(byte[] nonceKey, byte[] key, byte[] toEncrypt, byte[]? aad)
+        {
+            return EncryptWithAad(nonceKey, key, toEncrypt, aad, NativeMethods.aes_256_encrypt_bytes_with_aad, "AES-256 encrypt with AAD");
+        }
+
+        /// <summary>
+        /// Decrypts AES-256-GCM <c>ciphertext || tag</c> produced with associated data.
+        /// </summary>
+        /// <param name="nonceKey">The nonce the data was encrypted with.</param>
+        /// <param name="key">The 32-byte key the data was encrypted with.</param>
+        /// <param name="toDecrypt">The <c>ciphertext || tag</c> to decrypt.</param>
+        /// <param name="aad">The same associated data passed on encryption. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.DecryptionFailed"/> when the ciphertext was tampered with or the key, nonce or AAD is wrong.</exception>
+        public byte[] Aes256Decrypt(byte[] nonceKey, byte[] key, byte[] toDecrypt, byte[]? aad)
+        {
+            return DecryptWithAad(nonceKey, key, toDecrypt, aad, NativeMethods.aes_256_decrypt_bytes_with_aad, "AES-256 decrypt with AAD");
+        }
+
+        /// <summary>
+        /// Encrypts with AES-128-GCM and associated data under a caller-supplied 12-byte nonce, and
+        /// returns <c>ciphertext || tag</c>. Never reuse a nonce under the same key. Prefer
+        /// <see cref="Aes128Seal"/>, which manages the nonce and also takes associated data.
+        /// </summary>
+        /// <param name="nonceKey">A 12-byte nonce from <see cref="GenerateAESNonce"/>, used for this message only.</param>
+        /// <param name="key">A 16-byte key from <see cref="Aes128Key"/>.</param>
+        /// <param name="dataToEncrypt">The data to encrypt. May be empty.</param>
+        /// <param name="aad">Associated data: authenticated, not encrypted, and not included in the result. It must match on <see cref="Aes128Decrypt(byte[], byte[], byte[], byte[])"/>. <c>null</c> means empty.</param>
+        public byte[] Aes128Encrypt(byte[] nonceKey, byte[] key, byte[] dataToEncrypt, byte[]? aad)
+        {
+            return EncryptWithAad(nonceKey, key, dataToEncrypt, aad, NativeMethods.aes_128_encrypt_bytes_with_aad, "AES-128 encrypt with AAD");
+        }
+
+        /// <summary>
+        /// Decrypts AES-128-GCM <c>ciphertext || tag</c> produced with associated data.
+        /// </summary>
+        /// <param name="nonceKey">The nonce the data was encrypted with.</param>
+        /// <param name="key">The 16-byte key the data was encrypted with.</param>
+        /// <param name="dataToDecrypt">The <c>ciphertext || tag</c> to decrypt.</param>
+        /// <param name="aad">The same associated data passed on encryption. <c>null</c> means empty.</param>
+        /// <exception cref="CasException"><see cref="CasErrorCode.DecryptionFailed"/> when the ciphertext was tampered with or the key, nonce or AAD is wrong.</exception>
+        public byte[] Aes128Decrypt(byte[] nonceKey, byte[] key, byte[] dataToDecrypt, byte[]? aad)
+        {
+            return DecryptWithAad(nonceKey, key, dataToDecrypt, aad, NativeMethods.aes_128_decrypt_bytes_with_aad, "AES-128 decrypt with AAD");
+        }
+
+        private delegate AesBytesEncrypt EncryptWithAadFn(byte* nonce, nuint nonceLength, byte* key, nuint keyLength, byte* plaintext, nuint plaintextLength, byte* aad, nuint aadLength);
+
+        private delegate AesBytesDecrypt DecryptWithAadFn(byte* nonce, nuint nonceLength, byte* key, nuint keyLength, byte* ciphertext, nuint ciphertextLength, byte* aad, nuint aadLength);
+
+        private static byte[] EncryptWithAad(byte[] nonce, byte[] key, byte[] plaintext, byte[]? aad, EncryptWithAadFn nativeEncrypt, string operation)
+        {
+            ArgumentNullException.ThrowIfNull(nonce);
+            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(plaintext);
+
+            fixed (byte* noncePtr = NativePin.Of(nonce))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* plaintextPtr = NativePin.Of(plaintext))
+            fixed (byte* aadPtr = aad)
+            {
+                AesBytesEncrypt result = nativeEncrypt(noncePtr, (nuint)nonce.Length, keyPtr, (nuint)key.Length, plaintextPtr, (nuint)plaintext.Length, aadPtr, (nuint)(aad?.Length ?? 0));
+                CasErrorHandler.ThrowIfError(result.error_code, operation);
+                return NativeByteBuffer.CopyAndFree(result.ciphertext, result.length);
+            }
+        }
+
+        private static byte[] DecryptWithAad(byte[] nonce, byte[] key, byte[] ciphertext, byte[]? aad, DecryptWithAadFn nativeDecrypt, string operation)
+        {
+            ArgumentNullException.ThrowIfNull(nonce);
+            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(ciphertext);
+
+            fixed (byte* noncePtr = NativePin.Of(nonce))
+            fixed (byte* keyPtr = NativePin.Of(key))
+            fixed (byte* ciphertextPtr = NativePin.Of(ciphertext))
+            fixed (byte* aadPtr = aad)
+            {
+                AesBytesDecrypt result = nativeDecrypt(noncePtr, (nuint)nonce.Length, keyPtr, (nuint)key.Length, ciphertextPtr, (nuint)ciphertext.Length, aadPtr, (nuint)(aad?.Length ?? 0));
+                CasErrorHandler.ThrowIfError(result.error_code, operation);
+                return NativeByteBuffer.CopyAndFree(result.plaintext, result.length);
             }
         }
 
