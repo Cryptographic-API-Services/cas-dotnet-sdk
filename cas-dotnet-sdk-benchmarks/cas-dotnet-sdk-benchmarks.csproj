@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- BenchmarkDotNet 0.15 runs on net8.0 and later. -->
+    <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+    <RootNamespace>CasDotnetSdkBenchmarks</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- BenchmarkDotNet needs optimized, non-debuggable code to give real numbers. -->
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
+  </ItemGroup>
+
+  <!--
+    The SDK project packs the native library from artifacts/native/<rid>/ and copies
+    it to referencing projects' output, but only if it existed when MSBuild evaluated
+    the project. On a clean build the BuildRust target stages it later, so copy it
+    here too, after the build, so the first `dotnet run` (and inProcess runs) find it.
+  -->
+  <Target Name="CopyCasNativeLibrary" AfterTargets="Build" Condition="'$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <_CasNativeDir>$(MSBuildThisFileDirectory)..\cas-dotnet-sdk\artifacts\native\</_CasNativeDir>
+      <_CasIsOSX>$([MSBuild]::IsOSPlatform('OSX'))</_CasIsOSX>
+    </PropertyGroup>
+    <ItemGroup>
+      <_CasNativeLibrary Condition="'$(OS)' == 'Windows_NT'" Include="$(_CasNativeDir)win-x64\cas_core_lib.dll" />
+      <_CasNativeLibrary Condition="'$(_CasIsOSX)' == 'true'" Include="$(_CasNativeDir)osx-arm64/libcas_core_lib.dylib" />
+      <_CasNativeLibrary Condition="'$(OS)' != 'Windows_NT' And '$(_CasIsOSX)' != 'true'" Include="$(_CasNativeDir)linux-x64/libcas_core_lib.so" />
+    </ItemGroup>
+    <Warning Condition="!Exists('@(_CasNativeLibrary)')" Text="Native library @(_CasNativeLibrary) not found. Build with a Rust toolchain on PATH (the default), or stage it there before building with -p:BuildNativeRust=false." />
+    <Copy Condition="Exists('@(_CasNativeLibrary)')" SourceFiles="@(_CasNativeLibrary)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

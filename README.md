@@ -26,6 +26,9 @@ We build on the work of leading cryptography projects. For in-depth algorithm de
 ## Usage Examples
 See practical usage and code samples in our [Examples](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/blob/main/docs/EXAMPLES.md).
 
+## Benchmarks
+A [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) suite covering every algorithm lives in [`cas-dotnet-sdk-benchmarks`](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/tree/main/cas-dotnet-sdk-benchmarks). Run it locally with `dotnet run -c Release --project cas-dotnet-sdk-benchmarks -f net10.0`; CI runs it on every push to `main` and publishes the results with the workflow run.
+
 ## Supported Frameworks / Operating Systems
 We aim to provide cross-compatibility wherever possible. Test cases are run on .NET 6-10 for Windows, Linux (Ubuntu), and macOS on each pull request and release to NuGet through GitHub Actions.
 - [X] .NET 6
