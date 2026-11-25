@@ -31,7 +31,7 @@ those builds collide ("the file is being used by another process").
 | Local file | Upstream file | Exercised by |
 | --- | --- | --- |
 | `wycheproof_aes_gcm.json` | `aes_gcm_test.json` | `Wycheproof/AesGcmWycheproofTests.cs` |
-| `wycheproof_ed25519.json` | `ed25519_test.json` | `Wycheproof/Ed25519WycheproofTests.cs` |
+| `wycheproof_ed25519.json` | `ed25519_test.json` | `Wycheproof/Ed25519WycheproofTests.cs` (`VerifyWithPublicKeyBytes` on every key; `VerifyBytes` too on the two keys with published seeds) |
 | `wycheproof_x25519.json` | `x25519_test.json` | `Wycheproof/X25519WycheproofTests.cs` |
 | `wycheproof_hmac_sha256.json` | `hmac_sha256_test.json` | `Wycheproof/HmacWycheproofTests.cs` |
 | `wycheproof_mlkem_1024_decaps.json` | `mlkem_1024_semi_expanded_decaps_test.json` | `MLKEMWrapperTests.WycheproofDecapsulationVectors` |

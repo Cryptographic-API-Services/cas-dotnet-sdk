@@ -113,6 +113,8 @@ bool isValid = rsa.Verify(keyPair.PublicKey, data, signature);
 ### Signatures
 - ED25519
 
+The signer keeps the 32-byte `SigningKey`; verifiers only need the 32-byte public key (`VerifyingKey`, also returned as `PublicKey` by `SignBytes`). Verify with `VerifyWithPublicKeyBytes`. Verification is strict: non-canonical signatures, small-order R components and small-order public keys are rejected.
+
 ```csharp
 using CasDotnetSdk.Signatures;
 using CasDotnetSdk.Signatures.Types;
@@ -122,10 +124,15 @@ Ed25519KeyPairResult keyPair = ed25519Wrapper.GetKeyPair();
 byte[] data = Encoding.UTF8.GetBytes("Sign this with Ed25519");
 Ed25519ByteSignatureResult signature = ed25519Wrapper.SignBytes(keyPair.SigningKey, data);
 
-// Verify with the signing key pair you hold...
-bool isValid = ed25519Wrapper.VerifyBytes(keyPair.SigningKey, signature.Signature, data);
-// ...or with only the public key, as a recipient would.
-bool isValidPublic = ed25519Wrapper.VerifyWithPublicKeyBytes(signature.PublicKey, signature.Signature, data);
+// Verify with the signer's public key.
+bool isValid = ed25519Wrapper.VerifyWithPublicKeyBytes(keyPair.VerifyingKey, signature.Signature, data);
+```
+
+`VerifyBytes(signingKey, signature, data)` is obsolete: it takes the signing key, so a verifier would have to hold it. It gives the same (strict) result as `VerifyWithPublicKeyBytes` and will be removed in a future major version.
+
+```csharp
+// Obsolete (compiler warning CS0618): use VerifyWithPublicKeyBytes instead.
+bool isValidWithSigningKey = ed25519Wrapper.VerifyBytes(keyPair.SigningKey, signature.Signature, data);
 ```
 
 
