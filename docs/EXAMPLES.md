@@ -13,6 +13,7 @@ Examples for every public method in the SDK, grouped by category. Snippets assum
 - [Hybrid Encryption](#hybrid-encryption)
 - [Compression](#compression)
 - [Error Handling](#error-handling)
+- [Handling Secrets](#handling-secrets)
 
 
 ### Symmetric
@@ -554,7 +555,7 @@ HpkeEncryptResult encrypted = hpke.Encrypt(plaintext, keyPair.PublicKey, keyPair
 byte[] decrypted = hpke.Decrypt(encrypted.Ciphertext, keyPair.PrivateKey, encrypted.EncappedKey, encrypted.Tag, keyPair.InfoStr);
 ```
 
-`infoStr` is RFC 9180 application context that both sides agree on (at most 65,530 bytes). The optional `aad` argument binds the ciphertext to associated data, such as a record id or a header, that is authenticated but not encrypted. Decryption fails unless the recipient passes the same `aad`:
+`infoStr` is RFC 9180 application context that both sides agree on (at most 65,530 bytes), such as a protocol name and version. It is not part of the key pair: `GenerateKeyPair` fills `InfoStr` with a random value for convenience, but any bytes both sides agree on work, and the recipient needs the same bytes to decrypt. The optional `aad` argument binds the ciphertext to associated data, such as a record id or a header, that is authenticated but not encrypted. Decryption fails unless the recipient passes the same `aad`:
 
 ```csharp
 byte[] aad = Encoding.UTF8.GetBytes("record-42");
@@ -609,5 +610,34 @@ try
 catch (CasException ex)
 {
     Console.WriteLine($"{ex.ErrorCode} ({ex.RawErrorCode}): {ex.Message}");
+}
+```
+
+
+### Handling Secrets
+Keys, shared secrets and decrypted plaintexts come back as ordinary `byte[]` arrays. The native library wipes its own copies, but the garbage collector doesn't wipe managed memory, so a secret stays in the process until it is overwritten. To keep that window short:
+
+- Keep keys and secrets in `byte[]`, not `string`: a `string` can't be cleared and may be interned or copied. Encode text only at the edge, as the examples do with `Encoding.UTF8.GetBytes`.
+- Clear each secret with `CryptographicOperations.ZeroMemory` as soon as you are done with it, in a `finally` so an exception doesn't skip it.
+- The password hashers take the password as a `string`. They clear their own UTF-8 copy after the native call, but the `string` itself can't be wiped, so drop references to it as soon as hashing or verification is done.
+
+```csharp
+using System.Security.Cryptography;
+using CasDotnetSdk.Symmetric;
+
+AESWrapper aesWrapper = new AESWrapper();
+byte[] key = aesWrapper.Aes256Key();
+byte[] decrypted = Array.Empty<byte>();
+try
+{
+    byte[] nonce = aesWrapper.GenerateAESNonce();
+    byte[] encrypted = aesWrapper.Aes256Encrypt(nonce, key, Encoding.UTF8.GetBytes("Hello World"));
+    decrypted = aesWrapper.Aes256Decrypt(nonce, key, encrypted);
+    // use decrypted ...
+}
+finally
+{
+    CryptographicOperations.ZeroMemory(key);
+    CryptographicOperations.ZeroMemory(decrypted);
 }
 ```

@@ -37,12 +37,14 @@
   <!--
     The locked flag builds the dependency graph committed in cas-core-lib/Cargo.lock and
     fails instead of re-resolving it (#205). cas-core-lib's build.rs writes the bindings only to
-    OUT_DIR unless CAS_DOTNET_BINDINGS_DIR is set, so point it at generated/.
+    OUT_DIR unless CAS_DOTNET_BINDINGS_DIR is set, so point it at generated/. NormalizeDirectory
+    gives the path with the OS's separator: the value goes to build.rs as written, and on Linux and
+    macOS a backslash is not a separator. The PR workflows check that the file was regenerated.
   -->
   <Target Name="BuildRust" BeforeTargets="CoreCompile"
           Condition="'$(BuildNativeRust)'=='true'">
     <Exec Command="cargo build --release --locked" WorkingDirectory="$(RustProjectDir)"
-          EnvironmentVariables="CAS_DOTNET_BINDINGS_DIR=$(MSBuildProjectDirectory)\generated" />
+          EnvironmentVariables="CAS_DOTNET_BINDINGS_DIR=$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', 'generated'))" />
   </Target>
 
   <Target Name="StageRustArtifacts" AfterTargets="BuildRust" Condition="'$(BuildNativeRust)'=='true'">
