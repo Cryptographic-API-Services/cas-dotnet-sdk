@@ -54,37 +54,49 @@
 
   <!--
     Project Wycheproof known-answer vectors are downloaded from C2SP/wycheproof
-    (testvectors_v1/) instead of being committed, so every build tests against the
-    latest upstream vectors (matching the cas-typescript-sdk approach). They are
-    copied next to the test assembly as PQC/Data/<local name>.
+    (testvectors_v1/) instead of being committed (matching the cas-typescript-sdk
+    approach). They are copied next to the test assembly as PQC/Data/<local name>.
 
+    - They come from a pinned commit (WycheproofCommit), and every build checks
+      each file against the SHA-256 in its WycheproofVector item, so tests never
+      run on vectors nobody reviewed (#224). A mismatch deletes the cached copy
+      and fails the build. Refreshing the pin is in CLAUDE.md.
     - Each target framework downloads into its own obj/<config>/<tfm>/wycheproof/
       folder, so the parallel per-framework builds of a plain `dotnet test` never
-      write the same file.
-    - The ref (default 'main') is resolved to a commit SHA with `git ls-remote`,
-      logged, and used to skip re-downloading until upstream actually changes.
-    - Pin a ref for a reproducible run with -p:WycheproofRef=<sha-or-tag> (or the
-      WYCHEPROOF_REF environment variable).
+      write the same file. Files are re-downloaded only when the ref changes.
+    - Test another ref with -p:WycheproofRef=<branch, tag or sha> (or the
+      WYCHEPROOF_REF environment variable). A branch or tag is resolved to a SHA
+      with `git ls-remote` and logged. Files from a ref other than WycheproofCommit
+      can't be checked against the digests: the build warns and logs their
+      digests in the form the WycheproofVector items take.
     - If the ref can't be resolved (e.g. offline) but vectors are already cached,
       they are reused with a warning. -p:FetchWycheproofVectors=false skips the
       network entirely and uses whatever is cached.
 
-    To add a file: add a WycheproofVector item (local name, Upstream metadata).
+    To add a file: add a WycheproofVector item (local name, Upstream file name,
+    Sha256 of the file at WycheproofCommit).
   -->
   <PropertyGroup>
+    <WycheproofCommit>65ca494727a52944c204441c860b039e6786b99b</WycheproofCommit>
     <FetchWycheproofVectors Condition="'$(FetchWycheproofVectors)' == ''">true</FetchWycheproofVectors>
     <WycheproofRef Condition="'$(WycheproofRef)' == ''">$(WYCHEPROOF_REF)</WycheproofRef>
-    <WycheproofRef Condition="'$(WycheproofRef)' == ''">main</WycheproofRef>
+    <WycheproofRef Condition="'$(WycheproofRef)' == ''">$(WycheproofCommit)</WycheproofRef>
   </PropertyGroup>
 
   <ItemGroup>
-    <WycheproofVector Include="wycheproof_aes_gcm.json" Upstream="aes_gcm_test.json" />
-    <WycheproofVector Include="wycheproof_ed25519.json" Upstream="ed25519_test.json" />
-    <WycheproofVector Include="wycheproof_x25519.json" Upstream="x25519_test.json" />
-    <WycheproofVector Include="wycheproof_hmac_sha256.json" Upstream="hmac_sha256_test.json" />
-    <WycheproofVector Include="wycheproof_mlkem_1024_decaps.json" Upstream="mlkem_1024_semi_expanded_decaps_test.json" />
-    <WycheproofVector Include="wycheproof_mldsa_65_sign.json" Upstream="mldsa_65_sign_seed_test.json" />
-    <WycheproofVector Include="wycheproof_mldsa_65_verify.json" Upstream="mldsa_65_verify_test.json" />
+    <WycheproofVector Include="wycheproof_aes_gcm.json" Upstream="aes_gcm_test.json" Sha256="985e5ecc172e181eaf49e89508b9470dcf478002eb7e8559c707eb42dc97dfe7" />
+    <WycheproofVector Include="wycheproof_ed25519.json" Upstream="ed25519_test.json" Sha256="ea80ffebac085e21cb9d3e903e7fa2b448d96702da5b31f061d0b83b430b74b3" />
+    <WycheproofVector Include="wycheproof_x25519.json" Upstream="x25519_test.json" Sha256="35c3f5231cf25cc640b524d403461deee9e49441d5d915a3a25b2c8ff5adbe7d" />
+    <WycheproofVector Include="wycheproof_hmac_sha256.json" Upstream="hmac_sha256_test.json" Sha256="2d201cfa61d1bf95e6f5d07d96634b4a348b31e8eaa277ad7c8d09677b7a743f" />
+    <WycheproofVector Include="wycheproof_mlkem_1024_decaps.json" Upstream="mlkem_1024_semi_expanded_decaps_test.json" Sha256="a4a7c88152df3d8d4b3f33aad584167dfaff67195cfde08aac4b981030b4d05c" />
+    <WycheproofVector Include="wycheproof_mldsa_65_sign.json" Upstream="mldsa_65_sign_seed_test.json" Sha256="e26b2bb9ab8d45ed570ba6828c7e40b6fa3e1545bb8bc2c449c77531760133e0" />
+    <WycheproofVector Include="wycheproof_mldsa_65_verify.json" Upstream="mldsa_65_verify_test.json" Sha256="1ca235f61928421a173a171780beb00264ae9155dc33c52a11e1766cc7979034" />
+    <WycheproofVector Include="wycheproof_rsa_pkcs1_2048_sha256.json" Upstream="rsa_signature_2048_sha256_test.json" Sha256="94a917b01ff50fb874cfc05bf29b4af44868d944a6558201cf18380da93fb393" />
+    <WycheproofVector Include="wycheproof_rsa_pkcs1_3072_sha256.json" Upstream="rsa_signature_3072_sha256_test.json" Sha256="0f5f18cabfaad3e2792e82f7e9882f8999049b456714de924b8a5e202f61ca43" />
+    <WycheproofVector Include="wycheproof_rsa_pkcs1_4096_sha256.json" Upstream="rsa_signature_4096_sha256_test.json" Sha256="957aca128e30bd02c8982f8ca482d6521d16683f4bbc3f193cdfd4c8f04bc667" />
+    <WycheproofVector Include="wycheproof_rsa_pss_2048_sha256_mgf1_32.json" Upstream="rsa_pss_2048_sha256_mgf1_32_test.json" Sha256="7f6efafc160f4816b96cbf1c12188a31051d7e3f001e27505d9edb5f2a0e325c" />
+    <WycheproofVector Include="wycheproof_rsa_pss_3072_sha256_mgf1_32.json" Upstream="rsa_pss_3072_sha256_mgf1_32_test.json" Sha256="cca48433e6d1accb57f65b3396c4f4dd93c776467101c3f0948e74c283fd4749" />
+    <WycheproofVector Include="wycheproof_rsa_pss_4096_sha256_mgf1_32.json" Upstream="rsa_pss_4096_sha256_mgf1_32_test.json" Sha256="e627cbf5139a01e0a446c4fe15911f6268224fdd3ef4a1eb714b3942b5686410" />
   </ItemGroup>
 
   <Target Name="FetchWycheproofVectors" BeforeTargets="AssignTargetPaths">
@@ -149,6 +161,39 @@
                       File="$(_WycheproofMarker)" Lines="$(_WycheproofResolvedRef)" Overwrite="true" />
     <Delete Condition="'$(_WycheproofDownload)' == 'true' and '$(_WycheproofResolvedIsSha)' != 'True'"
             Files="$(_WycheproofMarker)" />
+
+    <!--
+      Check the files against the pinned digests. The marker names the commit the
+      cached files came from; only files from WycheproofCommit can be checked.
+      MSBuild compares strings case-insensitively, so GetFileHash's upper-case hex
+      matches the lower-case digests above.
+    -->
+    <PropertyGroup>
+      <_WycheproofFilesRef />
+      <_WycheproofFilesRef Condition="Exists('$(_WycheproofMarker)')">$([System.IO.File]::ReadAllText('$(_WycheproofMarker)').Trim())</_WycheproofFilesRef>
+      <_WycheproofFilesLabel>$(_WycheproofFilesRef)</_WycheproofFilesLabel>
+      <_WycheproofFilesLabel Condition="'$(_WycheproofFilesLabel)' == ''">$(WycheproofRef)</_WycheproofFilesLabel>
+    </PropertyGroup>
+    <ItemGroup>
+      <_WycheproofFile Include="@(WycheproofVector->'$(_WycheproofDir)%(Identity)')" />
+      <_WycheproofFile Remove="@(_WycheproofFile)" Condition="!Exists('%(_WycheproofFile.FullPath)')" />
+    </ItemGroup>
+    <GetFileHash Condition="'@(_WycheproofFile)' != ''" Files="@(_WycheproofFile)" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="_WycheproofHashed" />
+    </GetFileHash>
+    <ItemGroup Condition="'$(_WycheproofFilesRef)' == '$(WycheproofCommit)'">
+      <_WycheproofBadDigest Include="@(_WycheproofHashed)" Condition="'%(_WycheproofHashed.FileHash)' != '%(_WycheproofHashed.Sha256)'" />
+    </ItemGroup>
+
+    <Warning Condition="'@(_WycheproofHashed)' != '' and '$(_WycheproofFilesRef)' != '$(WycheproofCommit)'"
+             Text="Wycheproof vectors from C2SP/wycheproof@$(_WycheproofFilesLabel) are not the pinned WycheproofCommit ($(WycheproofCommit)), so their SHA-256 digests were not checked. Their digests are logged below." />
+    <Message Condition="'@(_WycheproofHashed)' != '' and '$(_WycheproofFilesRef)' != '$(WycheproofCommit)'" Importance="high"
+             Text="  %(_WycheproofHashed.Filename)%(_WycheproofHashed.Extension): Sha256=&quot;%(_WycheproofHashed.FileHash)&quot;" />
+
+    <!-- Delete the bad copies (and the marker) so the next build downloads them again. -->
+    <Delete Condition="'@(_WycheproofBadDigest)' != ''" Files="@(_WycheproofBadDigest);$(_WycheproofMarker)" />
+    <Error Condition="'@(_WycheproofBadDigest)' != ''"
+           Text="Wycheproof vectors don't match their pinned SHA-256 digests (C2SP/wycheproof@$(WycheproofCommit)): @(_WycheproofBadDigest->'%(Filename)%(Extension) expected %(Sha256), got %(FileHash)', '; '). The cached copies were deleted; build again to re-download them. If upstream rewrote them at that commit, check the change before updating the digests." />
 
     <ItemGroup>
       <Content Include="$(_WycheproofDir)%(WycheproofVector.Identity)"

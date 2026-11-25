@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange;
 using CasDotnetSdkTests.PQC;
 using Xunit;
@@ -10,8 +11,9 @@ namespace CasDotnetSdkTests.Wycheproof
     /// <summary>
     /// Project Wycheproof X25519 vectors. x25519-dalek clamps the private key and
     /// masks the public key's high bit per RFC 7748, so "valid", "acceptable" and
-    /// "invalid" vectors alike must produce the expected shared secret (low-order
-    /// points yield an all-zero secret rather than an error).
+    /// "invalid" vectors alike must produce the expected shared secret, except that a
+    /// low-order public key (all-zero shared secret) must be rejected with
+    /// <see cref="CasErrorCode.InvalidKey"/> (#213).
     /// </summary>
     public class X25519WycheproofTests
     {
@@ -33,6 +35,23 @@ namespace CasDotnetSdkTests.Wycheproof
                     byte[] pub = PqcVectorData.Hex(test.GetProperty("public").GetString()!);
                     byte[] expected = PqcVectorData.Hex(test.GetProperty("shared").GetString()!);
                     count++;
+
+                    if (expected.All(b => b == 0))
+                    {
+                        try
+                        {
+                            _wrapper.GenerateSharedSecret(priv, pub);
+                            failures.Add($"tcId={tcId} accepted a low-order public key");
+                        }
+                        catch (CasException ex) when (ex.ErrorCode == CasErrorCode.InvalidKey)
+                        {
+                        }
+                        catch (Exception ex)
+                        {
+                            failures.Add($"tcId={tcId} threw {ex.GetType().Name} instead of InvalidKey");
+                        }
+                        continue;
+                    }
 
                     try
                     {

@@ -20,16 +20,25 @@ namespace CasDotnetSdk.KeyExchange
         public X25519SecretPublicKey GenerateSecretAndPublicKey()
         {
             x25519SecretPublicKeyResult result = NativeMethods.generate_secret_and_public_key();
-            return new X25519SecretPublicKey()
+            try
             {
-                SecretKey = NativeByteBuffer.CopyAndFree(result.secret_key, result.secret_key_length),
-                PublicKey = NativeByteBuffer.CopyAndFree(result.public_key, result.public_key_length)
-            };
+                CasErrorHandler.ThrowIfError(result.error_code, "X25519 key generation");
+                return new X25519SecretPublicKey()
+                {
+                    SecretKey = NativeByteBuffer.Copy(result.secret_key, result.secret_key_length),
+                    PublicKey = NativeByteBuffer.Copy(result.public_key, result.public_key_length)
+                };
+            }
+            finally
+            {
+                NativeMethods.free_x25519_secret_public_key_result(&result);
+            }
         }
 
         /// <summary>
         /// Generates a shared secret using the X25519 algorithm Diffie Hellman.
         /// </summary>
+        /// <exception cref="CasException"><see cref="CasErrorCode.InvalidKey"/> when the peer's public key is a low-order point, which would give an all-zero shared secret.</exception>
         public X25519SharedSecret GenerateSharedSecret(byte[] secretKey, byte[] otherUserPublicKey)
         {
             if (secretKey == null || secretKey.Length == 0)

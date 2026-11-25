@@ -21,11 +21,19 @@ namespace CasDotnetSdk.PQC
         public MLKemKeyPair GenerateKeyPair()
         {
             MlKemKeyPairResult result = NativeMethods.ml_kem_1024_generate_key_pair();
-            return new MLKemKeyPair
+            try
             {
-                SecretKey = NativeByteBuffer.CopyAndFree(result.secret_key_ptr, result.secret_key_length),
-                PublicKey = NativeByteBuffer.CopyAndFree(result.public_key_ptr, result.public_key_length)
-            };
+                CasErrorHandler.ThrowIfError(result.error_code, "ML-KEM key generation");
+                return new MLKemKeyPair
+                {
+                    SecretKey = NativeByteBuffer.Copy(result.secret_key_ptr, result.secret_key_length),
+                    PublicKey = NativeByteBuffer.Copy(result.public_key_ptr, result.public_key_length)
+                };
+            }
+            finally
+            {
+                NativeMethods.free_ml_kem_key_pair_result(&result);
+            }
         }
 
         /// <summary>
@@ -38,12 +46,19 @@ namespace CasDotnetSdk.PQC
             fixed (byte* publicKeyPtr = NativePin.Of(publicKey))
             {
                 MlKemEncapsulateResult result = NativeMethods.ml_kem_1024_encapsulate_shared_secret(publicKeyPtr, (nuint)publicKey.Length);
-                CasErrorHandler.ThrowIfError(result.error_code, "ML-KEM encapsulate");
-                return new MLKemEncapsulateResult
+                try
                 {
-                    Ciphertext = NativeByteBuffer.CopyAndFree(result.ciphertext_ptr, result.ciphertext_length),
-                    SharedSecret = NativeByteBuffer.CopyAndFree(result.shared_secret_ptr, result.shared_secret_length)
-                };
+                    CasErrorHandler.ThrowIfError(result.error_code, "ML-KEM encapsulate");
+                    return new MLKemEncapsulateResult
+                    {
+                        Ciphertext = NativeByteBuffer.Copy(result.ciphertext_ptr, result.ciphertext_length),
+                        SharedSecret = NativeByteBuffer.Copy(result.shared_secret_ptr, result.shared_secret_length)
+                    };
+                }
+                finally
+                {
+                    NativeMethods.free_ml_kem_encapsulate_result(&result);
+                }
             }
         }
 

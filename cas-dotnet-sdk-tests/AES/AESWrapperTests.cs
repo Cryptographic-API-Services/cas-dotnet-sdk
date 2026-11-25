@@ -1,3 +1,4 @@
+using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
@@ -41,29 +42,55 @@ namespace CasDotnetSdkTests.Tests
         }
 
         [Fact]
-        public void Aes256X25519DiffieHellmanKeyAndNonce()
+        public void Aes256X25519DiffieHellmanKey()
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
         }
 
         [Fact]
-        public void Aes128X25519DiffieHellmanKeyAndNonce()
+        public void Aes128X25519DiffieHellmanKey()
         {
             X25519SecretPublicKey aliceSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
+        }
+
+        [Fact]
+        public void X25519DerivedKeysAreBoundToCipherAndKeySize()
+        {
+            X25519SecretPublicKey alice = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bob = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            byte[] sharedSecret = this._x25519Wrapper.GenerateSharedSecret(alice.SecretKey, bob.PublicKey).SharedSecret;
+
+            byte[] aes256Key = this._aESWrapper.Aes256KeyFromX25519SharedSecret(sharedSecret, alice.PublicKey, bob.PublicKey);
+            byte[] aes128Key = this._aESWrapper.Aes128KeyFromX25519SharedSecret(sharedSecret, alice.PublicKey, bob.PublicKey);
+
+            Assert.Equal(32, aes256Key.Length);
+            Assert.Equal(16, aes128Key.Length);
+            Assert.NotEqual(sharedSecret, aes256Key);
+            Assert.NotEqual(aes256Key[..16], aes128Key);
+        }
+
+        [Fact]
+        public void X25519DerivedKeyRejectsAllZeroSharedSecret()
+        {
+            X25519SecretPublicKey alice = this._x25519Wrapper.GenerateSecretAndPublicKey();
+            X25519SecretPublicKey bob = this._x25519Wrapper.GenerateSecretAndPublicKey();
+
+            CasException ex = Assert.Throws<CasException>(() => this._aESWrapper.Aes256KeyFromX25519SharedSecret(new byte[32], alice.PublicKey, bob.PublicKey));
+            Assert.Equal(CasErrorCode.InvalidKey, ex.ErrorCode);
         }
 
         [Fact]
@@ -73,8 +100,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes256KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes256KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
             byte[] nonce = this._aESWrapper.GenerateAESNonce();
@@ -91,8 +118,8 @@ namespace CasDotnetSdkTests.Tests
             X25519SecretPublicKey bobSecretAndPublicKey = this._x25519Wrapper.GenerateSecretAndPublicKey();
             X25519SharedSecret aliceSharedSecet = this._x25519Wrapper.GenerateSharedSecret(aliceSecretAndPublicKey.SecretKey, bobSecretAndPublicKey.PublicKey);
             X25519SharedSecret bobSharedSecet = this._x25519Wrapper.GenerateSharedSecret(bobSecretAndPublicKey.SecretKey, aliceSecretAndPublicKey.PublicKey);
-            byte[] aliceAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(aliceSharedSecet.SharedSecret);
-            byte[] bobAesKey = this._aESWrapper.Aes128KeyNonceX25519DiffieHellman(bobSharedSecet.SharedSecret);
+            byte[] aliceAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(aliceSharedSecet.SharedSecret, aliceSecretAndPublicKey.PublicKey, bobSecretAndPublicKey.PublicKey);
+            byte[] bobAesKey = this._aESWrapper.Aes128KeyFromX25519SharedSecret(bobSharedSecet.SharedSecret, bobSecretAndPublicKey.PublicKey, aliceSecretAndPublicKey.PublicKey);
 
             Assert.Equal(aliceAesKey, bobAesKey);
             byte[] nonce = this._aESWrapper.GenerateAESNonce();
@@ -118,6 +145,95 @@ namespace CasDotnetSdkTests.Tests
             byte[] encrypted = this._aESWrapper.Aes256Encrypt(nonce, key, plaintext);
 
             Assert.Equal(expectedCiphertext, encrypted.Take(expectedCiphertext.Length).ToArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(AES128NistAadDecryptVectors))]
+        public void Aes128WithAadMatchesNistDecryptVectors(byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            AssertNistAadDecrypt(this._aESWrapper.Aes128Decrypt, this._aESWrapper.Aes128Encrypt, nonce, key, ciphertextAndTag, aad, expectedPlaintext, expectFailure);
+        }
+
+        [Theory]
+        [MemberData(nameof(AES256NistAadDecryptVectors))]
+        public void Aes256WithAadMatchesNistDecryptVectors(byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            AssertNistAadDecrypt(this._aESWrapper.Aes256Decrypt, this._aESWrapper.Aes256Encrypt, nonce, key, ciphertextAndTag, aad, expectedPlaintext, expectFailure);
+        }
+
+        private static void AssertNistAadDecrypt(
+            Func<byte[], byte[], byte[], byte[]?, byte[]> decrypt,
+            Func<byte[], byte[], byte[], byte[]?, byte[]> encrypt,
+            byte[] nonce, byte[] key, byte[] ciphertextAndTag, byte[] aad, byte[] expectedPlaintext, bool expectFailure)
+        {
+            if (expectFailure)
+            {
+                CasException ex = Assert.Throws<CasException>(() => decrypt(nonce, key, ciphertextAndTag, aad));
+                Assert.Equal(CasErrorCode.DecryptionFailed, ex.ErrorCode);
+                return;
+            }
+
+            Assert.Equal(expectedPlaintext, decrypt(nonce, key, ciphertextAndTag, aad));
+            Assert.Equal(ciphertextAndTag, encrypt(nonce, key, expectedPlaintext, aad));
+        }
+
+        public static IEnumerable<object[]> AES128NistAadDecryptVectors()
+        {
+            return LoadGcmAadDecryptVectors("gcmDecrypt128.rsp");
+        }
+
+        public static IEnumerable<object[]> AES256NistAadDecryptVectors()
+        {
+            return LoadGcmAadDecryptVectors("gcmDecrypt256.rsp");
+        }
+
+        // Yields the 96-bit IV, 128-bit tag cases (the only shape the SDK's AES-GCM takes) for
+        // every AAD length, including the FAIL cases, as (IV, key, CT || tag, AAD, PT, FAIL).
+        private static IEnumerable<object[]> LoadGcmAadDecryptVectors(string fileName)
+        {
+            Dictionary<string, string> header = new Dictionary<string, string>();
+            Dictionary<string, string> fields = new Dictionary<string, string>();
+
+            foreach (string rawLine in File.ReadLines(ResolveVectorPath(fileName)))
+            {
+                string line = rawLine.Trim();
+                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (line.StartsWith("[", StringComparison.Ordinal))
+                {
+                    string[] parts = line.Trim('[', ']').Split('=', 2);
+                    header[parts[0].Trim()] = parts[1].Trim();
+                    continue;
+                }
+
+                bool isFailure = line.Equals("FAIL", StringComparison.Ordinal);
+                if (!isFailure)
+                {
+                    string[] parts = line.Split('=', 2);
+                    fields[parts[0].Trim()] = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+                    if (parts[0].Trim() != "PT")
+                    {
+                        continue;
+                    }
+                }
+
+                if (header.GetValueOrDefault("IVlen") == "96" && header.GetValueOrDefault("Taglen") == "128")
+                {
+                    yield return new object[]
+                    {
+                        HexToBytes(fields["IV"]),
+                        HexToBytes(fields["Key"]),
+                        HexToBytes(fields["CT"] + fields["Tag"]),
+                        HexToBytes(fields["AAD"]),
+                        isFailure ? Array.Empty<byte>() : HexToBytes(fields["PT"]),
+                        isFailure
+                    };
+                }
+                fields.Clear();
+            }
         }
 
         public static IEnumerable<object[]> AES128NistVectors()

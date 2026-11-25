@@ -15,13 +15,14 @@ namespace CasDotnetSdk.Hashers
     internal static unsafe class ShaNative
     {
         internal delegate SHAHashByteResult HashFn(byte* data, nuint length);
-        internal delegate bool VerifyFn(byte* data, nuint dataLength, byte* hash, nuint hashLength);
+        internal delegate CasVerifyResult VerifyFn(byte* data, nuint dataLength, byte* hash, nuint hashLength);
 
         internal static byte[] Hash(byte[]? data, HashFn nativeHash)
         {
             fixed (byte* dataPtr = data)
             {
                 SHAHashByteResult result = nativeHash(dataPtr, (nuint)(data?.Length ?? 0));
+                CasErrorHandler.ThrowIfError(result.error_code, "SHA hash");
                 return NativeByteBuffer.CopyAndFree(result.result_bytes_ptr, result.length);
             }
         }
@@ -36,7 +37,10 @@ namespace CasDotnetSdk.Hashers
             fixed (byte* dataPtr = data)
             fixed (byte* hashPtr = hash)
             {
-                return nativeVerify(dataPtr, (nuint)(data?.Length ?? 0), hashPtr, (nuint)hash.Length);
+                // The native comparison is constant-time.
+                CasVerifyResult result = nativeVerify(dataPtr, (nuint)(data?.Length ?? 0), hashPtr, (nuint)hash.Length);
+                CasErrorHandler.ThrowIfError(result.error_code, "SHA verify");
+                return result.is_valid;
             }
         }
     }

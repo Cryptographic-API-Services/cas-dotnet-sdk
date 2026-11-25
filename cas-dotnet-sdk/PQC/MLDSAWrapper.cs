@@ -7,6 +7,12 @@ namespace CasDotnetSdk.PQC
     /// <summary>
     /// ML-DSA-65 (FIPS 204) post-quantum digital signatures. Signing is deterministic
     /// and uses an empty context.
+    /// <para>
+    /// Deterministic signing is a valid FIPS 204 mode and needs no randomness at signing time.
+    /// FIPS 204 prefers the hedged (randomized) variant where an attacker can measure power or
+    /// electromagnetic side channels or inject faults while signing; this wrapper does not
+    /// expose it.
+    /// </para>
     /// </summary>
     public unsafe class MLDSAWrapper
     {
@@ -20,11 +26,19 @@ namespace CasDotnetSdk.PQC
         public MLDSAKeyPair GenerateSigningAndVerificationKey()
         {
             MlDsaKeyPairResult result = NativeMethods.ml_dsa_generate_signing_and_verification_key();
-            return new MLDSAKeyPair
+            try
             {
-                SigningKey = NativeByteBuffer.CopyAndFree(result.signing_key_ptr, result.signing_key_length),
-                VerificationKey = NativeByteBuffer.CopyAndFree(result.verification_key_ptr, result.verification_key_length)
-            };
+                CasErrorHandler.ThrowIfError(result.error_code, "ML-DSA key generation");
+                return new MLDSAKeyPair
+                {
+                    SigningKey = NativeByteBuffer.Copy(result.signing_key_ptr, result.signing_key_length),
+                    VerificationKey = NativeByteBuffer.Copy(result.verification_key_ptr, result.verification_key_length)
+                };
+            }
+            finally
+            {
+                NativeMethods.free_ml_dsa_key_pair_result(&result);
+            }
         }
 
         /// <summary>

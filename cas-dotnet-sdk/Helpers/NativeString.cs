@@ -16,13 +16,28 @@ namespace CasDotnetSdk.Helpers
         /// </summary>
         public static string ReadAndFree(byte* ptr)
         {
+            try
+            {
+                return Read(ptr);
+            }
+            finally
+            {
+                // free_cstring ignores null.
+                NativeMethods.free_cstring(ptr);
+            }
+        }
+
+        /// <summary>
+        /// Reads a null-terminated C string without freeing it. The caller frees the owning
+        /// result struct.
+        /// </summary>
+        public static string Read(byte* ptr)
+        {
             if (ptr == null)
             {
                 return string.Empty;
             }
-            string value = Marshal.PtrToStringUTF8((IntPtr)ptr) ?? string.Empty;
-            NativeMethods.free_cstring(ptr);
-            return value;
+            return Marshal.PtrToStringUTF8((IntPtr)ptr) ?? string.Empty;
         }
 
         /// <summary>

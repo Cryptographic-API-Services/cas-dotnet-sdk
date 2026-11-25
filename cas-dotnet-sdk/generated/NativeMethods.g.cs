@@ -18,11 +18,23 @@ namespace CasCoreLib
 
 
 
+        /// <summary>
+        ///  Derives an AES-256-GCM key from an X25519 shared secret and both parties'
+        ///  public keys (HKDF-SHA256, bound to the cipher and to both public keys).
+        ///  The public keys can be passed in either order, so both peers get the same
+        ///  key. Returns `InvalidKey` (1) for a wrong-length or all-zero shared secret
+        ///  or a wrong-length public key.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "aes_256_key_from_x25519_diffie_hellman_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_256_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length);
+        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_256_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length, byte* public_key_a, nuint public_key_a_length, byte* public_key_b, nuint public_key_b_length);
 
+        /// <summary>
+        ///  Derives an AES-128-GCM key the same way as
+        ///  [`aes_256_key_from_x25519_diffie_hellman_shared_secret`], with a
+        ///  per-cipher label, so the two never give related keys.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "aes_128_key_from_x25519_diffie_hellman_shared_secret", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_128_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length);
+        internal static extern AesNonceAndKeyFromX25519DiffieHellman aes_128_key_from_x25519_diffie_hellman_shared_secret(byte* shared_secret, nuint shared_secret_length, byte* public_key_a, nuint public_key_a_length, byte* public_key_b, nuint public_key_b_length);
 
         [DllImport(__DllName, EntryPoint = "aes_nonce", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern AesNonce aes_nonce();
@@ -45,6 +57,160 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "aes_256_decrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern AesBytesDecrypt aes_256_decrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
 
+        /// <summary>
+        ///  Encrypts `plaintext` with AES-128-GCM under a fresh random nonce and returns
+        ///  `nonce || ciphertext || tag`. This is the recommended way to encrypt: the
+        ///  caller never handles a nonce, so it cannot reuse one. Rotate the key well
+        ///  before about 2^32 messages. `aad` may be empty (a null pointer is accepted
+        ///  when `aad_length` is 0); the same AAD must be passed to `aes_128_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_128_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  Decrypts a `nonce || ciphertext || tag` blob produced by `aes_128_seal`.
+        ///  A blob shorter than nonce + tag is `InvalidInput`; a tampered blob or the
+        ///  wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_128_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM version of `aes_128_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_256_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM version of `aes_128_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_256_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `aes_128_encrypt_bytes_with_key` with additional authenticated data. Returns
+        ///  `ciphertext || tag`. The caller supplies the nonce and must never reuse it
+        ///  under the same key; prefer `aes_128_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_encrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_128_encrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `aes_128_decrypt_bytes_with_key` with additional authenticated data. The
+        ///  wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_decrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_128_decrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM version of `aes_128_encrypt_bytes_with_aad`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_encrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesEncrypt aes_256_encrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM version of `aes_128_decrypt_bytes_with_aad`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_decrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesBytesDecrypt aes_256_decrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  Generates a random 12-byte nonce for AES-128-GCM-SIV and AES-256-GCM-SIV.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_gcm_siv_nonce", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivNonce aes_gcm_siv_nonce();
+
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivKey aes_128_gcm_siv_key();
+
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivKey aes_256_gcm_siv_key();
+
+        /// <summary>
+        ///  Encrypts with AES-128-GCM-SIV under a caller-supplied 12-byte nonce and
+        ///  returns `ciphertext || tag`. AES-GCM-SIV is nonce-misuse resistant: reusing
+        ///  a nonce under the same key only reveals whether two messages were identical,
+        ///  but it still reveals that, so prefer `aes_128_gcm_siv_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_encrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_128_gcm_siv_encrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        /// <summary>
+        ///  Decrypts `ciphertext || tag` from `aes_128_gcm_siv_encrypt_bytes_with_key`.
+        ///  A tampered ciphertext or the wrong key or nonce is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_decrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_128_gcm_siv_decrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_encrypt_bytes_with_key`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_encrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_256_gcm_siv_encrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_decrypt_bytes_with_key`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_decrypt_bytes_with_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_256_gcm_siv_decrypt_bytes_with_key(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
+
+        /// <summary>
+        ///  Encrypts `plaintext` with AES-128-GCM-SIV under a fresh random nonce and
+        ///  returns `nonce || ciphertext || tag`. This is the recommended way to
+        ///  encrypt: the caller never handles a nonce. Rotate the key well before about
+        ///  2^32 messages. `aad` may be empty (a null pointer is accepted when
+        ///  `aad_length` is 0); the same AAD must be passed to `aes_128_gcm_siv_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_128_gcm_siv_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  Decrypts a `nonce || ciphertext || tag` blob produced by
+        ///  `aes_128_gcm_siv_seal`. A blob shorter than nonce + tag is `InvalidInput`;
+        ///  a tampered blob or the wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_128_gcm_siv_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_256_gcm_siv_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_256_gcm_siv_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `aes_128_gcm_siv_encrypt_bytes_with_key` with additional authenticated
+        ///  data. Returns `ciphertext || tag`. The caller supplies the nonce; prefer
+        ///  `aes_128_gcm_siv_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_encrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_128_gcm_siv_encrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `aes_128_gcm_siv_decrypt_bytes_with_key` with additional authenticated
+        ///  data. The wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_128_gcm_siv_decrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_128_gcm_siv_decrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_encrypt_bytes_with_aad`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_encrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivEncryptResult aes_256_gcm_siv_encrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  AES-256-GCM-SIV version of `aes_128_gcm_siv_decrypt_bytes_with_aad`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "aes_256_gcm_siv_decrypt_bytes_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern AesGcmSivDecryptResult aes_256_gcm_siv_decrypt_bytes_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
+
         [DllImport(__DllName, EntryPoint = "ascon_128_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Ascon128Key ascon_128_key();
 
@@ -57,19 +223,108 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "ascon_128_decrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Ascon128DecryptResult ascon_128_decrypt(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
 
+        /// <summary>
+        ///  Encrypts `plaintext` with Ascon-AEAD128 under a fresh random 16-byte nonce
+        ///  and returns `nonce || ciphertext || tag`. This is the recommended way to
+        ///  encrypt: the caller never handles a nonce, so it cannot reuse one. `aad` may
+        ///  be empty (a null pointer is accepted when `aad_length` is 0); the same AAD
+        ///  must be passed to `ascon_128_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "ascon_128_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128EncryptResult ascon_128_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  Decrypts a `nonce || ciphertext || tag` blob produced by `ascon_128_seal`.
+        ///  A blob shorter than nonce + tag is `InvalidInput`; a tampered blob or the
+        ///  wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "ascon_128_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128DecryptResult ascon_128_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `ascon_128_encrypt` with additional authenticated data. Returns
+        ///  `ciphertext || tag`. The caller supplies the nonce and must never reuse it
+        ///  under the same key; prefer `ascon_128_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "ascon_128_encrypt_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128EncryptResult ascon_128_encrypt_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `ascon_128_decrypt` with additional authenticated data. The wrong AAD is
+        ///  `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "ascon_128_decrypt_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Ascon128DecryptResult ascon_128_decrypt_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
+
         [DllImport(__DllName, EntryPoint = "blake2_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Blake2HashByteResult blake2_512_bytes(byte* data, nuint data_length);
 
         [DllImport(__DllName, EntryPoint = "blake2_512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool blake2_512_bytes_verify(byte* hashed_data, nuint hashed_data_length, byte* to_compare, nuint to_compare_length);
+        internal static extern CasVerifyResult blake2_512_bytes_verify(byte* hashed_data, nuint hashed_data_length, byte* to_compare, nuint to_compare_length);
 
         [DllImport(__DllName, EntryPoint = "blake2_256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Blake2HashByteResult blake2_256_bytes(byte* data_to_hash, nuint data_to_hash_length);
 
         [DllImport(__DllName, EntryPoint = "blake2_256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool blake2_256_bytes_verify(byte* hashed_data, nuint hashed_data_length, byte* to_compare, nuint to_compare_length);
+        internal static extern CasVerifyResult blake2_256_bytes_verify(byte* hashed_data, nuint hashed_data_length, byte* to_compare, nuint to_compare_length);
+
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305Key chacha20_poly1305_key();
+
+        /// <summary>
+        ///  Generates a random 12-byte ChaCha20-Poly1305 nonce. Use it for one message only.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_nonce", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305Nonce chacha20_poly1305_nonce();
+
+        /// <summary>
+        ///  Encrypts with ChaCha20-Poly1305 under a caller-supplied 12-byte nonce and
+        ///  returns `ciphertext || tag`. The nonce must never be reused under the same
+        ///  key; prefer `chacha20_poly1305_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_encrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305EncryptResult chacha20_poly1305_encrypt(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length);
+
+        /// <summary>
+        ///  Decrypts `ciphertext || tag` from `chacha20_poly1305_encrypt`. A tampered
+        ///  ciphertext or the wrong key or nonce is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_decrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305DecryptResult chacha20_poly1305_decrypt(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length);
+
+        /// <summary>
+        ///  Encrypts `plaintext` with ChaCha20-Poly1305 under a fresh random nonce and
+        ///  returns `nonce || ciphertext || tag`. This is the recommended way to
+        ///  encrypt: the caller never handles a nonce, so it cannot reuse one. Rotate
+        ///  the key well before about 2^32 messages. `aad` may be empty (a null pointer
+        ///  is accepted when `aad_length` is 0); the same AAD must be passed to
+        ///  `chacha20_poly1305_open`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_seal", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305EncryptResult chacha20_poly1305_seal(byte* key, nuint key_length, byte* plaintext, nuint plaintext_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  Decrypts a `nonce || ciphertext || tag` blob produced by
+        ///  `chacha20_poly1305_seal`. A blob shorter than nonce + tag is `InvalidInput`;
+        ///  a tampered blob or the wrong AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_open", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305DecryptResult chacha20_poly1305_open(byte* key, nuint key_length, byte* @sealed, nuint sealed_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `chacha20_poly1305_encrypt` with additional authenticated data. Returns
+        ///  `ciphertext || tag`. The caller supplies the nonce and must never reuse it
+        ///  under the same key; prefer `chacha20_poly1305_seal`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_encrypt_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305EncryptResult chacha20_poly1305_encrypt_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_encrypt, nuint to_encrypt_length, byte* aad, nuint aad_length);
+
+        /// <summary>
+        ///  `chacha20_poly1305_decrypt` with additional authenticated data. The wrong
+        ///  AAD is `DecryptionFailed`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "chacha20_poly1305_decrypt_with_aad", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ChaCha20Poly1305DecryptResult chacha20_poly1305_decrypt_with_aad(byte* nonce_key, nuint nonce_key_length, byte* key, nuint key_length, byte* to_decrypt, nuint to_decrypt_length, byte* aad, nuint aad_length);
 
         [DllImport(__DllName, EntryPoint = "get_ed25519_key_pair_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Ed25519KeyPairBytesResult get_ed25519_key_pair_bytes();
@@ -83,9 +338,41 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "verify_with_public_key_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult verify_with_public_key_bytes(byte* public_key, nuint public_key_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
 
+        /// <summary>
+        ///  Frees both buffers of an [`Ed25519KeyPairBytesResult`] and nulls its
+        ///  fields, so a second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_ed25519_key_pair_bytes_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_ed25519_key_pair_bytes_result(Ed25519KeyPairBytesResult* result);
+
+        /// <summary>
+        ///  Frees both buffers of an [`Ed25519ByteSignatureResult`] and nulls its
+        ///  fields, so a second call is harmless. A null `result` (or null fields, after
+        ///  an error) is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_ed25519_byte_signature_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_ed25519_byte_signature_result(Ed25519ByteSignatureResult* result);
+
+        /// <summary>
+        ///  Releases a string returned by this library (`CString::into_raw`). The
+        ///  string goes back through `ZeroAlloc`, which wipes it. The caller must not
+        ///  write an extra NUL into it, because the length is recovered with `strlen`.
+        ///
+        ///  Only for `*mut c_char` fields (`CasStringResult::value`, the PEM strings in
+        ///  `RsaKeyPair`). Never pass a byte buffer: use [`free_bytes`] for those. Each
+        ///  string must be freed exactly once. Null is ignored.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "free_cstring", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void free_cstring(byte* s);
 
+        /// <summary>
+        ///  Releases a byte buffer returned by this library. `ptr` must be a buffer
+        ///  pointer from one of the result structs (that is, from [`export_bytes`]) and
+        ///  must not be freed twice. Null is ignored.
+        ///
+        ///  The buffer goes back through the Rust global allocator, so `ZeroAlloc` wipes
+        ///  it (length header included) before the memory is reused.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "free_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void free_bytes(byte* ptr);
 
@@ -98,42 +385,210 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "hpke_generate_keypair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern HpkeKeyPair hpke_generate_keypair();
 
+        /// <summary>
+        ///  HPKE (X25519, HKDF-SHA512, AES-256-GCM) base-mode encryption. `info_str`
+        ///  binds the keys to a context and must be at most 65,530 bytes: a longer one
+        ///  returns `InvalidInput` (4). The recipient must pass the same `info_str` and AAD.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "hpke_encrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern HpkeEncrypt hpke_encrypt(byte* plaintext, nuint plaintext_length, byte* public_key, nuint public_keylength, byte* info_str, nuint info_str_length);
+        internal static extern HpkeEncrypt hpke_encrypt(byte* plaintext, nuint plaintext_length, byte* public_key, nuint public_keylength, byte* info_str, nuint info_str_length, byte* aad, nuint aad_length);
 
+        /// <summary>
+        ///  Decrypts a message from [`hpke_encrypt`]. An `info_str` longer than 65,530
+        ///  bytes returns `InvalidInput` (4); a wrong `info_str`, AAD, key or tag returns
+        ///  `DecryptionFailed` (8).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "hpke_decrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern HpkeDecrypt hpke_decrypt(byte* ciphertext, nuint ciphertext_length, byte* private_key, nuint private_keylength, byte* encapped_key, nuint encapped_key_length, byte* tag, nuint tag_length, byte* info_str, nuint info_str_length);
+        internal static extern HpkeDecrypt hpke_decrypt(byte* ciphertext, nuint ciphertext_length, byte* private_key, nuint private_keylength, byte* encapped_key, nuint encapped_key_length, byte* tag, nuint tag_length, byte* info_str, nuint info_str_length, byte* aad, nuint aad_length);
 
+        /// <summary>
+        ///  Frees the three buffers of an [`HpkeKeyPair`] and nulls its fields, so a
+        ///  second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_hpke_key_pair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_hpke_key_pair(HpkeKeyPair* result);
+
+        /// <summary>
+        ///  Frees the three buffers of an [`HpkeEncrypt`] and nulls its fields, so a
+        ///  second call is harmless. A null `result` (or null fields, after an error)
+        ///  is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_hpke_encrypt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_hpke_encrypt(HpkeEncrypt* result);
+
+        /// <summary>
+        ///  Hashes a password with Argon2id. `memory_cost` is in **MiB** (19–4096),
+        ///  `iterations` 1–10 and `parallelism` 1–16. Out-of-range values return
+        ///  `InvalidParameters` (6) instead of allocating. The password is
+        ///  `password_bytes` (`password_length` bytes of UTF-8) and may contain NUL bytes.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_hash_password_parameters_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult argon2_hash_password_parameters_bytes(uint memory_cost, uint iterations, uint parallelism, byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Hashes a password with Argon2id's default parameters. The password is
+        ///  `password_bytes` (`password_length` bytes of UTF-8) and may contain NUL bytes.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_hash_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult argon2_hash_bytes(byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Verifies a password against an Argon2 hash (a NUL-terminated string). The
+        ///  password is `password_bytes` (`password_length` bytes of UTF-8).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult argon2_verify_bytes(byte* hashed_password, byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `argon2_hash_password_parameters_bytes`. A null pointer or invalid UTF-8
+        ///  returns `InvalidInput` (4); out-of-range parameters return `InvalidParameters` (6).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "argon2_hash_password_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult argon2_hash_password_parameters(uint memory_cost, uint iterations, uint parallelism, byte* password_to_hash);
 
+        /// <summary>
+        ///  Returns a random 16-byte salt for `argon2_derive_aes_128_key_with_salt` and
+        ///  `argon2_derive_aes_256_key_with_salt`. The salt is not secret: store it next to
+        ///  whatever the key protects and pass it back to re-derive the same key.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_generate_salt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Argon2Salt argon2_generate_salt();
+
+        /// <summary>
+        ///  Derives a 16-byte AES-128 key from a password and salt with Argon2id (19 MiB,
+        ///  2 iterations, parallelism 1). The same password and salt always give the same
+        ///  key. A salt shorter than 16 bytes returns `InvalidParameters` (6); a null
+        ///  pointer with a non-zero length returns `InvalidInput` (4).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_derive_aes_128_key_with_salt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Argon2DerivedKey argon2_derive_aes_128_key_with_salt(byte* password, nuint password_length, byte* salt, nuint salt_length);
+
+        /// <summary>
+        ///  Derives a 32-byte AES-256 key from a password and salt with Argon2id (19 MiB,
+        ///  2 iterations, parallelism 1). The same password and salt always give the same
+        ///  key. A salt shorter than 16 bytes returns `InvalidParameters` (6); a null
+        ///  pointer with a non-zero length returns `InvalidInput` (4).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "argon2_derive_aes_256_key_with_salt", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern Argon2DerivedKey argon2_derive_aes_256_key_with_salt(byte* password, nuint password_length, byte* salt, nuint salt_length);
+
+        /// <summary>
+        ///  Deprecated: derives an AES-128 key with a random salt that is thrown away, so
+        ///  the same password never gives the same key again. Use `argon2_generate_salt`
+        ///  and `argon2_derive_aes_128_key_with_salt`.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "argon2_derive_aes_128_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Argon2KDFAes128 argon2_derive_aes_128_key(byte* hashed_password);
 
+        /// <summary>
+        ///  Deprecated: derives an AES-256 key with a random salt that is thrown away, so
+        ///  the same password never gives the same key again. Use `argon2_generate_salt`
+        ///  and `argon2_derive_aes_256_key_with_salt`.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "argon2_derive_aes_256_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern Argon2KDFAes128 argon2_derive_aes_256_key(byte* hashed_password);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `argon2_verify_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "argon2_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult argon2_verify(byte* hashed_pass, byte* password);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `argon2_hash_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "argon2_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult argon2_hash(byte* pass_to_hash);
 
+        /// <summary>
+        ///  Hashes a password with bcrypt. `cost` must be 10–16; out-of-range values
+        ///  return `InvalidParameters` (6). The password is `password_length` bytes of
+        ///  UTF-8 (at most 72) and may contain NUL bytes. The bytes are `password_bytes`.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "bcrypt_hash_with_parameters_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult bcrypt_hash_with_parameters_bytes(byte* password_bytes, nuint password_length, uint cost);
+
+        /// <summary>
+        ///  Hashes a password with bcrypt at the default cost (12). The password is
+        ///  `password_bytes` (`password_length` bytes of UTF-8, at most 72) and may contain NUL bytes.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "bcrypt_hash_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult bcrypt_hash_bytes(byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Verifies a password against a bcrypt hash (a NUL-terminated string). The
+        ///  password is `password_bytes` (`password_length` bytes of UTF-8, at most 72).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "bcrypt_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult bcrypt_verify_bytes(byte* password_bytes, nuint password_length, byte* hash);
+
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `bcrypt_hash_with_parameters_bytes`. A null pointer or invalid UTF-8
+        ///  returns `InvalidInput` (4); out-of-range `cost` returns `InvalidParameters` (6).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "bcrypt_hash_with_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult bcrypt_hash_with_parameters(byte* pass_to_hash, uint cost);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `bcrypt_hash_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "bcrypt_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult bcrypt_hash(byte* pass_to_hash);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `bcrypt_verify_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "bcrypt_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult bcrypt_verify(byte* pass, byte* hash);
 
+        /// <summary>
+        ///  Hashes a password with scrypt. `cpu_memory_cost` is log₂N (10–20),
+        ///  `block_size` (`r`) 1–32 and `parallelism` (`p`) 1–16; scrypt also needs
+        ///  log₂N &lt; 16·r. Out-of-range values return `InvalidParameters` (6). The
+        ///  password is `password_bytes` (`password_length` bytes of UTF-8) and may contain NUL bytes.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "scrypt_hash_with_parameters_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult scrypt_hash_with_parameters_bytes(byte* password_bytes, nuint password_length, byte cpu_memory_cost, uint block_size, uint parallelism);
+
+        /// <summary>
+        ///  Hashes a password with scrypt's default parameters. The password is
+        ///  `password_bytes` (`password_length` bytes of UTF-8) and may contain NUL bytes.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "scrypt_hash_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasStringResult scrypt_hash_bytes(byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Verifies a password against a scrypt hash (a NUL-terminated string). The
+        ///  password is `password_bytes` (`password_length` bytes of UTF-8).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "scrypt_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult scrypt_verify_bytes(byte* hash_to_check, byte* password_bytes, nuint password_length);
+
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `scrypt_hash_with_parameters_bytes`. A null pointer or invalid UTF-8
+        ///  returns `InvalidInput` (4); out-of-range parameters return `InvalidParameters` (6).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "scrypt_hash_with_parameters", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult scrypt_hash_with_parameters(byte* pass_to_hash, byte cpu_memory_cost, uint block_size, uint parallelism);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `scrypt_hash_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "scrypt_hash", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasStringResult scrypt_hash(byte* pass_to_hash);
 
+        /// <summary>
+        ///  Deprecated: the password is a C string, so it ends at the first NUL byte.
+        ///  Use `scrypt_verify_bytes`. A null pointer or invalid UTF-8 returns `InvalidInput` (4).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "scrypt_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult scrypt_verify(byte* hash_to_check, byte* pass_to_check);
 
@@ -164,56 +619,123 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "slh_dsa_verify_signature", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult slh_dsa_verify_signature(byte* verification_key, nuint verification_key_length, byte* signature, nuint signature_length, byte* message, nuint message_length);
 
+        /// <summary>
+        ///  Frees both buffers of an [`SlhDsaKeyPairResult`] and nulls its fields, so a
+        ///  second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_slh_dsa_key_pair_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_slh_dsa_key_pair_result(SlhDsaKeyPairResult* result);
+
+        /// <summary>
+        ///  Frees both buffers of an [`MlDsaKeyPairResult`] and nulls its fields, so a
+        ///  second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_ml_dsa_key_pair_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_ml_dsa_key_pair_result(MlDsaKeyPairResult* result);
+
+        /// <summary>
+        ///  Frees both buffers of an [`MlKemKeyPairResult`] and nulls its fields, so a
+        ///  second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_ml_kem_key_pair_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_ml_kem_key_pair_result(MlKemKeyPairResult* result);
+
+        /// <summary>
+        ///  Frees both buffers of an [`MlKemEncapsulateResult`] and nulls its fields,
+        ///  so a second call is harmless. A null `result` (or null fields, after an
+        ///  error) is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_ml_kem_encapsulate_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_ml_kem_encapsulate_result(MlKemEncapsulateResult* result);
+
         [DllImport(__DllName, EntryPoint = "get_key_pair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern RsaKeyPair get_key_pair(nuint key_size);
 
+        /// <summary>
+        ///  Signs `data_to_sign` (the message itself, any length) with RSASSA-PKCS1-v1_5
+        ///  and SHA-256 (JWS `RS256`). cas-lib hashes the message and adds the standard
+        ///  DigestInfo prefix, so the signature verifies with OpenSSL, .NET
+        ///  `RSA.VerifyData(..., SHA256, Pkcs1)` and other RS256 verifiers.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "rsa_sign_with_key_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern RsaSignBytesResults rsa_sign_with_key_bytes(byte* private_key, byte* data_to_sign, nuint data_to_sign_length);
 
+        /// <summary>
+        ///  Verifies an RS256 `signature` over `data_to_verify` (the message itself).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "rsa_verify_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern CasVerifyResult rsa_verify_bytes(byte* public_key, byte* data_to_verify, nuint data_to_verify_length, byte* signature, nuint signature_length);
+
+        /// <summary>
+        ///  Signs `data_to_sign` (the message itself, any length) with RSASSA-PSS,
+        ///  SHA-256, MGF1-SHA-256 and a 32-byte random salt (JWS `PS256`). Recommended
+        ///  over [`rsa_sign_with_key_bytes`] for new designs. Signatures are randomized.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "rsa_sign_pss_with_key_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern RsaSignBytesResults rsa_sign_pss_with_key_bytes(byte* private_key, byte* data_to_sign, nuint data_to_sign_length);
+
+        /// <summary>
+        ///  Verifies a PS256 `signature` (MGF1-SHA-256, 32-byte salt) over
+        ///  `data_to_verify` (the message itself).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "rsa_verify_pss_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern CasVerifyResult rsa_verify_pss_bytes(byte* public_key, byte* data_to_verify, nuint data_to_verify_length, byte* signature, nuint signature_length);
+
+        /// <summary>
+        ///  Frees both strings of an [`RsaKeyPair`] and nulls its fields, so a second
+        ///  call is harmless. A null `result` (or null fields, after an error) is
+        ///  ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_rsa_key_pair", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_rsa_key_pair(RsaKeyPair* result);
 
         [DllImport(__DllName, EntryPoint = "sha2_256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha2_256_bytes(byte* data_to_hash, nuint data_len);
 
         [DllImport(__DllName, EntryPoint = "sha2_256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha2_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha2_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
         [DllImport(__DllName, EntryPoint = "sha2_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha2_512_bytes(byte* data_to_hash, nuint data_len);
 
         [DllImport(__DllName, EntryPoint = "sha2_512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha2_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha2_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
         [DllImport(__DllName, EntryPoint = "sha3_256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha3_256_bytes(byte* data_to_hash, nuint data_len);
 
         [DllImport(__DllName, EntryPoint = "sha3_256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha3_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha3_256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
         [DllImport(__DllName, EntryPoint = "sha3_512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha3_512_bytes(byte* data_to_hash, nuint data_len);
 
         [DllImport(__DllName, EntryPoint = "sha3_512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha3_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha3_512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
+        /// <summary>
+        ///  Deprecated alias of [`sha3_512_bytes`]: computes SHA3-512, not SHA-512.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "sha512_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha512_bytes(byte* data_to_hash, nuint data_len);
 
+        /// <summary>
+        ///  Deprecated alias of [`sha3_512_bytes_verify`]: verifies a SHA3-512 digest, not SHA-512.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "sha512_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha512_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
+        /// <summary>
+        ///  Deprecated alias of [`sha3_256_bytes`]: computes SHA3-256, not SHA-256.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "sha256_bytes", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern SHAHashByteResult sha256_bytes(byte* data_to_hash, nuint data_len);
 
+        /// <summary>
+        ///  Deprecated alias of [`sha3_256_bytes_verify`]: verifies a SHA3-256 digest, not SHA-256.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "sha256_bytes_verify", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool sha256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
+        internal static extern CasVerifyResult sha256_bytes_verify(byte* data_to_hash, nuint data_len, byte* data_to_verify, nuint data_to_verify_len);
 
         [DllImport(__DllName, EntryPoint = "generate_secret_and_public_key", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern x25519SecretPublicKeyResult generate_secret_and_public_key();
@@ -221,29 +743,80 @@ namespace CasCoreLib
         [DllImport(__DllName, EntryPoint = "diffie_hellman", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern x25519SharedSecretResult diffie_hellman(byte* secret_key, nuint secret_key_length, byte* other_user_public_key, nuint other_user_public_key_length);
 
+        /// <summary>
+        ///  Frees both buffers of an [`x25519SecretPublicKeyResult`] and nulls its
+        ///  fields, so a second call is harmless. A null `result` is ignored.
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "free_x25519_secret_public_key_result", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern void free_x25519_secret_public_key_result(x25519SecretPublicKeyResult* result);
+
+        /// <summary>
+        ///  Decompresses zstd data, producing at most 64 MiB of output
+        ///  (cas-lib's `DEFAULT_MAX_DECOMPRESSED_SIZE`).
+        ///
+        ///  Larger output returns `error_code = 13` (`DecompressionLimitExceeded`); use
+        ///  [`decompress_with_limit`] to choose a different cap.
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "decompress", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern ZstdCompressResult decompress(byte* data_to_decompress, nuint data_to_decompress_length);
 
+        /// <summary>
+        ///  Decompresses zstd data, producing at most `max_output_length` bytes.
+        ///
+        ///  Output larger than `max_output_length` returns `error_code = 13`
+        ///  (`DecompressionLimitExceeded`). A `max_output_length` of 0 returns
+        ///  `error_code = 6` (`InvalidParameters`).
+        /// </summary>
+        [DllImport(__DllName, EntryPoint = "decompress_with_limit", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+        internal static extern ZstdCompressResult decompress_with_limit(byte* data_to_decompress, nuint data_to_decompress_length, nuint max_output_length);
+
+        /// <summary>
+        ///  Compresses data with zstd. `level` must be in `0..=22` (0 selects zstd's
+        ///  default); anything else returns `error_code = 6` (`InvalidParameters`).
+        /// </summary>
         [DllImport(__DllName, EntryPoint = "compress", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern ZstdCompressResult compress(byte* data_to_compress, nuint data_to_compress_length, nuint level);
 
 
     }
 
+    /// <summary>
+    ///  AES-GCM nonce from `aes_nonce`.
+    ///
+    ///  The caller owns `nonce` and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct AesNonce
     {
         public byte* nonce;
         public nuint length;
+        public int error_code;
     }
 
+    /// <summary>
+    ///  AES key from `aes_128_key` / `aes_256_key`.
+    ///
+    ///  The caller owns `key` (secret) and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct AesKeyResult
     {
         public byte* key;
         public nuint length;
+        /// <summary>
+        ///  `0` on success. Key generation does not take caller input; a non-zero
+        ///  code means generation failed and `key` is null.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  AES-GCM ciphertext from `aes_128_encrypt_bytes_with_key` /
+    ///  `aes_256_encrypt_bytes_with_key`.
+    ///
+    ///  The caller owns `ciphertext` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct AesBytesEncrypt
     {
@@ -252,6 +825,13 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  AES-GCM plaintext from `aes_128_decrypt_bytes_with_key` /
+    ///  `aes_256_decrypt_bytes_with_key`.
+    ///
+    ///  The caller owns `plaintext` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct AesBytesDecrypt
     {
@@ -260,6 +840,13 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  AES key derived by `aes_128_key_from_x25519_diffie_hellman_shared_secret`
+    ///  / `aes_256_key_from_x25519_diffie_hellman_shared_secret`.
+    ///
+    ///  The caller owns `aes_key_ptr` (secret) and frees it once with `free_bytes`.
+    ///  It is null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct AesNonceAndKeyFromX25519DiffieHellman
     {
@@ -269,6 +856,50 @@ namespace CasCoreLib
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesGcmSivNonce
+    {
+        public byte* nonce;
+        public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesGcmSivKey
+    {
+        public byte* key;
+        public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesGcmSivEncryptResult
+    {
+        public byte* ciphertext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct AesGcmSivDecryptResult
+    {
+        public byte* plaintext;
+        public nuint length;
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  Ascon-128 ciphertext from `ascon_128_encrypt`.
+    ///
+    ///  The caller owns `ciphertext` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ascon128EncryptResult
     {
         public byte* ciphertext;
@@ -276,6 +907,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  Ascon-128 plaintext from `ascon_128_decrypt`.
+    ///
+    ///  The caller owns `plaintext` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ascon128DecryptResult
     {
@@ -284,27 +921,100 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  Ascon-128 key from `ascon_128_key`.
+    ///
+    ///  The caller owns `key` (secret) and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ascon128Key
     {
         public byte* key;
         public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  Ascon-128 nonce from `ascon_128_nonce`.
+    ///
+    ///  The caller owns `nonce` and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ascon128Nonce
     {
         public byte* nonce;
         public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  BLAKE2 digest from `blake2_256_bytes` / `blake2_512_bytes`.
+    ///
+    ///  The caller owns `result_bytes_ptr` and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Blake2HashByteResult
     {
         public byte* result_bytes_ptr;
         public nuint length;
+        /// <summary>
+        ///  `0` on success. `InvalidInput` (4) for a null pointer with a non-zero length
+        ///  or a length above `isize::MAX`.
+        /// </summary>
+        public int error_code;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct ChaCha20Poly1305Nonce
+    {
+        public byte* nonce;
+        public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct ChaCha20Poly1305Key
+    {
+        public byte* key;
+        public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct ChaCha20Poly1305EncryptResult
+    {
+        public byte* ciphertext;
+        public nuint length;
+        public int error_code;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct ChaCha20Poly1305DecryptResult
+    {
+        public byte* plaintext;
+        public nuint length;
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  Ed25519 key pair from `get_ed25519_key_pair_bytes`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_ed25519_key_pair_bytes_result`], or call `free_bytes` once on each
+    ///  pointer. `signing_key` (the full key pair) is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ed25519KeyPairBytesResult
     {
@@ -312,8 +1022,19 @@ namespace CasCoreLib
         public nuint signing_key_length;
         public byte* verifying_key;
         public nuint verifying_key_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  Ed25519 signature and public key from `sign_with_key_pair_bytes`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_ed25519_byte_signature_result`], or call `free_bytes` once on each
+    ///  pointer. Both are null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Ed25519ByteSignatureResult
     {
@@ -352,6 +1073,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  HMAC tag from `hmac_sign_bytes`.
+    ///
+    ///  The caller owns `result_bytes_ptr` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct HmacSignByteResult
     {
@@ -360,6 +1087,13 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  HPKE key pair from `hpke_generate_keypair`.
+    ///
+    ///  The caller owns all three buffers and must free them: pass the struct to
+    ///  [`free_hpke_key_pair`], or call `free_bytes` once on each pointer.
+    ///  `private_key_ptr` is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct HpkeKeyPair
     {
@@ -369,8 +1103,20 @@ namespace CasCoreLib
         public nuint public_key_ptr_length;
         public byte* info_str_ptr;
         public nuint info_str_ptr_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input; a non-zero code means it
+        ///  failed and every pointer is null.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  HPKE ciphertext from `hpke_encrypt`.
+    ///
+    ///  The caller owns all three buffers and must free them: pass the struct to
+    ///  [`free_hpke_encrypt`], or call `free_bytes` once on each pointer. All three
+    ///  are null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct HpkeEncrypt
     {
@@ -383,6 +1129,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  HPKE plaintext from `hpke_decrypt`.
+    ///
+    ///  The caller owns `plaintext_ptr` and frees it with `free_bytes`. It is null
+    ///  when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct HpkeDecrypt
     {
@@ -391,6 +1143,14 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  AES key derived by the deprecated `argon2_derive_aes_128_key` /
+    ///  `argon2_derive_aes_256_key` (despite the name, the 256-bit function returns
+    ///  it too).
+    ///
+    ///  The caller owns `key` (secret) and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct Argon2KDFAes128
     {
@@ -399,6 +1159,39 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  A salt from `argon2_generate_salt`. Free `salt` with `free_bytes`.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Argon2Salt
+    {
+        public byte* salt;
+        public nuint length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  A key from `argon2_derive_aes_128_key_with_salt` / `argon2_derive_aes_256_key_with_salt`.
+    ///  `key` is null when `error_code` is non-zero; otherwise free it with `free_bytes`.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe partial struct Argon2DerivedKey
+    {
+        public byte* key;
+        public nuint length;
+        public int error_code;
+    }
+
+    /// <summary>
+    ///  SLH-DSA key pair from `slh_dsa_generate_signing_and_verification_key`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_slh_dsa_key_pair_result`], or call `free_bytes` once on each pointer.
+    ///  `signing_key_ptr` is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct SlhDsaKeyPairResult
     {
@@ -406,8 +1199,18 @@ namespace CasCoreLib
         public nuint signing_key_length;
         public byte* verification_key_ptr;
         public nuint verification_key_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  SLH-DSA signature from `slh_dsa_sign_message`.
+    ///
+    ///  The caller owns `signature_ptr` and frees it with `free_bytes`. It is null
+    ///  when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct SlhDsaSignature
     {
@@ -416,6 +1219,13 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  ML-DSA key pair from `ml_dsa_generate_signing_and_verification_key`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_ml_dsa_key_pair_result`], or call `free_bytes` once on each pointer.
+    ///  `signing_key_ptr` is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct MlDsaKeyPairResult
     {
@@ -423,8 +1233,18 @@ namespace CasCoreLib
         public nuint signing_key_length;
         public byte* verification_key_ptr;
         public nuint verification_key_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  ML-DSA signature from `ml_dsa_sign_message`.
+    ///
+    ///  The caller owns `signature_ptr` and frees it with `free_bytes`. It is null
+    ///  when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct MlDsaSignature
     {
@@ -433,6 +1253,13 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  ML-KEM-1024 key pair from `ml_kem_1024_generate_key_pair`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_ml_kem_key_pair_result`], or call `free_bytes` once on each pointer.
+    ///  `secret_key_ptr` is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct MlKemKeyPairResult
     {
@@ -440,8 +1267,20 @@ namespace CasCoreLib
         public nuint secret_key_length;
         public byte* public_key_ptr;
         public nuint public_key_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  ML-KEM-1024 encapsulation from `ml_kem_1024_encapsulate_shared_secret`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_ml_kem_encapsulate_result`], or call `free_bytes` once on each
+    ///  pointer. Both are null when `error_code` is non-zero. `shared_secret_ptr` is
+    ///  secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct MlKemEncapsulateResult
     {
@@ -452,6 +1291,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  ML-KEM-1024 decapsulation from `ml_kem_1024_decapsulate_shared_secret`.
+    ///
+    ///  The caller owns `shared_secret_ptr` (secret) and frees it with
+    ///  `free_bytes`. It is null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct MlKemDecapsulateResult
     {
@@ -460,6 +1305,14 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  PEM-encoded RSA key pair from `get_key_pair`.
+    ///
+    ///  The caller owns both strings and must free them: pass the struct to
+    ///  [`free_rsa_key_pair`], or call `free_cstring` (not `free_bytes`) once on
+    ///  each pointer. Both are null when `error_code` is non-zero. `priv_key` is
+    ///  secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct RsaKeyPair
     {
@@ -468,6 +1321,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  RSA signature from `rsa_sign_with_key_bytes`.
+    ///
+    ///  The caller owns `signature_raw_ptr` and frees it with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct RsaSignBytesResults
     {
@@ -476,13 +1335,30 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  SHA-2 / SHA-3 digest from the `sha*_bytes` functions.
+    ///
+    ///  The caller owns `result_bytes_ptr` and frees it once with `free_bytes`.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct SHAHashByteResult
     {
         public byte* result_bytes_ptr;
         public nuint length;
+        /// <summary>
+        ///  `0` on success. `InvalidInput` (4) when the pointer is null and the length
+        ///  is not zero, or the length exceeds `isize::MAX`. A real digest is never empty.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  X25519 key pair from `generate_secret_and_public_key`.
+    ///
+    ///  The caller owns both buffers and must free them: pass the struct to
+    ///  [`free_x25519_secret_public_key_result`], or call `free_bytes` once on each
+    ///  pointer. `secret_key` is secret.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct x25519SecretPublicKeyResult
     {
@@ -490,8 +1366,19 @@ namespace CasCoreLib
         public nuint secret_key_length;
         public byte* public_key;
         public nuint public_key_length;
+        /// <summary>
+        ///  `0` on success. Generation takes no caller input; a non-zero code means it
+        ///  failed and both pointers are null.
+        /// </summary>
+        public int error_code;
     }
 
+    /// <summary>
+    ///  X25519 shared secret from `diffie_hellman`.
+    ///
+    ///  The caller owns `shared_secret` (secret) and frees it with `free_bytes`. It
+    ///  is null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct x25519SharedSecretResult
     {
@@ -500,6 +1387,12 @@ namespace CasCoreLib
         public int error_code;
     }
 
+    /// <summary>
+    ///  Output of `compress` / `decompress` / `decompress_with_limit`.
+    ///
+    ///  The caller owns `data` and frees it once with `free_bytes`. It is
+    ///  null when `error_code` is non-zero.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe partial struct ZstdCompressResult
     {
