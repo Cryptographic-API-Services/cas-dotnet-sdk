@@ -2,6 +2,7 @@ using CasCoreLib;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Helpers;
 using System;
+using System.Security.Cryptography;
 
 namespace CasDotnetSdk.Asymmetric
 {
@@ -30,12 +31,21 @@ namespace CasDotnetSdk.Asymmetric
                 throw new Exception("You must provide allocated data to sign with RSA");
             }
 
-            fixed (byte* privateKeyPtr = NativeString.ToCString(privateKey))
-            fixed (byte* dataPtr = NativePin.Of(dataToSign))
+            // The UTF-8 copy of the private key is ours to wipe; the caller's string can't be.
+            byte[] privateKeyBytes = NativeString.ToCString(privateKey);
+            try
             {
-                RsaSignBytesResults signResult = NativeMethods.rsa_sign_with_key_bytes(privateKeyPtr, dataPtr, (nuint)dataToSign.Length);
-                CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
-                return NativeByteBuffer.CopyAndFree(signResult.signature_raw_ptr, signResult.length);
+                fixed (byte* privateKeyPtr = privateKeyBytes)
+                fixed (byte* dataPtr = NativePin.Of(dataToSign))
+                {
+                    RsaSignBytesResults signResult = NativeMethods.rsa_sign_with_key_bytes(privateKeyPtr, dataPtr, (nuint)dataToSign.Length);
+                    CasErrorHandler.ThrowIfError(signResult.error_code, "RSA sign");
+                    return NativeByteBuffer.CopyAndFree(signResult.signature_raw_ptr, signResult.length);
+                }
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(privateKeyBytes);
             }
         }
 
@@ -94,12 +104,21 @@ namespace CasDotnetSdk.Asymmetric
                 throw new ArgumentException("You must provide allocated data to sign with RSA-PSS.", nameof(dataToSign));
             }
 
-            fixed (byte* privateKeyPtr = NativeString.ToCString(privateKey))
-            fixed (byte* dataPtr = NativePin.Of(dataToSign))
+            // The UTF-8 copy of the private key is ours to wipe; the caller's string can't be.
+            byte[] privateKeyBytes = NativeString.ToCString(privateKey);
+            try
             {
-                RsaSignBytesResults signResult = NativeMethods.rsa_sign_pss_with_key_bytes(privateKeyPtr, dataPtr, (nuint)dataToSign.Length);
-                CasErrorHandler.ThrowIfError(signResult.error_code, "RSA-PSS sign");
-                return NativeByteBuffer.CopyAndFree(signResult.signature_raw_ptr, signResult.length);
+                fixed (byte* privateKeyPtr = privateKeyBytes)
+                fixed (byte* dataPtr = NativePin.Of(dataToSign))
+                {
+                    RsaSignBytesResults signResult = NativeMethods.rsa_sign_pss_with_key_bytes(privateKeyPtr, dataPtr, (nuint)dataToSign.Length);
+                    CasErrorHandler.ThrowIfError(signResult.error_code, "RSA-PSS sign");
+                    return NativeByteBuffer.CopyAndFree(signResult.signature_raw_ptr, signResult.length);
+                }
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(privateKeyBytes);
             }
         }
 
