@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>  
     <Title>cas-dotnet-sdk</Title>
     <PackageIcon>icon.jpeg</PackageIcon>
-    <Version>1.9.82</Version>
+    <Version>2.0.0</Version>
     <Authors>Mike Mulchrone</Authors>
     <Description>A Nuget package that provides a implementation of the RustCrypto suite of cryptographic algorithms.</Description>
     <RepositoryUrl>https://github.com/Cryptographic-API-Services/cas-dotnet-sdk</RepositoryUrl>
@@ -41,10 +41,8 @@
     gives the path with the OS's separator: the value goes to build.rs as written, and on Linux and
     macOS a backslash is not a separator. The PR workflows check that the file was regenerated.
   -->
-  <Target Name="BuildRust" BeforeTargets="CoreCompile"
-          Condition="'$(BuildNativeRust)'=='true'">
-    <Exec Command="cargo build --release --locked" WorkingDirectory="$(RustProjectDir)"
-          EnvironmentVariables="CAS_DOTNET_BINDINGS_DIR=$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', 'generated'))" />
+  <Target Name="BuildRust" BeforeTargets="CoreCompile" Condition="'$(BuildNativeRust)'=='true'">
+    <Exec Command="cargo build --release --locked" WorkingDirectory="$(RustProjectDir)" EnvironmentVariables="CAS_DOTNET_BINDINGS_DIR=$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', 'generated'))"/>
   </Target>
 
   <Target Name="StageRustArtifacts" AfterTargets="BuildRust" Condition="'$(BuildNativeRust)'=='true'">
@@ -54,45 +52,42 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-    <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll" />
-    <_DestDir Include="$(NativeArtifactsDir)/win-x64/" />
+    <_RustOut Include="$(RustProjectDir)\target\release\cas_core_lib.dll"/>
+    <_DestDir Include="$(NativeArtifactsDir)/win-x64/"/>
   </ItemGroup>
 
   <!-- macOS support is Apple Silicon (osx-arm64) only. -->
   <ItemGroup Condition="'$(_IsOSX)' == 'true'">
-    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.dylib" />
-    <_DestDir Include="$(NativeArtifactsDir)/osx-arm64/" />
+    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.dylib"/>
+    <_DestDir Include="$(NativeArtifactsDir)/osx-arm64/"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(OS)' != 'Windows_NT' AND '$(_IsOSX)' != 'true'">
-    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.so" />
-    <_DestDir Include="$(NativeArtifactsDir)/linux-x64/" />
+    <_RustOut Include="$(RustProjectDir)/target/release/libcas_core_lib.so"/>
+    <_DestDir Include="$(NativeArtifactsDir)/linux-x64/"/>
   </ItemGroup>
 
-    <MakeDir Directories="@(_DestDir)" />
-    <Copy SourceFiles="@(_RustOut)" DestinationFolder="@(_DestDir)" SkipUnchangedFiles="true" />
+    <MakeDir Directories="@(_DestDir)"/>
+    <Copy SourceFiles="@(_RustOut)" DestinationFolder="@(_DestDir)" SkipUnchangedFiles="true"/>
   </Target>
 
     <!-- Pack staged native artifacts into runtimes/<rid>/native -->
     <ItemGroup>
-      <None Include="$(NativeArtifactsDir)\win-x64\cas_core_lib.dll"
-            Condition="Exists('$(NativeArtifactsDir)\win-x64\cas_core_lib.dll')">
+      <None Include="$(NativeArtifactsDir)\win-x64\cas_core_lib.dll" Condition="Exists('$(NativeArtifactsDir)\win-x64\cas_core_lib.dll')">
         <Pack>true</Pack>
         <PackagePath>runtimes\win-x64\native</PackagePath>
         <Link>cas_core_lib.dll</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
-      <None Include="$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so"
-            Condition="Exists('$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so')">
+      <None Include="$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so" Condition="Exists('$(NativeArtifactsDir)\linux-x64\libcas_core_lib.so')">
         <Pack>true</Pack>
         <PackagePath>runtimes\linux-x64\native</PackagePath>
         <Link>libcas_core_lib.so</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
 
-      <None Include="$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib"
-            Condition="Exists('$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib')">
+      <None Include="$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib" Condition="Exists('$(NativeArtifactsDir)\osx-arm64\libcas_core_lib.dylib')">
         <Pack>true</Pack>
         <PackagePath>runtimes\osx-arm64\native</PackagePath>
         <Link>libcas_core_lib.dylib</Link>
@@ -110,14 +105,13 @@
     a target that runs after generation but before CoreCompile.
   -->
   <ItemGroup>
-    <Compile Remove="generated\**\*.cs" />
+    <Compile Remove="generated\**\*.cs"/>
   </ItemGroup>
 
   <Target Name="IncludeGeneratedBindings" AfterTargets="BuildRust" BeforeTargets="CoreCompile">
-    <Error Condition="!Exists('$(GeneratedBindingsFile)')"
-           Text="Generated bindings not found at $(GeneratedBindingsFile). Run a Rust build (cargo build --release in cas-core-lib) or build with -p:BuildNativeRust=true." />
+    <Error Condition="!Exists('$(GeneratedBindingsFile)')" Text="Generated bindings not found at $(GeneratedBindingsFile). Run a Rust build (cargo build --release in cas-core-lib) or build with -p:BuildNativeRust=true."/>
     <ItemGroup>
-      <Compile Include="$(GeneratedBindingsFile)" />
+      <Compile Include="$(GeneratedBindingsFile)"/>
     </ItemGroup>
   </Target>
 
