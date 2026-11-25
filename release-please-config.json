@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "39933d5b3f42dd033c2c4f7e3e8ece1dd7c01ba4",
+  "pull-request-title-pattern": "chore: release ${version}",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "cas-dotnet-sdk",
+      "include-component-in-tag": false,
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "cas-dotnet-sdk/cas-dotnet-sdk.csproj",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ],
+      "changelog-sections": [
+        { "type": "feat", "section": "Added" },
+        { "type": "changed", "section": "Changed" },
+        { "type": "deprecated", "section": "Deprecated" },
+        { "type": "fix", "section": "Fixed" },
+        { "type": "security", "section": "Security" },
+        { "type": "docs", "section": "Documentation" },
+        { "type": "perf", "section": "Other" },
+        { "type": "refactor", "section": "Other" },
+        { "type": "test", "section": "Other" },
+        { "type": "ci", "section": "Other" },
+        { "type": "build", "section": "Other" },
+        { "type": "chore", "section": "Other" },
+        { "type": "revert", "section": "Other" }
+      ]
+    }
+  }
+}

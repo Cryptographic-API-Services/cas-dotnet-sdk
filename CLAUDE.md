@@ -108,6 +108,10 @@ git grep -hoE "^\s+public [A-Za-z0-9<>\[\]]+ [A-Z][A-Za-z0-9]*\(" -- 'cas-dotnet
 - Also give the public method XML doc comments (`<summary>`, plus `<param>` for any tuning parameter).
 - Keep the doc example-only: no benchmark tables or performance claims.
 
+## Releases
+
+Releases are automated with release-please (`release-please-config.json`, `.release-please-manifest.json`), as in cas-lib, cas-core-lib and cas-typescript-sdk. Don't bump `<Version>` in `cas-dotnet-sdk.csproj` or edit `CHANGELOG.md` by hand. Every push to `main` opens or updates a `chore: release X.Y.Z` PR whose version and changelog come from the Conventional Commit PR titles since the last release (`feat!:` / `BREAKING CHANGE:` → major, `feat:` → minor, `fix:` → patch). Merging that PR tags `vX.Y.Z`, creates the GitHub Release, and only then does `main-push-nuget-publish.yml` build, test and push the package to NuGet.
+
 ## Cross-platform constraint
 
 Supported targets: **Windows x64**, **Linux x64**, and **macOS Apple Silicon** (`osx-arm64`). Intel macs (`osx-x64`) are intentionally not supported — the Intel runners were too slow for this project's CI. Since the csbindgen migration (#191), P/Invoke goes through the generated `cas-dotnet-sdk/generated/NativeMethods.g.cs` using the bare library name `cas_core_lib`; the .NET runtime resolves it per-OS to `cas_core_lib.dll` / `libcas_core_lib.so` / `libcas_core_lib.dylib`, so there are no per-platform `[DllImport]` files to keep in sync. The native lib is built (`cargo build --release --locked`), staged into `artifacts/native/<rid>/`, and packed into `runtimes/<rid>/native` for each RID. Tests run against .NET 6–10 on all three OSes in CI on every PR: `pr-tests-windows` and `pr-tests-linux` fan out one job per TFM, while `pr-tests-macos-arm64` (`macos-latest`, Apple Silicon) runs all five target frameworks in a single `dotnet test` invocation (no `-f`).
