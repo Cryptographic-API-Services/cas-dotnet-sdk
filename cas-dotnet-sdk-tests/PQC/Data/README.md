@@ -85,8 +85,11 @@ reported in the failure message.
 - **ChaCha20-Poly1305, AES-GCM-SIV, HMAC-SHA512** — not exposed by the .NET SDK.
 - **Ascon** — `cas-lib` implements NIST SP 800-232 Ascon-AEAD128; Wycheproof only
   ships vectors for the pre-standard Ascon v1.2 family.
-- **RSA signatures** — `cas-lib` signs with unprefixed PKCS#1 v1.5 over raw data
-  (no DigestInfo), so the `rsa_signature_*` vectors cannot match.
+- **RSA signatures** — not wired up yet. Since cas-lib 0.7.0, `Sign`/`Verify` are
+  standard RS256 and `SignPss`/`VerifyPss` are PS256 (32-byte salt), so
+  `rsa_signature_2048_sha256_test.json` and `rsa_pss_2048_sha256_mgf1_32_test.json`
+  could be added (the SDK takes PKCS#1 PEM public keys, the vectors ship SPKI).
+  Until then, `RsaWrapperTests` checks interoperability with .NET's `RSA` both ways.
 - **ML-KEM seed-form / encaps / keygen vectors** — decapsulation takes the
   expanded 3168-byte key and encapsulation is randomized.
 - **SLH-DSA** — no Wycheproof vectors exist yet.
