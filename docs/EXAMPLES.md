@@ -393,15 +393,33 @@ byte[] opened = hpke.Decrypt(bound.Ciphertext, keyPair.PrivateKey, bound.Encappe
 ### Compression
 - ZSTD
 
-`level` ranges from `0` to `22` (`0` selects zstd's default); anything else throws `ArgumentOutOfRangeException`. Lower levels are faster; higher levels compress better. Decompression needs no level. `Decompress` stops at 64 MiB of output and throws a `CasException` with `CasErrorCode.DecompressionLimitExceeded`, so a small malicious frame can't exhaust memory.
+`level` ranges from `0` to `22` (`0` selects zstd's default); anything else throws `ArgumentOutOfRangeException`. Lower levels are faster; higher levels compress better. Decompression needs no level.
+
+Decompression output is limited, so a small malicious frame can't exhaust memory. Output over the limit throws a `CasException` with `CasErrorCode.DecompressionLimitExceeded`.
+
+- `Decompress(data)` allows up to 64 MiB of output.
+- `Decompress(data, maxOutputSize)` allows up to `maxOutputSize` bytes. It must be greater than `0` (otherwise `ArgumentOutOfRangeException`) and can be above 64 MiB, up to `int.MaxValue`. Set it no higher than the largest output you expect from the data's source.
 
 ```csharp
 using CasDotnetSdk.Compression;
+using CasDotnetSdk.Helpers;
 
 ZSTDWrapper zstd = new ZSTDWrapper();
 byte[] data = Encoding.UTF8.GetBytes("Compress this text, compress this text, compress this text");
 byte[] compressed = zstd.Compress(data, 3);
+
+// Up to 64 MiB of output.
 byte[] decompressed = zstd.Decompress(compressed);
+
+// Up to a limit you choose, here 1 MiB.
+try
+{
+    byte[] limited = zstd.Decompress(compressed, 1024 * 1024);
+}
+catch (CasException ex) when (ex.ErrorCode == CasErrorCode.DecompressionLimitExceeded)
+{
+    // The data would decompress to more than 1 MiB.
+}
 ```
 
 
