@@ -7,6 +7,12 @@ namespace CasDotnetSdk.PQC
     /// <summary>
     /// ML-DSA-65 (FIPS 204) post-quantum digital signatures. Signing is deterministic
     /// and uses an empty context.
+    /// <para>
+    /// Deterministic signing is a valid FIPS 204 mode and needs no randomness at signing time.
+    /// FIPS 204 prefers the hedged (randomized) variant where an attacker can measure power or
+    /// electromagnetic side channels or inject faults while signing; this wrapper does not
+    /// expose it.
+    /// </para>
     /// </summary>
     public unsafe class MLDSAWrapper
     {
