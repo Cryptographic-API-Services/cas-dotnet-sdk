@@ -43,7 +43,7 @@ Note: CI (`.github/workflows/pr-tests-*.yml`) builds `cargo build --release --lo
 
 - **PR workflows** (`pr-tests-{windows,linux,macos-arm64}.yml`) run on every PR whatever the base branch. After `dotnet test` they check that the committed `cas-dotnet-sdk/generated/NativeMethods.g.cs` matches the bindings the test build just regenerated (CRs stripped, since Windows checks it out with CRLF), and that the file really was regenerated. A PR that bumps the submodule without committing the regenerated bindings fails there.
 - **`audit.yml`** runs `cargo audit --deny unsound --deny yanked` (cargo-audit pinned) on `cas-core-lib/Cargo.lock` on every PR, on push to `main` and weekly. No advisories are ignored; fixes land in cas-core-lib / cas-lib and arrive here as a submodule bump.
-- **`main-push-nuget-publish.yml`** runs on push to `main`. Its `native` matrix job builds each RID with `--locked`, then runs `cargo test`, the same bindings check, and `dotnet test` on every TFM against the just-built library before uploading it; `pack-and-publish` needs all three and is the only job with `id-token: write` (NuGet Trusted Publishing). The .NET SDK it builds with is pinned by `DOTNET_SDK_VERSION` in that file (each job writes a `global.json` at run time; the repo has none, so local builds use any .NET 10 SDK). Bump it by hand.
+- **`main-push-nuget-publish.yml`** runs on push to `main`. Its `release-please` job opens or updates the release PR (see "Releases"); the rest runs only when merging that PR created a release, on its tag. Its `native` matrix job builds each RID with `--locked`, then runs `cargo test`, the same bindings check, and `dotnet test` on every TFM against the just-built library before uploading it; `pack-and-publish` needs all three and is the only job with `id-token: write` (NuGet Trusted Publishing). The .NET SDK it builds with is pinned by `DOTNET_SDK_VERSION` in that file (each job writes a `global.json` at run time; the repo has none, so local builds use any .NET 10 SDK). Bump it by hand.
 - **Dependabot** (`.github/dependabot.yml`) proposes NuGet packages, GitHub Actions (SHA pins) and the `cas-core-lib` submodule weekly, with a 7-day cooldown. Security updates come from the repository's Dependabot security updates setting.
 - All workflows grant `permissions: {}` at the top and the minimum per job, pin actions to commit SHAs with a `# vX.Y.Z` comment, check out with `persist-credentials: false`, and pass untrusted values to `run:` through `env:`, never `${{ }}` inside the script.
 
@@ -107,6 +107,10 @@ git grep -hoE "^\s+public [A-Za-z0-9<>\[\]]+ [A-Z][A-Za-z0-9]*\(" -- 'cas-dotnet
 - **New result types:** use the real property names from `Types/` in the example.
 - Also give the public method XML doc comments (`<summary>`, plus `<param>` for any tuning parameter).
 - Keep the doc example-only: no benchmark tables or performance claims.
+
+## Releases
+
+Releases are automated with release-please (`release-please-config.json`, `.release-please-manifest.json`), as in cas-lib, cas-core-lib and cas-typescript-sdk. Don't bump `<Version>` in `cas-dotnet-sdk.csproj` or edit `CHANGELOG.md` by hand. Every push to `main` opens or updates a `chore: release X.Y.Z` PR whose version and changelog come from the Conventional Commit PR titles since the last release (`feat!:` / `BREAKING CHANGE:` → major, `feat:` → minor, `fix:` → patch). Merging that PR tags `vX.Y.Z`, creates the GitHub Release, and only then does `main-push-nuget-publish.yml` build, test and push the package to NuGet.
 
 ## Cross-platform constraint
 
