@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk", "cas-dotne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-tests", "cas-dotnet-sdk-tests\cas-dotnet-sdk-tests.csproj", "{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-dotnet-sdk-benchmarks", "cas-dotnet-sdk-benchmarks\cas-dotnet-sdk-benchmarks.csproj", "{3323F124-735C-4D3D-8B78-BA614CA9AA27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Release|x64.ActiveCfg = Release|Any CPU
 		{4904E91B-5A0D-41E9-92CA-0E1BCE987FAE}.Release|x64.Build.0 = Release|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Debug|x64.Build.0 = Debug|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Release|x64.ActiveCfg = Release|Any CPU
+		{3323F124-735C-4D3D-8B78-BA614CA9AA27}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,7 +15,7 @@
 # the weekly cargo audit workflow flags anything they miss.
 version: 2
 updates:
-  # Finds the SDK and test projects through cas-dotnet-sdk.sln at the root.
+  # Finds the SDK, test and benchmark projects through cas-dotnet-sdk.sln at the root.
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
