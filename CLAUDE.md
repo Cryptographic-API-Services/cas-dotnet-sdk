@@ -10,6 +10,7 @@ CAS .NET SDK is a managed cryptographic toolkit published as the [`cas-dotnet-sd
 
 - `cas-dotnet-sdk/` — the SDK class library (NuGet package source). Multi-targets `net6.0`–`net10.0`.
 - `cas-dotnet-sdk-tests/` — xUnit test project, references the SDK directly.
+- `cas-dotnet-sdk-benchmarks/` — BenchmarkDotNet console project (`net8.0`–`net10.0`), references the SDK directly. One class per algorithm family under `Benchmarks/`; see its `README.md`.
 - `cas-core-lib/` — **git submodule** containing the Rust source compiled to `cas_core_lib.dll` (Windows) / `libcas_core_lib.so` (Linux) / `libcas_core_lib.dylib` (macOS). Clone with `--recursive` or run `git submodule update --init --recursive`.
 - `docs/EXAMPLES.md` — user-facing usage samples. Must be kept current with the public API (see "Keeping examples in sync").
 
@@ -33,7 +34,13 @@ dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -c Release -f net
 # Run a single test class or method
 dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 --filter "FullyQualifiedName~SHAWrapperTests"
 dotnet test ./cas-dotnet-sdk-tests/cas-dotnet-sdk-tests.csproj -f net8.0 --filter "DisplayName~Hash512"
+
+# Benchmarks (always Release). --job dry runs each benchmark once to check it works.
+dotnet run -c Release --project cas-dotnet-sdk-benchmarks -f net10.0 -- --filter '*' --job short
+dotnet run -c Release --project cas-dotnet-sdk-benchmarks -f net10.0 -- --filter '*MLKEM*'
 ```
+
+BenchmarkDotNet builds each run in a generated child project; `Program.cs` sets the `BuildNativeRust=false` environment variable so that build reuses the native lib staged by the host build instead of running cargo again. Don't set it as a job `MsBuildArgument`: a job in the config replaces the one picked with `--job`. The benchmark `.csproj` also copies the staged native lib next to its own output after each build, so a clean first build can run.
 
 The same commands work for local development on macOS (Apple Silicon): a Rust toolchain on PATH builds `libcas_core_lib.dylib`, and the `StageRustArtifacts` MSBuild target stages it into `artifacts/native/osx-arm64/` automatically — no extra flags needed.
 
@@ -42,6 +49,7 @@ Note: CI (`.github/workflows/pr-tests-*.yml`) builds `cargo build --release --lo
 ### CI
 
 - **PR workflows** (`pr-tests-{windows,linux,macos-arm64}.yml`) run on every PR whatever the base branch. After `dotnet test` they check that the committed `cas-dotnet-sdk/generated/NativeMethods.g.cs` matches the bindings the test build just regenerated (CRs stripped, since Windows checks it out with CRLF), and that the file really was regenerated. A PR that bumps the submodule without committing the regenerated bindings fails there. Their `dotnet test` also downloads the pinned NIST and Wycheproof vectors (see "Test vectors"); nothing caches them between runs.
+- **`benchmarks.yml`** runs the BenchmarkDotNet suite on net10.0 on Linux x64, Windows x64 and macOS arm64 (one matrix job per RID, `fail-fast: false`): a `--job dry` smoke run on every PR (fails if any benchmark throws), a `--job short` run on push to `main`, and a manual run with a chosen `--filter` and job. Real runs write each OS's results tables to the job summary and upload the full reports as the `benchmark-results-<rid>` artifact. `Program.cs` returns non-zero when any benchmark fails, because BenchmarkDotNet itself exits 0.
 - **`audit.yml`** runs `cargo audit --deny unsound --deny yanked` (cargo-audit pinned) on `cas-core-lib/Cargo.lock` on every PR, on push to `main` and weekly. No advisories are ignored; fixes land in cas-core-lib / cas-lib and arrive here as a submodule bump.
 - **`main-push-nuget-publish.yml`** runs on push to `main`. Its `release-please` job opens or updates the release PR (see "Releases"); the rest runs only when merging that PR created a release, on its tag. Its `native` matrix job builds each RID with `--locked`, then runs `cargo test`, the same bindings check, and `dotnet test` on every TFM against the just-built library before uploading it; `pack-and-publish` needs all three and is the only job with `id-token: write` (NuGet Trusted Publishing). The .NET SDK it builds with is pinned by `DOTNET_SDK_VERSION` in that file (each job writes a `global.json` at run time; the repo has none, so local builds use any .NET 10 SDK). Bump it by hand.
 - **Dependabot** (`.github/dependabot.yml`) proposes NuGet packages, GitHub Actions (SHA pins) and the `cas-core-lib` submodule weekly, with a 7-day cooldown. Security updates come from the repository's Dependabot security updates setting.
@@ -91,6 +99,7 @@ Passwords go to the native `*_bytes` exports as the full UTF-8 encoding plus its
 4. If the category has a factory/enum, register the new type there.
 5. Add an xUnit test, with NIST known-answer vectors where NIST has a validation program for the algorithm (see "Test vectors").
 6. Add a usage example to `docs/EXAMPLES.md` (see below).
+7. Add a benchmark to the matching class in `cas-dotnet-sdk-benchmarks/Benchmarks/` (inputs built in `[GlobalSetup]`, result returned).
 
 ## Keeping examples in sync
 
