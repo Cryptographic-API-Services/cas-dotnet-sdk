@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using CasDotnetSdk.PQC;
+using CasDotnetSdkTests.Nist;
 using CasDotnetSdkTests.PQC;
 using Xunit;
 
@@ -52,43 +53,43 @@ namespace CasDotnetSdkTests
             Assert.Equal(first, second);
         }
 
-        // NIST ACVP ML-DSA-65 (FIPS 204) sigVer known-answer vectors.
-        // cas-lib verifies with an empty context, so only empty-context (external, pure) tests are included.
+        // NIST ACVP ML-DSA-65 (FIPS 204) sigVer known-answer vectors. cas-lib verifies the
+        // external, pure interface with an empty context, so only those run; pre-hash, internal
+        // (externalMu or not), context and other parameter-set vectors are skipped (counted).
         [Fact]
         public void NistSignatureVerificationVectors()
         {
-            var root = PqcVectorData.Load("nist_mldsa_65_sigver.json");
-            int count = 0;
+            int run = 0;
+            int skipped = 0;
             var failures = new List<string>();
-            foreach (var group in root.GetProperty("testGroups").EnumerateArray())
+            foreach (AcvpFile.Case c in AcvpFile.Load("ML-DSA-sigVer-FIPS204", "ML-DSA", "sigVer"))
             {
-                foreach (var test in group.GetProperty("tests").EnumerateArray())
+                if (c.String("parameterSet") != "ML-DSA-65" || c.String("signatureInterface") != "external" ||
+                    c.String("preHash") != "pure" || c.Bool("externalMu") || c.Context.Length > 0)
                 {
-                    int tcId = test.GetProperty("tcId").GetInt32();
-                    byte[] pk = PqcVectorData.Hex(test.GetProperty("pk").GetString()!);
-                    byte[] msg = PqcVectorData.Hex(test.GetProperty("message").GetString()!);
-                    byte[] sig = PqcVectorData.Hex(test.GetProperty("signature").GetString()!);
-                    bool expected = test.GetProperty("testPassed").GetBoolean();
+                    skipped++;
+                    continue;
+                }
+                run++;
 
-                    bool actual;
-                    try
-                    {
-                        actual = this._wrapper.Verify(pk, sig, msg);
-                    }
-                    catch
-                    {
-                        // A malformed key/signature is a verification failure.
-                        actual = false;
-                    }
-                    if (actual != expected)
-                    {
-                        failures.Add($"tcId={tcId} expected={expected} actual={actual}");
-                    }
-                    count++;
+                bool expected = c.Bool("testPassed");
+                bool actual;
+                try
+                {
+                    actual = this._wrapper.Verify(c.Hex("pk"), c.Hex("signature"), c.Hex("message"));
+                }
+                catch
+                {
+                    // A malformed key/signature is a verification failure.
+                    actual = false;
+                }
+                if (actual != expected)
+                {
+                    failures.Add($"tcId={c.TcId} expected={expected} actual={actual}");
                 }
             }
-            Assert.True(count > 0, "No NIST ML-DSA vectors were loaded.");
-            Assert.True(failures.Count == 0, $"{failures.Count}/{count} NIST ML-DSA vectors mismatched: {string.Join("; ", failures)}");
+            NistVectors.AssertCounts("ML-DSA-sigVer-FIPS204", 1, 179, run, skipped);
+            Assert.True(failures.Count == 0, $"{failures.Count}/{run} NIST ML-DSA vectors mismatched: {string.Join("; ", failures)}");
         }
 
         // Project Wycheproof ML-DSA-65 verification vectors.

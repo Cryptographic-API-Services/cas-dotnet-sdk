@@ -1,5 +1,5 @@
 using CasDotnetSdk.Hashers;
-using System.Globalization;
+using CasDotnetSdkTests.Nist;
 using Xunit;
 
 namespace CasDotnetSdkTests.Tests
@@ -7,8 +7,6 @@ namespace CasDotnetSdkTests.Tests
     public class SHAWrapperTests
     {
         private readonly SHAWrapper _wrapper;
-        private const string DataDirectory = "SHA/Data";
-        private const string ProjectDataDirectory = "cas-dotnet-sdk-tests/SHA/Data";
 
         public SHAWrapperTests()
         {
@@ -87,85 +85,34 @@ namespace CasDotnetSdkTests.Tests
                 .Concat(LoadRspVectors("SHA3_512LongMsg.rsp"));
         }
 
+        /// <summary>
+        /// Every vector of a byte-oriented CAVP SHA file (SHAVS / SHA3VS ShortMsg and LongMsg) as
+        /// (message, digest). The byte-oriented files hold only whole-byte messages.
+        /// </summary>
         internal static IEnumerable<object[]> LoadRspVectors(string fileName)
         {
-            string path = ResolveVectorPath(fileName);
-
-            string? msgHex = null;
-            int? bitLength = null;
-
-            foreach (string rawLine in File.ReadLines(path))
+            foreach (RspRecord record in RspFile.Read(fileName, "Len"))
             {
-                string line = rawLine.Trim();
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
+                int bits = record.Int("Len");
+                if (bits % 8 != 0)
                 {
-                    continue;
+                    throw new InvalidOperationException($"Only byte-aligned NIST test vectors are supported. Found Len = {bits} in {fileName}.");
                 }
 
-                if (line.StartsWith("Len =", StringComparison.Ordinal))
-                {
-                    bitLength = int.Parse(line["Len =".Length..].Trim(), CultureInfo.InvariantCulture);
-                    continue;
-                }
-
-                if (line.StartsWith("Msg =", StringComparison.Ordinal))
-                {
-                    msgHex = line["Msg =".Length..].Trim();
-                    continue;
-                }
-
-                if (!line.StartsWith("MD =", StringComparison.Ordinal) || bitLength is null || msgHex is null)
-                {
-                    continue;
-                }
-
-                string digestHex = line["MD =".Length..].Trim();
-                yield return new object[]
-                {
-                    GetMessageBytes(msgHex, bitLength.Value),
-                    Convert.FromHexString(digestHex)
-                };
-
-                msgHex = null;
-                bitLength = null;
+                // A zero-length message is written as "Msg = 00".
+                byte[] message = bits == 0 ? Array.Empty<byte>() : record.Bytes("Msg").Take(bits / 8).ToArray();
+                yield return new object[] { message, record.Bytes("MD") };
             }
         }
 
-        private static byte[] GetMessageBytes(string msgHex, int bitLength)
+        [Theory]
+        [InlineData("SHA3_256ShortMsg.rsp", 137)]
+        [InlineData("SHA3_256LongMsg.rsp", 100)]
+        [InlineData("SHA3_512ShortMsg.rsp", 73)]
+        [InlineData("SHA3_512LongMsg.rsp", 100)]
+        public void NistVectorCountsArePinned(string fileName, int expectedRun)
         {
-            if (bitLength == 0)
-            {
-                return Array.Empty<byte>();
-            }
-
-            if (bitLength % 8 != 0)
-            {
-                throw new InvalidOperationException($"Only byte-aligned NIST test vectors are supported. Found Len = {bitLength}.");
-            }
-
-            byte[] fullMessage = Convert.FromHexString(msgHex);
-            return fullMessage.Take(bitLength / 8).ToArray();
-        }
-
-        private static string ResolveVectorPath(string fileName)
-        {
-            string[] candidatePaths =
-            {
-                Path.Combine(AppContext.BaseDirectory, DataDirectory, fileName),
-                Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ProjectDataDirectory, fileName)),
-                Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ProjectDataDirectory, fileName))
-            };
-
-            foreach (string candidatePath in candidatePaths)
-            {
-                if (File.Exists(candidatePath))
-                {
-                    return candidatePath;
-                }
-            }
-
-            throw new FileNotFoundException(
-                $"Missing NIST SHA vector file: {fileName}. Checked: {string.Join(", ", candidatePaths)}");
+            NistVectors.AssertCounts(fileName, expectedRun, 0, LoadRspVectors(fileName).Count(), 0);
         }
     }
 }

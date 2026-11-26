@@ -1,4 +1,5 @@
 using CasDotnetSdk.Hashers;
+using CasDotnetSdkTests.Nist;
 using System.Text;
 using Xunit;
 
@@ -67,6 +68,16 @@ namespace CasDotnetSdkTests.Tests
             byte[] data = Encoding.UTF8.GetBytes("abc");
             Assert.NotEqual(new SHAWrapper().Hash256(data), hasher.Hash256(data));
             Assert.NotEqual(new SHAWrapper().Hash512(data), hasher.Hash512(data));
+        }
+
+        [Theory]
+        [InlineData("SHA256ShortMsg.rsp", 65)]
+        [InlineData("SHA256LongMsg.rsp", 64)]
+        [InlineData("SHA512ShortMsg.rsp", 129)]
+        [InlineData("SHA512LongMsg.rsp", 128)]
+        public void NistVectorCountsArePinned(string fileName, int expectedRun)
+        {
+            NistVectors.AssertCounts(fileName, expectedRun, 0, SHAWrapperTests.LoadRspVectors(fileName).Count(), 0);
         }
 
         public static IEnumerable<object[]> SHA256NistVectors()

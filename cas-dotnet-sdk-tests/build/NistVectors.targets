@@ -1,0 +1,107 @@
+<Project>
+  <!--
+    NIST known-answer vectors are downloaded, not committed (like the Wycheproof vectors in
+    cas-dotnet-sdk-tests.csproj, and matching cas-typescript-sdk's scripts/fetch-nist.mjs).
+    The CAVP files the tests read come to about 18 MB and the ACVP JSON to about 81 MB,
+    almost all of it SLH-DSA, so they can't sensibly live in git.
+
+    - CAVP: the static zips on csrc.nist.gov, each pinned by its SHA-256 (NistCavpArchive).
+      The members the tests read (NistCavpFile) are extracted next to the zip; their digests
+      are recorded at extraction and re-checked on every build.
+    - ACVP: gen-val/json-files/<dir>/internalProjection.json (inputs and expected results in
+      one file) from usnistgov/ACVP-Server at the release tag NistAcvpPinnedRef, each pinned by
+      the git blob SHA GitHub reports for it at that tag (NistAcvpFile).
+    - Everything goes into one git-ignored cache, obj/nist/, shared by every configuration and
+      target framework; the DownloadNistVectors task holds a cross-process mutex, so the
+      parallel per-framework builds of a plain `dotnet test` don't collide. A file that is
+      cached and matches its pin is never downloaded again.
+    - The files are copied next to the test assembly as NistVectors/cavp/<name> and
+      NistVectors/acvp/<dir>/internalProjection.json (read by Nist/NistVectors.cs).
+    - A mismatch is an error: a cached copy that doesn't match is downloaded again, and a fresh
+      download that doesn't match fails the build. -p:FetchNistVectors=false never touches the
+      network and uses (and checks) only what is cached.
+
+    Refreshing (see Nist/README.md):
+    - ACVP: build with -p:NistAcvpRef=<newer tag> (or NIST_ACVP_REF). Those files aren't
+      checked; their blob SHAs are logged as BlobSha="...". When the tests pass (update the
+      pinned vector counts after reviewing why they moved), set NistAcvpPinnedRef to the tag
+      and paste the logged BlobSha values below.
+    - CAVP: to add or replace an archive, give it an empty Sha256; the build downloads it,
+      warns, and logs Sha256="..." to paste here.
+  -->
+  <PropertyGroup>
+    <NistAcvpPinnedRef>v1.1.0.43</NistAcvpPinnedRef>
+    <FetchNistVectors Condition="'$(FetchNistVectors)' == ''">true</FetchNistVectors>
+    <NistAcvpRef Condition="'$(NistAcvpRef)' == ''">$(NIST_ACVP_REF)</NistAcvpRef>
+    <NistAcvpRef Condition="'$(NistAcvpRef)' == ''">$(NistAcvpPinnedRef)</NistAcvpRef>
+    <NistVectorCache Condition="'$(NistVectorCache)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)', 'nist'))</NistVectorCache>
+    <_NistCavpBaseUrl>https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents</_NistCavpBaseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <NistCavpArchive Include="shabytetestvectors.zip" Url="$(_NistCavpBaseUrl)/shs/shabytetestvectors.zip" Sha256="929ef80b7b3418aca026643f6f248815913b60e01741a44bba9e118067f4c9b8" />
+    <NistCavpArchive Include="sha-3bytetestvectors.zip" Url="$(_NistCavpBaseUrl)/sha3/sha-3bytetestvectors.zip" Sha256="cd07701af2e47f5cc889d642528b4bf11f8b6eb55797c7307a96828ed8d8fc8c" />
+    <NistCavpArchive Include="gcmtestvectors.zip" Url="$(_NistCavpBaseUrl)/mac/gcmtestvectors.zip" Sha256="f9fc479e134cde2980b3bb7cddbcb567b2cd96fd753835243ed067699f26a023" />
+    <NistCavpArchive Include="hmactestvectors.zip" Url="$(_NistCavpBaseUrl)/mac/hmactestvectors.zip" Sha256="418c3837d38f249d6668146bd0090db24dd3c02d2e6797e3de33860a387ae4bd" />
+    <NistCavpArchive Include="186-3rsatestvectors.zip" Url="$(_NistCavpBaseUrl)/dss/186-3rsatestvectors.zip" Sha256="8405aeb3572a4f98ed4b1a3ccb3f2f49e725462dd28ec4759d6a15d88855d19c" />
+
+    <NistCavpFile Include="SHA256ShortMsg.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA256ShortMsg.rsp" />
+    <NistCavpFile Include="SHA256LongMsg.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA256LongMsg.rsp" />
+    <NistCavpFile Include="SHA256Monte.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA256Monte.rsp" />
+    <NistCavpFile Include="SHA512ShortMsg.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA512ShortMsg.rsp" />
+    <NistCavpFile Include="SHA512LongMsg.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA512LongMsg.rsp" />
+    <NistCavpFile Include="SHA512Monte.rsp" Archive="shabytetestvectors.zip" Member="shabytetestvectors/SHA512Monte.rsp" />
+    <NistCavpFile Include="SHA3_256ShortMsg.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_256ShortMsg.rsp" />
+    <NistCavpFile Include="SHA3_256LongMsg.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_256LongMsg.rsp" />
+    <NistCavpFile Include="SHA3_256Monte.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_256Monte.rsp" />
+    <NistCavpFile Include="SHA3_512ShortMsg.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_512ShortMsg.rsp" />
+    <NistCavpFile Include="SHA3_512LongMsg.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_512LongMsg.rsp" />
+    <NistCavpFile Include="SHA3_512Monte.rsp" Archive="sha-3bytetestvectors.zip" Member="SHA3_512Monte.rsp" />
+    <NistCavpFile Include="gcmDecrypt128.rsp" Archive="gcmtestvectors.zip" Member="gcmDecrypt128.rsp" />
+    <NistCavpFile Include="gcmDecrypt256.rsp" Archive="gcmtestvectors.zip" Member="gcmDecrypt256.rsp" />
+    <NistCavpFile Include="gcmEncryptExtIV128.rsp" Archive="gcmtestvectors.zip" Member="gcmEncryptExtIV128.rsp" />
+    <NistCavpFile Include="gcmEncryptExtIV256.rsp" Archive="gcmtestvectors.zip" Member="gcmEncryptExtIV256.rsp" />
+    <NistCavpFile Include="HMAC.rsp" Archive="hmactestvectors.zip" Member="HMAC.rsp" />
+    <!-- The .txt is the SigGen15 response file with the private exponent d added by NIST for testing. -->
+    <NistCavpFile Include="SigGen15_186-3.txt" Archive="186-3rsatestvectors.zip" Member="SigGen15_186-3.txt" />
+    <NistCavpFile Include="SigVer15_186-3.rsp" Archive="186-3rsatestvectors.zip" Member="SigVer15_186-3.rsp" />
+    <NistCavpFile Include="SigVerPSS_186-3.rsp" Archive="186-3rsatestvectors.zip" Member="SigVerPSS_186-3.rsp" />
+
+    <NistAcvpFile Include="ML-KEM-encapDecap-FIPS203" BlobSha="73692fe52abe2f937b7884baa46475c77c68a1d3" />
+    <NistAcvpFile Include="ML-DSA-keyGen-FIPS204" BlobSha="ebf2104da140b725675aea4cc47676c0536421f7" />
+    <NistAcvpFile Include="ML-DSA-sigVer-FIPS204" BlobSha="4c8caf12220e44dfa711fefe20e0285aaad844be" />
+    <NistAcvpFile Include="SLH-DSA-sigGen-FIPS205" BlobSha="5ff182bc29ae00b02a219cf68fff370d9963a12c" />
+    <NistAcvpFile Include="SLH-DSA-sigVer-FIPS205" BlobSha="0805107118f6d2c171f15b005e0b2bb0ec1ddcc1" />
+    <NistAcvpFile Include="Ascon-AEAD128-SP800-232" BlobSha="876a8910f7a68876afaf4c0691910302344a47c0" />
+    <NistAcvpFile Include="EDDSA-KeyGen-1.0" BlobSha="06befe7a32b8cd2cc854d37e80e2692d90e0c2c5" />
+    <NistAcvpFile Include="EDDSA-SigGen-1.0" BlobSha="dff2df4d6634e32fb4519ad01ebd9c060b5ddca2" />
+    <NistAcvpFile Include="EDDSA-SigVer-1.0" BlobSha="f68f86e0f65c7fbfa92de795a616ebf9135eec4a" />
+  </ItemGroup>
+
+  <UsingTask TaskName="DownloadNistVectors" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task>
+      <Code Type="Class" Language="cs" Source="$(MSBuildThisFileDirectory)DownloadNistVectors.cs" />
+    </Task>
+  </UsingTask>
+
+  <Target Name="FetchNistVectors" BeforeTargets="AssignTargetPaths">
+    <DownloadNistVectors CacheDirectory="$(NistVectorCache)"
+                         AcvpRef="$(NistAcvpRef)"
+                         AcvpPinnedRef="$(NistAcvpPinnedRef)"
+                         CavpArchives="@(NistCavpArchive)"
+                         CavpFiles="@(NistCavpFile)"
+                         AcvpFiles="@(NistAcvpFile)"
+                         Download="$(FetchNistVectors)">
+      <Output TaskParameter="Files" ItemName="_NistVectorFile" />
+    </DownloadNistVectors>
+
+    <Message Importance="normal" Text="NIST vectors: @(_NistVectorFile->Count()) files in $(NistVectorCache) (ACVP-Server@$(NistAcvpRef))" />
+
+    <!-- Including from the task output copies its TargetPath metadata; nothing here touches other Content items. -->
+    <ItemGroup>
+      <Content Include="@(_NistVectorFile)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

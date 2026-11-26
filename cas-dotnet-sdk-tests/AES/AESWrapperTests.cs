@@ -2,6 +2,7 @@ using CasDotnetSdk.Helpers;
 using CasDotnetSdk.KeyExchange;
 using CasDotnetSdk.KeyExchange.Types;
 using CasDotnetSdk.Symmetric;
+using CasDotnetSdkTests.Nist;
 using System.Text;
 using Xunit;
 
@@ -11,8 +12,6 @@ namespace CasDotnetSdkTests.Tests
     {
         private readonly AESWrapper _aESWrapper;
         private readonly X25519Wrapper _x25519Wrapper;
-        private const string ProjectDataDirectory = "cas-dotnet-sdk-tests/AES/Data";
-        private const string OutputDataDirectory = "AES/Data";
 
         public AESWrapperTests()
         {
@@ -179,222 +178,77 @@ namespace CasDotnetSdkTests.Tests
 
         public static IEnumerable<object[]> AES128NistAadDecryptVectors()
         {
-            return LoadGcmAadDecryptVectors("gcmDecrypt128.rsp");
+            return GcmAadDecryptVectors("gcmDecrypt128.rsp").Vectors;
         }
 
         public static IEnumerable<object[]> AES256NistAadDecryptVectors()
         {
-            return LoadGcmAadDecryptVectors("gcmDecrypt256.rsp");
-        }
-
-        // Yields the 96-bit IV, 128-bit tag cases (the only shape the SDK's AES-GCM takes) for
-        // every AAD length, including the FAIL cases, as (IV, key, CT || tag, AAD, PT, FAIL).
-        private static IEnumerable<object[]> LoadGcmAadDecryptVectors(string fileName)
-        {
-            Dictionary<string, string> header = new Dictionary<string, string>();
-            Dictionary<string, string> fields = new Dictionary<string, string>();
-
-            foreach (string rawLine in File.ReadLines(ResolveVectorPath(fileName)))
-            {
-                string line = rawLine.Trim();
-                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (line.StartsWith("[", StringComparison.Ordinal))
-                {
-                    string[] parts = line.Trim('[', ']').Split('=', 2);
-                    header[parts[0].Trim()] = parts[1].Trim();
-                    continue;
-                }
-
-                bool isFailure = line.Equals("FAIL", StringComparison.Ordinal);
-                if (!isFailure)
-                {
-                    string[] parts = line.Split('=', 2);
-                    fields[parts[0].Trim()] = parts.Length > 1 ? parts[1].Trim() : string.Empty;
-                    if (parts[0].Trim() != "PT")
-                    {
-                        continue;
-                    }
-                }
-
-                if (header.GetValueOrDefault("IVlen") == "96" && header.GetValueOrDefault("Taglen") == "128")
-                {
-                    yield return new object[]
-                    {
-                        HexToBytes(fields["IV"]),
-                        HexToBytes(fields["Key"]),
-                        HexToBytes(fields["CT"] + fields["Tag"]),
-                        HexToBytes(fields["AAD"]),
-                        isFailure ? Array.Empty<byte>() : HexToBytes(fields["PT"]),
-                        isFailure
-                    };
-                }
-                fields.Clear();
-            }
+            return GcmAadDecryptVectors("gcmDecrypt256.rsp").Vectors;
         }
 
         public static IEnumerable<object[]> AES128NistVectors()
         {
-            return LoadGcmEncryptVectors("gcmDecrypt128.rsp");
+            return GcmEncryptVectors("gcmDecrypt128.rsp").Vectors;
         }
 
         public static IEnumerable<object[]> AES256NistVectors()
         {
-            return LoadGcmEncryptVectors("gcmDecrypt256.rsp");
+            return GcmEncryptVectors("gcmDecrypt256.rsp").Vectors;
         }
 
-        private static IEnumerable<object[]> LoadGcmEncryptVectors(string fileName)
+        [Theory]
+        [InlineData("gcmDecrypt128.rsp", 375, 7500, 255, 7620)]
+        [InlineData("gcmDecrypt256.rsp", 375, 7500, 268, 7607)]
+        public void NistVectorCountsArePinned(string fileName, int aadRun, int aadSkipped, int encryptRun, int encryptSkipped)
         {
-            string path = ResolveVectorPath(fileName);
+            var aad = GcmAadDecryptVectors(fileName);
+            NistVectors.AssertCounts($"{fileName} (AAD decrypt)", aadRun, aadSkipped, aad.Vectors.Count, aad.Skipped);
+            var encrypt = GcmEncryptVectors(fileName);
+            NistVectors.AssertCounts($"{fileName} (encrypt, no AAD)", encryptRun, encryptSkipped, encrypt.Vectors.Count, encrypt.Skipped);
+        }
 
-            string? keyHex = null;
-            string? ivHex = null;
-            string? ctHex = null;
-            string? ptHex = null;
-            int? ivBitLength = null;
-            int? aadBitLength = null;
-            bool isFailureCase = false;
-
-            foreach (string rawLine in File.ReadLines(path))
+        // The 96-bit IV, 128-bit tag cases (the only shape the SDK's AES-GCM takes) for every AAD
+        // length, including the FAIL cases, as (IV, key, CT || tag, AAD, PT, FAIL).
+        private static (List<object[]> Vectors, int Skipped) GcmAadDecryptVectors(string fileName)
+        {
+            var vectors = new List<object[]>();
+            int skipped = 0;
+            foreach (RspRecord record in RspFile.Read(fileName))
             {
-                string line = rawLine.Trim();
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
+                if (record["IVlen"] != "96" || record["Taglen"] != "128")
                 {
+                    skipped++;
                     continue;
                 }
-
-                if (line.StartsWith("[IVlen =", StringComparison.Ordinal))
+                vectors.Add(new object[]
                 {
-                    ivBitLength = ParseBracketValue(line, "IVlen");
-                    continue;
-                }
-
-                if (line.StartsWith("[AADlen =", StringComparison.Ordinal))
-                {
-                    aadBitLength = ParseBracketValue(line, "AADlen");
-                    continue;
-                }
-
-                if (line.StartsWith("[", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (line.StartsWith("Count =", StringComparison.Ordinal))
-                {
-                    ResetVectorState(
-                        ref keyHex,
-                        ref ivHex,
-                        ref ctHex,
-                        ref ptHex);
-                    isFailureCase = false;
-                    continue;
-                }
-
-                if (line.StartsWith("Key =", StringComparison.Ordinal))
-                {
-                    keyHex = line["Key =".Length..].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("IV =", StringComparison.Ordinal))
-                {
-                    ivHex = line["IV =".Length..].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("CT =", StringComparison.Ordinal))
-                {
-                    ctHex = line["CT =".Length..].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("AAD =", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (line.Equals("FAIL", StringComparison.Ordinal))
-                {
-                    isFailureCase = true;
-                    continue;
-                }
-
-                if (!line.StartsWith("PT =", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                ptHex = line["PT =".Length..].Trim();
-
-                if (isFailureCase || ivBitLength != 96 || aadBitLength != 0)
-                {
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(keyHex) || string.IsNullOrEmpty(ivHex) || ctHex is null || ptHex is null)
-                {
-                    continue;
-                }
-
-                yield return new object[]
-                {
-                    HexToBytes(ivHex),
-                    HexToBytes(keyHex),
-                    HexToBytes(ptHex),
-                    HexToBytes(ctHex)
-                };
+                    record.Bytes("IV"),
+                    record.Bytes("Key"),
+                    record.Bytes("CT").Concat(record.Bytes("Tag")).ToArray(),
+                    record.Bytes("AAD"),
+                    record.Failed ? Array.Empty<byte>() : record.Bytes("PT"),
+                    record.Failed
+                });
             }
+            return (vectors, skipped);
         }
 
-        private static string ResolveVectorPath(string fileName)
+        // The passing 96-bit IV cases without AAD, as (IV, key, PT, CT): the 3-argument
+        // Aes*Encrypt has no AAD, and the test compares only the ciphertext, so any tag length works.
+        private static (List<object[]> Vectors, int Skipped) GcmEncryptVectors(string fileName)
         {
-            string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
-            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string[] candidatePaths =
+            var vectors = new List<object[]>();
+            int skipped = 0;
+            foreach (RspRecord record in RspFile.Read(fileName))
             {
-                Path.Combine(AppContext.BaseDirectory, OutputDataDirectory, fileName),
-                Path.Combine(projectRoot, ProjectDataDirectory, fileName),
-                Path.Combine(userProfile, "Downloads", "gcmtestvectors", fileName)
-            };
-
-            foreach (string candidatePath in candidatePaths)
-            {
-                if (File.Exists(candidatePath))
+                if (record.Failed || record["IVlen"] != "96" || record["AADlen"] != "0")
                 {
-                    return candidatePath;
+                    skipped++;
+                    continue;
                 }
+                vectors.Add(new object[] { record.Bytes("IV"), record.Bytes("Key"), record.Bytes("PT"), record.Bytes("CT") });
             }
-
-            throw new FileNotFoundException(
-                $"Missing AES-GCM vector file: {fileName}. Checked: {string.Join(", ", candidatePaths)}");
-        }
-
-        private static byte[] HexToBytes(string value)
-        {
-            return string.IsNullOrEmpty(value) ? Array.Empty<byte>() : Convert.FromHexString(value);
-        }
-
-        private static void ResetVectorState(
-            ref string? keyHex,
-            ref string? ivHex,
-            ref string? ctHex,
-            ref string? ptHex)
-        {
-            keyHex = null;
-            ivHex = null;
-            ctHex = null;
-            ptHex = null;
-        }
-
-        private static int ParseBracketValue(string line, string fieldName)
-        {
-            string prefix = $"[{fieldName} =";
-            string value = line[prefix.Length..].TrimEnd(']').Trim();
-            return int.Parse(value);
+            return (vectors, skipped);
         }
     }
 }
