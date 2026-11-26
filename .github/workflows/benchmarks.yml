@@ -1,15 +1,17 @@
 name: Benchmarks
 
-# BenchmarkDotNet suite in cas-dotnet-sdk-benchmarks/ (#22).
+# BenchmarkDotNet suite in cas-dotnet-sdk-benchmarks/ (#22), on every supported
+# platform: Linux x64, Windows x64 and macOS Apple Silicon.
 #
 # - pull_request: a dry run (each benchmark runs once) so a PR can't break the
-#   suite. The numbers aren't meaningful and aren't published.
-# - push to main / workflow_dispatch: a real run (ShortRun job by default). The
-#   results table goes to the job summary and the full reports (Markdown, JSON,
-#   CSV, HTML) are uploaded as the `benchmark-results` artifact.
+#   suite on any OS. The numbers aren't meaningful.
+# - push to main / workflow_dispatch: a real run (ShortRun job by default). Each
+#   OS writes its results tables to the job summary and uploads the full reports
+#   (Markdown, JSON, CSV, HTML) as the `benchmark-results-<rid>` artifact.
 #
-# Hosted runners are shared VMs, so expect run-to-run noise of several percent:
-# compare results from the same runner type, and treat small differences as noise.
+# Hosted runners are shared VMs with different hardware per OS, so compare a
+# result only with earlier runs on the same OS, and expect several percent of
+# run-to-run noise. Don't read the OS-to-OS differences as SDK differences.
 on:
   pull_request:
   push:
@@ -39,10 +41,29 @@ concurrency:
 
 jobs:
   benchmarks:
-    runs-on: ubuntu-latest
+    name: benchmarks (${{ matrix.rid }})
+    runs-on: ${{ matrix.host }}
     timeout-minutes: 90
     permissions:
       contents: read
+    strategy:
+      # Let every OS finish, so one platform's failure doesn't hide the others' results.
+      fail-fast: false
+      matrix:
+        include:
+          # `library` is the file cargo writes to target/release for the cdylib.
+          - host: ubuntu-latest
+            rid: linux-x64
+            library: libcas_core_lib.so
+          - host: windows-latest
+            rid: win-x64
+            library: cas_core_lib.dll
+          - host: macos-latest # arm64
+            rid: osx-arm64
+            library: libcas_core_lib.dylib
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -56,25 +77,29 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The submodule pins the compiler (rust-toolchain.toml) and the crate graph
+      # (Cargo.lock); --locked fails instead of re-resolving it (#205, #211).
       - name: Install toolchain from cas-core-lib/rust-toolchain.toml
         working-directory: cas-core-lib
         run: rustup toolchain install
 
-      - name: Build Rust native (Linux)
+      - name: Build Rust native
         working-directory: cas-core-lib
         run: cargo build --release --locked
 
       # Staged before the build, so the SDK project picks it up and the build can
       # skip cargo (-p:BuildNativeRust=false), as the publish workflow does.
       - name: Stage native lib
-        shell: bash
+        env:
+          RID: ${{ matrix.rid }}
+          LIBRARY: ${{ matrix.library }}
         run: |
           set -euo pipefail
-          mkdir -p cas-dotnet-sdk/artifacts/native/linux-x64
-          cp cas-core-lib/target/release/libcas_core_lib.so cas-dotnet-sdk/artifacts/native/linux-x64/
+          mkdir -p "cas-dotnet-sdk/artifacts/native/${RID}"
+          cp "cas-core-lib/target/release/${LIBRARY}" "cas-dotnet-sdk/artifacts/native/${RID}/"
+          ls -la "cas-dotnet-sdk/artifacts/native/${RID}"
 
       - name: Run benchmarks
-        shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_FILTER: ${{ inputs.filter }}
@@ -96,16 +121,19 @@ jobs:
 
       - name: Publish results to the job summary
         if: always()
-        shell: bash
+        env:
+          RID: ${{ matrix.rid }}
         run: |
           set -euo pipefail
           shopt -s nullglob
           reports=("$RUNNER_TEMP"/benchmarks/results/*-report-github.md)
-          if [ ${#reports[@]} -eq 0 ]; then
-            echo "No benchmark reports were produced." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
           {
+            echo "## Benchmarks: ${RID}"
+            echo
+            if [ ${#reports[@]} -eq 0 ]; then
+              echo "No benchmark reports were produced."
+              exit 0
+            fi
             if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
               echo "> Dry run: every benchmark ran once to check it works. These timings are not meaningful."
               echo
@@ -125,7 +153,7 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: benchmark-results
+          name: benchmark-results-${{ matrix.rid }}
           path: ${{ runner.temp }}/benchmarks/results/
           if-no-files-found: warn
           retention-days: 90

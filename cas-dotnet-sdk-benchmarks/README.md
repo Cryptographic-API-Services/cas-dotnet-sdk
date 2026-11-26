@@ -50,13 +50,13 @@ Results go to `BenchmarkDotNet.Artifacts/results/` (ignored by git) unless you p
 
 ## CI
 
-`.github/workflows/benchmarks.yml` runs the suite on `ubuntu-latest`:
+`.github/workflows/benchmarks.yml` runs the suite on .NET 10 on every supported platform, one job each: Linux x64 (`ubuntu-latest`), Windows x64 (`windows-latest`) and macOS Apple Silicon (`macos-latest`).
 
 - **Pull requests:** a dry run (`--job dry`), so a PR that breaks a benchmark fails. The timings aren't meaningful.
-- **Push to `main`:** a `--job short` run. The results table is in the run's job summary, and the full reports (Markdown, JSON, CSV, HTML) are in its `benchmark-results` artifact for 90 days.
+- **Push to `main`:** a `--job short` run. Each OS's results tables are in the run's job summary, and the full reports (Markdown, JSON, CSV, HTML) are in its `benchmark-results-<rid>` artifact (`linux-x64`, `win-x64`, `osx-arm64`) for 90 days.
 - **Manual (`workflow_dispatch`):** choose the `--filter` and the job (`dry`, `short`, `medium`, `long`).
 
-The program exits with a non-zero code if any benchmark fails, so a broken benchmark fails the workflow. Hosted runners are shared VMs: compare runs on the same runner type, and expect a few percent of noise.
+The program exits with a non-zero code if any benchmark fails, so a broken benchmark fails the workflow on that OS; the other OSes still finish. Hosted runners are shared VMs with different hardware per OS: compare a result only with earlier runs on the same OS, expect a few percent of noise, and don't read OS-to-OS differences as SDK differences.
 
 ## Adding a benchmark
 
