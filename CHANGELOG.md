@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.2](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/compare/v2.0.1...v2.0.2) (2026-11-26)
+
+
+### Other
+
+* add BenchmarkDotNet benchmark project ([#22](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/22)) ([#249](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/249)) ([389f632](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/389f63270372adadf029dc67f4b2ebed61cd1c88))
+* download NIST CAVP/ACVP vectors at build time and add NIST known-answer tests ([#186](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/186)) ([#250](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/issues/250)) ([5a38635](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/commit/5a38635f01b43cdf19c0d9ea1c3ae8c20d977993))
+
 ## [2.0.1](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk/compare/v2.0.0...v2.0.1) (2026-11-25)
 
 
