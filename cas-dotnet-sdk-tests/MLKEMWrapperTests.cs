@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CasDotnetSdk.PQC;
+using CasDotnetSdkTests.Nist;
 using CasDotnetSdkTests.PQC;
 using Xunit;
 
@@ -53,32 +54,31 @@ namespace CasDotnetSdkTests
 
         // NIST ACVP ML-KEM-1024 (FIPS 203) encapDecap decapsulation (VAL) vectors:
         // decapsulating c with dk must always produce the expected shared secret k
-        // (the expected value already accounts for implicit rejection).
+        // (the expected value already accounts for implicit rejection). Other parameter sets
+        // and functions are skipped (counted); the key checks are in Nist/NistPqcTests.
         [Fact]
         public void NistDecapsulationVectors()
         {
-            var root = PqcVectorData.Load("nist_mlkem_1024_decaps.json");
-            int count = 0;
+            int run = 0;
+            int skipped = 0;
             var failures = new List<string>();
-            foreach (var group in root.GetProperty("testGroups").EnumerateArray())
+            foreach (AcvpFile.Case c in AcvpFile.Load("ML-KEM-encapDecap-FIPS203", "ML-KEM", "encapDecap"))
             {
-                foreach (var test in group.GetProperty("tests").EnumerateArray())
+                if (c.String("parameterSet") != "ML-KEM-1024" || c.String("function") != "decapsulation")
                 {
-                    int tcId = test.GetProperty("tcId").GetInt32();
-                    byte[] dk = PqcVectorData.Hex(test.GetProperty("dk").GetString()!);
-                    byte[] c = PqcVectorData.Hex(test.GetProperty("c").GetString()!);
-                    byte[] expected = PqcVectorData.Hex(test.GetProperty("k").GetString()!);
+                    skipped++;
+                    continue;
+                }
+                run++;
 
-                    byte[] actual = this._wrapper.Decapsulate(dk, c);
-                    if (!actual.SequenceEqual(expected))
-                    {
-                        failures.Add($"tcId={tcId}");
-                    }
-                    count++;
+                byte[] actual = this._wrapper.Decapsulate(c.Hex("dk"), c.Hex("c"));
+                if (!actual.SequenceEqual(c.Hex("k")))
+                {
+                    failures.Add($"tcId={c.TcId}");
                 }
             }
-            Assert.True(count > 0, "No NIST ML-KEM vectors were loaded.");
-            Assert.True(failures.Count == 0, $"{failures.Count}/{count} NIST ML-KEM vectors mismatched: {string.Join(", ", failures)}");
+            NistVectors.AssertCounts("ML-KEM-encapDecap-FIPS203 (decapsulation)", 10, 155, run, skipped);
+            Assert.True(failures.Count == 0, $"{failures.Count}/{run} NIST ML-KEM vectors mismatched: {string.Join(", ", failures)}");
         }
 
         // Project Wycheproof ML-KEM-1024 semi-expanded decapsulation vectors.

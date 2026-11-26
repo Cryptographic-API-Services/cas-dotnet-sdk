@@ -1,16 +1,9 @@
 # Test vectors (`PQC/Data`)
 
-This folder holds the JSON known-answer vector files used by the test project.
-They come from two sources and are handled differently.
-
-## NIST ACVP vectors — committed
-
-| File | Exercised by |
-| --- | --- |
-| `nist_mlkem_1024_decaps.json` | `MLKEMWrapperTests.NistDecapsulationVectors` |
-| `nist_mldsa_65_sigver.json` | `MLDSAWrapperTests.NistSignatureVerificationVectors` |
-
-These are trimmed NIST ACVP (FIPS 203/204) vectors and are **checked in**.
+The Project Wycheproof vectors are copied next to the test assembly into
+`PQC/Data`; nothing in this folder but this README is committed. The NIST
+(CAVP and ACVP) vectors are downloaded too, by a separate mechanism: see
+`../../Nist/README.md`.
 
 ## Project Wycheproof vectors — downloaded, not committed
 
@@ -84,9 +77,10 @@ Wycheproof is licensed under the Apache License 2.0; see
 Tests skip only what the SDK's public API cannot express; skips are counted and
 reported in the failure message.
 
-- **AES-GCM with AAD, non-96-bit IVs, non-128-bit tags, or AES-192 keys** — the
-  API has no AAD parameter, takes a 96-bit nonce, appends a 128-bit tag, and
-  exposes only AES-128/256.
+- **AES-GCM with non-96-bit IVs, non-128-bit tags, or AES-192 keys** — the API
+  takes a 96-bit nonce, appends a 128-bit tag, and exposes only AES-128/256.
+  `AesGcmWycheproofTests` also still skips vectors with AAD: it predates the
+  `aad` overloads (which the NIST tests exercise).
 - **Ed25519, RSA and HMAC vectors with an empty message (or empty HMAC key)** — the
   public wrappers reject empty input up front.
 - **HMAC truncated-tag groups** — the SDK always returns the full 32-byte tag, so
@@ -96,14 +90,17 @@ reported in the failure message.
 
 ### Not covered
 
-- **ChaCha20-Poly1305, AES-GCM-SIV, HMAC-SHA512** — not exposed by the .NET SDK.
-- **Ascon** — `cas-lib` implements NIST SP 800-232 Ascon-AEAD128; Wycheproof only
-  ships vectors for the pre-standard Ascon v1.2 family.
+- **ChaCha20-Poly1305, AES-GCM-SIV** — no Wycheproof tests yet; covered by the
+  RFC 8439 / RFC 8452 vectors in their wrapper tests.
+- **HMAC-SHA512** — not exposed by the .NET SDK.
+- **Ascon** — Wycheproof only ships vectors for the pre-standard Ascon v1.2
+  family; the SP 800-232 Ascon-AEAD128 that `cas-lib` implements is covered by
+  NIST ACVP vectors.
 - **RSA with other hashes, salt lengths or key sizes, and RSA encryption** — the SDK
   signs only RS256 and PS256 (SHA-256, 32-byte salt) with 2048/3072/4096-bit keys
   and has no RSA encryption.
 - **ML-KEM seed-form / encaps / keygen vectors** — decapsulation takes the
   expanded 3168-byte key and encapsulation is randomized.
-- **SLH-DSA** — no Wycheproof vectors exist yet.
+- **SLH-DSA** — no Wycheproof vectors exist yet; NIST ACVP covers it.
 - **SHA-2 / SHA-3 / BLAKE2, password hashers, HPKE, zstd** — no applicable
-  Wycheproof vector sets (SHA-3 is covered by the NIST `.rsp` files in `SHA/Data`).
+  Wycheproof vector sets (SHA-2 and SHA-3 are covered by NIST CAVP).

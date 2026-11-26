@@ -40,29 +40,12 @@
     <ProjectReference Include="..\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
   </ItemGroup>
 
+  <!-- The NIST vectors are downloaded into obj/nist/ by build/NistVectors.targets (imported
+       below); the task source there isn't part of the test assembly. The Wycheproof vectors
+       are downloaded by the FetchWycheproofVectors target below. -->
   <ItemGroup>
-    <Content Include="AES\Data\*.rsp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>AES\Data\%(Filename)%(Extension)</TargetPath>
-    </Content>
-
-    <Content Include="SHA\Data\*.rsp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>SHA\Data\%(Filename)%(Extension)</TargetPath>
-    </Content>
-
-    <!-- Committed NIST ACVP vectors. The Wycheproof vectors are downloaded by
-         the FetchWycheproofVectors target below and added to Content there. -->
-    <Content Include="PQC\Data\*.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>PQC\Data\%(Filename)%(Extension)</TargetPath>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AES\Data\" />
-    <Folder Include="SHA\Data\" />
-    <Folder Include="PQC\Data\" />
+    <Compile Remove="build\**" />
+    <None Remove="build\**" />
   </ItemGroup>
 
   <!--
@@ -216,4 +199,5 @@
       </Content>
     </ItemGroup>
   </Target>
+  <Import Project="build\NistVectors.targets" />
 </Project>
